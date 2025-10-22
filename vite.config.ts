@@ -10,7 +10,10 @@ export default defineConfig({
         index: resolve(__dirname, 'src/index.ts'),
         'adapters/vue/index': resolve(__dirname, 'src/adapters/vue/index.ts'),
         'adapters/react/index': resolve(__dirname, 'src/adapters/react/index.tsx'),
-        'adapters/angular/index': resolve(__dirname, 'src/adapters/angular/index.ts')
+        'adapters/angular/index': resolve(__dirname, 'src/adapters/angular/index.ts'),
+        // Separate entries for tree-shaking
+        'filters/index': resolve(__dirname, 'src/filters/index.ts'),
+        'drawing/index': resolve(__dirname, 'src/drawing/index.ts')
       },
       name: 'LDesignCropper',
       formats: ['es', 'cjs'],
@@ -34,10 +37,38 @@ export default defineConfig({
           if (assetInfo.name === 'style.css') return 'style.css'
           return assetInfo.name || 'assets/[name][extname]'
         },
-        exports: 'named'
+        exports: 'named',
+        // Enable tree-shaking
+        preserveModules: false,
+        // Optimize chunk sizes
+        manualChunks: undefined
       }
     },
     cssCodeSplit: false,
-    emptyOutDir: true
+    emptyOutDir: true,
+    // Optimization settings
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // Keep console for debugging
+        drop_debugger: true,
+        pure_funcs: ['console.log'] // Remove console.log in production
+      },
+      mangle: {
+        safari10: true
+      },
+      format: {
+        comments: false // Remove comments
+      }
+    },
+    // Source maps for debugging
+    sourcemap: true,
+    // Target modern browsers
+    target: 'es2020'
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: [],
+    exclude: ['vue', 'react', 'react-dom', '@angular/core']
   }
 })

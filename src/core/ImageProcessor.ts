@@ -6,6 +6,7 @@ import type { ImageData, CanvasData, GetCroppedCanvasOptions } from '../types'
 import { loadImage, createCanvas, canvasToBlob, canvasToDataURL } from '../utils/image'
 import { createElement, setStyle } from '../utils/dom'
 import { getAspectRatio, clamp } from '../utils/math'
+import { raf, cancelRaf, canvasPool } from '../utils/performance'
 
 export class ImageProcessor {
   private container: HTMLElement
@@ -13,6 +14,9 @@ export class ImageProcessor {
   private canvasElement: HTMLCanvasElement | null = null
   private imageData: ImageData | null = null
   private src: string = ''
+  private pendingTransformRaf: number | null = null
+  private cachedCanvas: HTMLCanvasElement | null = null
+  private cacheKey: string = ''
 
   constructor(container: HTMLElement) {
     this.container = container
@@ -65,18 +69,18 @@ export class ImageProcessor {
 
     // Create image wrapper
     const wrapper = createElement('div', 'cropper-canvas')
-    
+
     // Calculate the container size
     const containerRect = this.container.getBoundingClientRect()
     const containerWidth = containerRect.width
     const containerHeight = containerRect.height
-    
+
     // Calculate the display size to fit the container (contain mode)
     const imageAspect = this.imageData.naturalWidth / this.imageData.naturalHeight
     const containerAspect = containerWidth / containerHeight
-    
+
     let displayWidth, displayHeight
-    
+
     // Use contain mode to ensure the entire image is visible
     if (imageAspect > containerAspect) {
       // Image is wider - fit width and adjust height
@@ -87,13 +91,13 @@ export class ImageProcessor {
       displayHeight = containerHeight
       displayWidth = containerHeight * imageAspect
     }
-    
+
     // Update image data with display dimensions
     this.imageData.width = displayWidth
     this.imageData.height = displayHeight
     this.imageData.left = (containerWidth - displayWidth) / 2
     this.imageData.top = (containerHeight - displayHeight) / 2
-    
+
     // Style the wrapper to position the image
     setStyle(wrapper, {
       position: 'absolute',
@@ -102,7 +106,7 @@ export class ImageProcessor {
       width: `${displayWidth}px`,
       height: `${displayHeight}px`
     })
-    
+
     // Style the image element
     setStyle(this.imageElement, {
       display: 'block',
@@ -111,9 +115,9 @@ export class ImageProcessor {
       maxWidth: 'none',
       maxHeight: 'none'
     })
-    
+
     wrapper.appendChild(this.imageElement)
-    
+
     // Insert canvas after background but before other elements
     const bgElement = this.container.querySelector('.cropper-bg')
     if (bgElement && bgElement.nextSibling) {
@@ -121,28 +125,43 @@ export class ImageProcessor {
     } else {
       this.container.appendChild(wrapper)
     }
-    
+
     this.updateTransform()
   }
 
   /**
    * Update image transform
+   * Uses RAF for smooth animations and GPU acceleration
    */
   updateTransform(): void {
     if (!this.imageElement || !this.imageData) return
 
-    const { rotate, scaleX, scaleY, skewX, skewY, translateX, translateY } = this.imageData
+    // Cancel any pending transform update
+    if (this.pendingTransformRaf !== null) {
+      cancelRaf(this.pendingTransformRaf)
+    }
 
-    const transforms = [
-      `translate(${translateX}px, ${translateY}px)`,
-      `rotate(${rotate}deg)`,
-      `scaleX(${scaleX})`,
-      `scaleY(${scaleY})`,
-      `skew(${skewX}deg, ${skewY}deg)`
-    ]
+    // Schedule transform update in next frame
+    this.pendingTransformRaf = raf(() => {
+      if (!this.imageElement || !this.imageData) return
 
-    setStyle(this.imageElement, {
-      transform: transforms.join(' ')
+      const { rotate, scaleX, scaleY, skewX, skewY, translateX, translateY } = this.imageData
+
+      // Use translate3d for GPU acceleration
+      const transforms = [
+        `translate3d(${translateX}px, ${translateY}px, 0)`,
+        `rotate(${rotate}deg)`,
+        `scaleX(${scaleX})`,
+        `scaleY(${scaleY})`,
+        `skew(${skewX}deg, ${skewY}deg)`
+      ]
+
+      setStyle(this.imageElement!, {
+        transform: transforms.join(' '),
+        willChange: 'transform' // Hint browser to use GPU
+      })
+
+      this.pendingTransformRaf = null
     })
   }
 
@@ -309,7 +328,7 @@ export class ImageProcessor {
     // Apply constraints while maintaining aspect ratio
     let finalWidth = width!
     let finalHeight = height!
-    
+
     if (maxWidth && finalWidth > maxWidth) {
       finalWidth = maxWidth
       finalHeight = finalWidth / cropAspectRatio
@@ -336,16 +355,16 @@ export class ImageProcessor {
 
     // Apply crop shape if specified
     const cropShape = options.cropShape || 'default'
-    
+
     // Save the context state
     ctx.save()
-    
+
     // For shaped exports, fill white background first (outside the clipping path)
     if (fillBackground && (cropShape === 'circle' || cropShape === 'rounded')) {
       ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, finalWidth, finalHeight)
     }
-    
+
     // Create clipping path based on shape
     if (cropShape === 'circle') {
       // Circle shape
@@ -372,7 +391,7 @@ export class ImageProcessor {
       ctx.closePath()
       ctx.clip()
     }
-    
+
     // Fill background inside clipping path (if specified and not using fillBackground)
     if (!fillBackground && fillColor && fillColor !== 'transparent') {
       ctx.fillStyle = fillColor
@@ -386,15 +405,15 @@ export class ImageProcessor {
     const naturalHeight = this.imageElement.naturalHeight
     const displayWidth = this.imageData.width
     const displayHeight = this.imageData.height
-    
+
     // Get the actual display rect of the transformed image
     const displayRect = this.getDisplayRect()
     if (!displayRect) return null
-    
+
     // The displayRect contains the actual position and size of the scaled image
     const imageLeft = displayRect.left
     const imageTop = displayRect.top
-    const scaledWidth = displayRect.width 
+    const scaledWidth = displayRect.width
     const scaledHeight = displayRect.height
 
     // Calculate crop area relative to the transformed image position
@@ -402,9 +421,9 @@ export class ImageProcessor {
     const cropTop = cropBoxData.top - imageTop
 
     // Check if we need to fill background (crop area extends beyond image)
-    const needsBackground = cropLeft < 0 || cropTop < 0 || 
-                          cropLeft + cropWidth > scaledWidth || 
-                          cropTop + cropHeight > scaledHeight
+    const needsBackground = cropLeft < 0 || cropTop < 0 ||
+      cropLeft + cropWidth > scaledWidth ||
+      cropTop + cropHeight > scaledHeight
 
     if (needsBackground) {
       if (fillColor && fillColor !== 'transparent') {
@@ -419,25 +438,25 @@ export class ImageProcessor {
     // Calculate what part of the natural image corresponds to the crop box
     // The key here is mapping from the visually scaled coordinates to natural image coordinates
     // displayRect already contains the scaled dimensions (width * scaleX, height * scaleY)
-    
+
     // IMPORTANT FIX: The mapping ratio should use the original display dimensions,
     // not the scaled dimensions. The display dimensions represent the container size
     // that the natural image is fitted into, before any zoom transformations.
     const baseScaleX = displayWidth / naturalWidth
     const baseScaleY = displayHeight / naturalHeight
-    
+
     // The actual display is further scaled by scaleX and scaleY
     // So the total scaling from natural to displayed is baseScale * scale
     const totalScaleX = baseScaleX * Math.abs(scaleX)
     const totalScaleY = baseScaleY * Math.abs(scaleY)
-    
+
     // Map the crop box position and size to natural image coordinates
     // These coordinates are relative to the scaled image display position
     let sourceX = Math.max(0, cropLeft) / totalScaleX
     let sourceY = Math.max(0, cropTop) / totalScaleY
     let sourceWidth = cropWidth / totalScaleX
     let sourceHeight = cropHeight / totalScaleY
-    
+
     // Handle cases where crop box extends beyond image bounds
     if (cropLeft < 0) {
       // Crop box starts before image, adjust source width
@@ -447,7 +466,7 @@ export class ImageProcessor {
       // Crop box extends past image right edge
       sourceWidth = (scaledWidth - cropLeft) / totalScaleX
     }
-    
+
     if (cropTop < 0) {
       // Crop box starts above image, adjust source height
       sourceHeight = Math.min(cropHeight + cropTop, scaledHeight) / totalScaleY
@@ -456,20 +475,20 @@ export class ImageProcessor {
       // Crop box extends past image bottom edge
       sourceHeight = (scaledHeight - cropTop) / totalScaleY
     }
-    
+
     // Ensure source coordinates are within natural image bounds
     sourceX = Math.max(0, Math.min(sourceX, naturalWidth))
     sourceY = Math.max(0, Math.min(sourceY, naturalHeight))
     sourceWidth = Math.max(0, Math.min(sourceWidth, naturalWidth - sourceX))
     sourceHeight = Math.max(0, Math.min(sourceHeight, naturalHeight - sourceY))
-    
+
     // Calculate destination rectangle
     // If the crop box extends beyond the image, we need to adjust the destination
     let destX = 0
     let destY = 0
     let destWidth = finalWidth
     let destHeight = finalHeight
-    
+
     // Adjust destination if crop box starts outside image bounds
     if (cropLeft < 0) {
       const offsetRatio = -cropLeft / cropWidth
@@ -481,7 +500,7 @@ export class ImageProcessor {
       destY = finalHeight * offsetRatio
       destHeight = finalHeight * (1 - offsetRatio)
     }
-    
+
     // Adjust destination size if crop box extends beyond image
     if (cropLeft >= 0 && cropLeft + cropWidth > scaledWidth) {
       destWidth = finalWidth * ((scaledWidth - cropLeft) / cropWidth)
@@ -531,7 +550,7 @@ export class ImageProcessor {
 
     // Restore the context state that was saved at the beginning
     ctx.restore()
-    
+
     return canvas
   }
 
@@ -576,29 +595,29 @@ export class ImageProcessor {
    */
   getDisplayRect(): { left: number; top: number; width: number; height: number } | null {
     if (!this.imageData) return null
-    
+
     const { left, top, width, height, scaleX, scaleY, rotate, translateX, translateY } = this.imageData
-    
+
     // Calculate the actual dimensions after scaling
     const actualWidth = Math.abs(width * scaleX)
     const actualHeight = Math.abs(height * scaleY)
-    
+
     // For rotation, we need to calculate the bounding box that contains the rotated rectangle
     if (rotate !== 0) {
       // Convert rotation to radians
       const rad = (rotate * Math.PI) / 180
       const cos = Math.abs(Math.cos(rad))
       const sin = Math.abs(Math.sin(rad))
-      
+
       // Calculate bounding box dimensions for rotated rectangle
       const rotatedWidth = actualWidth * cos + actualHeight * sin
       const rotatedHeight = actualWidth * sin + actualHeight * cos
-      
+
       // Calculate the center position considering translation
       // The center is scaled from the original center
       const centerX = left + width / 2 + translateX
       const centerY = top + height / 2 + translateY
-      
+
       return {
         left: centerX - rotatedWidth / 2,
         top: centerY - rotatedHeight / 2,
@@ -609,16 +628,16 @@ export class ImageProcessor {
       // Without rotation, apply scaling and translation
       // CSS transform scale scales from the center of the element
       // So we need to calculate the new position after scaling from center
-      
+
       // Original center position
       const centerX = left + width / 2
       const centerY = top + height / 2
-      
+
       // After scaling from center, the new top-left position is:
       // center - (scaledSize / 2)
       const scaledLeft = centerX - actualWidth / 2 + translateX
       const scaledTop = centerY - actualHeight / 2 + translateY
-      
+
       return {
         left: scaledLeft,
         top: scaledTop,
@@ -639,9 +658,27 @@ export class ImageProcessor {
    * Destroy
    */
   destroy(): void {
+    // Cancel pending RAF
+    if (this.pendingTransformRaf !== null) {
+      cancelRaf(this.pendingTransformRaf)
+      this.pendingTransformRaf = null
+    }
+
+    // Release cached canvas
+    if (this.cachedCanvas) {
+      canvasPool.release(this.cachedCanvas)
+      this.cachedCanvas = null
+    }
+
+    // Revoke object URL if it's a blob URL
+    if (this.src && this.src.startsWith('blob:')) {
+      URL.revokeObjectURL(this.src)
+    }
+
     this.imageElement = null
     this.canvasElement = null
     this.imageData = null
     this.src = ''
+    this.cacheKey = ''
   }
 }

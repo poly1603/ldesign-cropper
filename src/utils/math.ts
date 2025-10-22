@@ -3,6 +3,37 @@
  */
 
 import type { Point } from '../types'
+import { memoize } from './performance'
+
+// Trigonometric lookup tables for performance
+const SIN_TABLE_SIZE = 360
+const sinTable = new Float32Array(SIN_TABLE_SIZE)
+const cosTable = new Float32Array(SIN_TABLE_SIZE)
+
+// Populate lookup tables
+for (let i = 0; i < SIN_TABLE_SIZE; i++) {
+  const radians = (i * Math.PI) / 180
+  sinTable[i] = Math.sin(radians)
+  cosTable[i] = Math.cos(radians)
+}
+
+/**
+ * Fast sine using lookup table (for integer degrees 0-359)
+ */
+export function fastSin(degrees: number): number {
+  const normalized = ((degrees % 360) + 360) % 360
+  const index = Math.floor(normalized)
+  return sinTable[index]
+}
+
+/**
+ * Fast cosine using lookup table (for integer degrees 0-359)
+ */
+export function fastCos(degrees: number): number {
+  const normalized = ((degrees % 360) + 360) % 360
+  const index = Math.floor(normalized)
+  return cosTable[index]
+}
 
 /**
  * Clamp a number between min and max
@@ -65,9 +96,12 @@ export function rotatePoint(
 /**
  * Get aspect ratio from width and height
  */
-export function getAspectRatio(width: number, height: number): number {
-  return width / height
-}
+export const getAspectRatio = memoize(
+  (width: number, height: number): number => {
+    return width / height
+  },
+  (w, h) => `${w}:${h}`
+)
 
 /**
  * Round a number to a specific number of decimal places

@@ -23,6 +23,7 @@ import { PresetManager, type PresetOptions } from './PresetManager'
 import { getElement, createElement, addClass, removeClass, setStyle } from '../utils/dom'
 import { dispatch } from '../utils/events'
 import { clamp } from '../utils/math'
+import { UI, CSS_CLASSES, EVENTS, ERRORS } from '../config/constants'
 
 const DEFAULTS = {
   viewMode: 0 as const,
@@ -34,16 +35,16 @@ const DEFAULTS = {
   checkCrossOrigin: true,
   checkOrientation: true,
   modal: true,
-  modalOpacity: 0.3,  // Default modal opacity (lighter mask)
+  modalOpacity: UI.DEFAULT_MODAL_OPACITY,
   guides: true,
   center: true,
   highlight: true,
-  highlightOpacity: 0.03,  // Default highlight opacity (3% - lighter)
+  highlightOpacity: UI.DEFAULT_HIGHLIGHT_OPACITY,
   background: true,
   cropBoxStyle: 'default' as const,
   autoCrop: true,
-  autoCropArea: 0.8, // Deprecated, use initialCropBoxSize instead
-  initialCropBoxSize: 0.5, // Default to 50% of the smaller dimension
+  autoCropArea: UI.DEFAULT_AUTO_CROP_AREA, // Deprecated, use initialCropBoxSize instead
+  initialCropBoxSize: UI.DEFAULT_INITIAL_CROP_SIZE,
   movable: true,
   rotatable: true,
   scalable: true,
@@ -57,8 +58,8 @@ const DEFAULTS = {
   cropBoxMovable: true,
   cropBoxResizable: true,
   toggleDragModeOnDblclick: true,
-  minContainerWidth: 200,
-  minContainerHeight: 100,
+  minContainerWidth: UI.MIN_CONTAINER_WIDTH,
+  minContainerHeight: UI.MIN_CONTAINER_HEIGHT,
   minCanvasWidth: 0,
   minCanvasHeight: 0,
   minCropBoxWidth: 0,
@@ -76,7 +77,7 @@ const DEFAULTS = {
     clickToUpload: true,
     dragAndDrop: true,
     acceptedFiles: 'image/*',
-    maxFileSize: 10, // MB
+    maxFileSize: UI.MAX_PLACEHOLDER_FILE_SIZE,
     className: ''
   }
 }
@@ -104,7 +105,7 @@ export class Cropper {
     // Get the actual element
     const el = getElement(elementParam)
     if (!el) {
-      throw new Error('Container element not found')
+      throw new Error(ERRORS.CONTAINER_NOT_FOUND)
     }
     this.element = el as HTMLElement
     this.options = { ...DEFAULTS, ...options }
@@ -121,9 +122,9 @@ export class Cropper {
     this.container = this.element
 
     // Create wrapper
-    this.wrapper = createElement('div', 'cropper-container')
+    this.wrapper = createElement('div', CSS_CLASSES.CONTAINER)
     this.container.appendChild(this.wrapper)
-    
+
     // Add background immediately if enabled
     if (this.options.background) {
       this.addBackground()
@@ -234,15 +235,15 @@ export class Cropper {
     if (this.options.autoCrop) {
       // Use initialCropBoxSize if provided, otherwise use autoCropArea for backwards compatibility
       const sizeRatio = this.options.initialCropBoxSize ?? this.options.autoCropArea ?? 0.5
-      
+
       // Use aspect ratio if provided, otherwise use initialAspectRatio (default to 1 for square)
       const aspectRatio = this.options.aspectRatio || this.options.initialAspectRatio || 1
-      
+
       let width, height
 
       // Calculate initial crop box size based on the smaller dimension of the image
       const minImageDimension = Math.min(displayRect.width, displayRect.height)
-      
+
       if (aspectRatio === 1) {
         // For square crop box
         width = minImageDimension * sizeRatio
@@ -252,7 +253,7 @@ export class Cropper {
         // Start with the smaller dimension and calculate based on aspect ratio
         height = minImageDimension * sizeRatio
         width = height * aspectRatio
-        
+
         // If width exceeds the image width, scale down
         if (width > displayRect.width * 0.9) {
           width = displayRect.width * sizeRatio
@@ -262,7 +263,7 @@ export class Cropper {
         // Portrait orientation
         width = minImageDimension * sizeRatio
         height = width / aspectRatio
-        
+
         // If height exceeds the image height, scale down
         if (height > displayRect.height * 0.9) {
           height = displayRect.height * sizeRatio
@@ -323,7 +324,7 @@ export class Cropper {
     }
 
     // Handle both boolean and object toolbar options
-    const toolbarOptions = typeof this.options.toolbar === 'boolean' 
+    const toolbarOptions = typeof this.options.toolbar === 'boolean'
       ? {} // Use default options if true
       : this.options.toolbar
 
@@ -587,16 +588,16 @@ export class Cropper {
     const scaleY = imageData.scaleY
     const imageLeft = displayRect.left + imageData.translateX
     const imageTop = displayRect.top + imageData.translateY
-    
+
     // Convert crop box coordinates to image coordinates
     const relativeX = (cropBoxData.left - imageLeft) / Math.abs(scaleX)
     const relativeY = (cropBoxData.top - imageTop) / Math.abs(scaleY)
     const relativeWidth = cropBoxData.width / Math.abs(scaleX)
     const relativeHeight = cropBoxData.height / Math.abs(scaleY)
-    
+
     // Map to natural image dimensions
     const ratio = imageData.naturalWidth / imageData.width
-    
+
     const data: CropData = {
       x: relativeX * ratio,
       y: relativeY * ratio,
@@ -706,7 +707,7 @@ export class Cropper {
    */
   setOptions(options: Partial<CropperOptions>): void {
     this.options = { ...this.options, ...options }
-    
+
     // Apply certain options immediately if cropper is ready
     if (this.ready) {
       if (options.aspectRatio !== undefined && this.cropBox) {
@@ -728,20 +729,20 @@ export class Cropper {
     if (!this.ready || !this.imageProcessor || !this.cropBox) return null
 
     const cropBoxData = this.cropBox.getData()
-    
+
     // Enhanced options with shape and background handling
     const enhancedOptions: any = { ...options }
-    
+
     // Add crop shape if applyShape is true
     if (options.applyShape && this.options.cropBoxStyle !== 'default') {
       enhancedOptions.cropShape = this.options.cropBoxStyle
-      
+
       // For rounded and circle shapes, add white background outside the shape
       if (this.options.cropBoxStyle === 'circle' || this.options.cropBoxStyle === 'rounded') {
         enhancedOptions.fillBackground = true
       }
     }
-    
+
     return this.imageProcessor.getCroppedCanvas(cropBoxData, enhancedOptions)
   }
 
@@ -845,7 +846,7 @@ export class Cropper {
    */
   private addBackground(): void {
     if (!this.wrapper) return
-    
+
     // Check if background already exists
     const existingBg = this.wrapper.querySelector('.cropper-bg')
     if (!existingBg) {
@@ -1038,7 +1039,7 @@ export class Cropper {
   private handleDrop(event: DragEvent): void {
     event.preventDefault()
     event.stopPropagation()
-    
+
     if (this.placeholderElement) {
       removeClass(this.placeholderElement, 'cropper-placeholder-dragover')
     }
@@ -1059,7 +1060,7 @@ export class Cropper {
    */
   private loadFile(file: File): void {
     const placeholder = this.options.placeholder
-    
+
     // Check file size
     if (placeholder?.maxFileSize) {
       const maxSizeInBytes = placeholder.maxFileSize * 1024 * 1024
@@ -1071,7 +1072,7 @@ export class Cropper {
 
     // Create object URL and load image
     const url = URL.createObjectURL(file)
-    
+
     // Load the image
     this.replace(url).then(() => {
       // Dispatch upload event
@@ -1092,7 +1093,7 @@ export class Cropper {
    */
   private handleUploadError(message: string): void {
     console.error('Upload error:', message)
-    
+
     // Dispatch error event
     if (this.container) {
       dispatch(this.container, 'uploadError', { message })

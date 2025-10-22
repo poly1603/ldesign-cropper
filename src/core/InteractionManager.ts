@@ -6,6 +6,7 @@ import type { Point, Action } from '../types'
 import { on, off, getPointer, getCenter, getTouchDistance, preventDefault } from '../utils/events'
 import { supportsTouchEvents, getEventListenerOptions } from '../utils/compatibility'
 import { getData } from '../utils/dom'
+import { throttle, debounce } from '../utils/performance'
 
 export interface InteractionCallbacks {
   onStart?: (action: Action, point: Point, event: MouseEvent | TouchEvent) => void
@@ -31,6 +32,10 @@ export class InteractionManager {
   private zoomOnWheel: boolean
   private wheelZoomRatio: number
 
+  // Throttled/debounced handlers
+  private throttledMove: (event: MouseEvent | TouchEvent) => void
+  private debouncedWheel: (event: WheelEvent) => void
+
   constructor(
     element: HTMLElement,
     callbacks: InteractionCallbacks,
@@ -51,6 +56,10 @@ export class InteractionManager {
     this.zoomOnWheel = options.zoomOnWheel ?? true
     this.wheelZoomRatio = options.wheelZoomRatio ?? 0.1
 
+    // Create throttled handlers for performance
+    this.throttledMove = throttle(this.handleMove.bind(this), 16) // ~60fps
+    this.debouncedWheel = debounce(this.handleWheel.bind(this), 50)
+
     this.bindEvents()
   }
 
@@ -58,24 +67,26 @@ export class InteractionManager {
    * Bind events
    */
   private bindEvents(): void {
-    const eventOptions = getEventListenerOptions(false) as any
+    // Use passive listeners where we don't prevent default
+    const passiveOptions = getEventListenerOptions(true) as any
+    const activeOptions = getEventListenerOptions(false) as any
 
-    // Mouse events
-    on(this.element, 'mousedown', this.handleStart.bind(this) as any, eventOptions)
-    on(document, 'mousemove', this.handleMove.bind(this) as any, eventOptions)
-    on(document, 'mouseup', this.handleEnd.bind(this) as any, eventOptions)
+    // Mouse events - need active for preventDefault
+    on(this.element, 'mousedown', this.handleStart.bind(this) as any, activeOptions)
+    on(document, 'mousemove', this.throttledMove as any, activeOptions)
+    on(document, 'mouseup', this.handleEnd.bind(this) as any, activeOptions)
 
     // Touch events
     if (supportsTouchEvents()) {
-      on(this.element, 'touchstart', this.handleStart.bind(this) as any, eventOptions)
-      on(document, 'touchmove', this.handleMove.bind(this) as any, eventOptions)
-      on(document, 'touchend', this.handleEnd.bind(this) as any, eventOptions)
-      on(document, 'touchcancel', this.handleEnd.bind(this) as any, eventOptions)
+      on(this.element, 'touchstart', this.handleStart.bind(this) as any, activeOptions)
+      on(document, 'touchmove', this.throttledMove as any, activeOptions)
+      on(document, 'touchend', this.handleEnd.bind(this) as any, activeOptions)
+      on(document, 'touchcancel', this.handleEnd.bind(this) as any, activeOptions)
     }
 
-    // Wheel event for zoom
+    // Wheel event for zoom - use debounced version
     if (this.zoomOnWheel) {
-      on(this.element, 'wheel', this.handleWheel.bind(this) as any, eventOptions)
+      on(this.element, 'wheel', this.debouncedWheel as any, activeOptions)
     }
 
     // Prevent default drag behavior
@@ -244,7 +255,7 @@ export class InteractionManager {
 
     // Check class names for action - check target and parent elements
     let element: HTMLElement | null = target
-    
+
     // Search up the DOM tree up to 3 levels
     for (let i = 0; i < 3 && element; i++) {
       // Check class names for action
@@ -265,7 +276,7 @@ export class InteractionManager {
       if (element.classList.contains('line-e')) return 'e'
       if (element.classList.contains('line-s')) return 's'
       if (element.classList.contains('line-w')) return 'w'
-      
+
       // Move to parent
       element = element.parentElement
     }

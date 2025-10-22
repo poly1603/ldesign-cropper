@@ -11,6 +11,17 @@ export { InteractionManager } from './core/InteractionManager'
 export { Toolbar } from './core/Toolbar'
 export { HistoryManager } from './core/HistoryManager'
 export { PresetManager } from './core/PresetManager'
+export { FilterPanel } from './core/FilterPanel'
+export { KeyboardManager } from './core/KeyboardManager'
+export { BatchProcessor } from './core/BatchProcessor'
+export { BatchManager } from './core/BatchManager'
+export { ImageTileManager } from './core/ImageTileManager'
+
+// Filters
+export * from './filters'
+
+// Drawing
+export * from './drawing'
 
 // Framework Adapters
 export * from './adapters'
@@ -37,6 +48,9 @@ export type {
 
 // Utils
 export * from './utils'
+
+// Constants
+export * from './config/constants'
 
 // Default export
 export { Cropper as default } from './core/Cropper'

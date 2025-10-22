@@ -210,20 +210,20 @@ export class CropBox {
    */
   setAspectRatio(aspectRatio: number, adjustSize: boolean = true): void {
     this.aspectRatio = aspectRatio
-    
+
     // Only update the current crop box size if adjustSize is true
     if (adjustSize && !isNaN(aspectRatio) && aspectRatio > 0) {
       const currentRatio = this.data.width / this.data.height
-      
+
       // Only adjust if the difference is significant (more than 1%)
       if (Math.abs(currentRatio - aspectRatio) > 0.01) {
         const containerRect = this.container.getBoundingClientRect()
         const maxWidth = containerRect.width * 0.9
         const maxHeight = containerRect.height * 0.9
-        
+
         let newWidth = this.data.width
         let newHeight = this.data.height
-        
+
         if (currentRatio > aspectRatio) {
           // Current box is wider than new ratio, adjust width
           newWidth = this.data.height * aspectRatio
@@ -239,16 +239,16 @@ export class CropBox {
             newWidth = newHeight * aspectRatio
           }
         }
-        
+
         // Center the adjusted crop box
         const left = Math.max(0, (containerRect.width - newWidth) / 2)
         const top = Math.max(0, (containerRect.height - newHeight) / 2)
-        
-        this.setData({ 
+
+        this.setData({
           left,
           top,
           width: newWidth,
-          height: newHeight 
+          height: newHeight
         })
       }
     }
@@ -256,13 +256,15 @@ export class CropBox {
 
   /**
    * Update crop box visual
+   * Uses transform for GPU acceleration when possible
    */
   update(): void {
+    // Use transform3d for GPU acceleration
     setStyle(this.element, {
-      left: `${this.data.left}px`,
-      top: `${this.data.top}px`,
+      transform: `translate3d(${this.data.left}px, ${this.data.top}px, 0)`,
       width: `${this.data.width}px`,
-      height: `${this.data.height}px`
+      height: `${this.data.height}px`,
+      willChange: 'transform, width, height'
     })
   }
 
@@ -289,10 +291,10 @@ export class CropBox {
   setStyle(style: string): void {
     // Remove old style class
     removeClass(this.element, `style-${this.style}`)
-    
+
     // Update style
     this.style = style
-    
+
     // Add new style class
     addClass(this.element, `style-${this.style}`)
   }

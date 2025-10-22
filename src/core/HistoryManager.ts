@@ -4,6 +4,8 @@
  */
 
 import type { Cropper } from './Cropper'
+import { LRUCache } from '../utils/cache'
+import { PERFORMANCE } from '../config/constants'
 
 export interface HistoryState {
   data: any
@@ -23,6 +25,7 @@ export interface HistoryOptions {
 export class HistoryManager {
   private cropper: Cropper
   private history: HistoryState[] = []
+  private historyCache: LRUCache<number, HistoryState>
   private currentIndex: number = -1
   private options: Required<HistoryOptions>
   private autoSaveTimer: number | null = null
@@ -32,11 +35,14 @@ export class HistoryManager {
   constructor(cropper: Cropper, options: HistoryOptions = {}) {
     this.cropper = cropper
     this.options = {
-      maxSize: 50,
-      autoSave: true,
-      saveInterval: 1000,
+      maxSize: options.maxSize || PERFORMANCE.MAX_HISTORY_SIZE,
+      autoSave: options.autoSave ?? true,
+      saveInterval: options.saveInterval || PERFORMANCE.HISTORY_SAVE_INTERVAL_MS,
       ...options
     }
+
+    // Initialize LRU cache for history states
+    this.historyCache = new LRUCache(this.options.maxSize)
 
     this.initialize()
   }
@@ -56,7 +62,7 @@ export class HistoryManager {
   private setupAutoSave(): void {
     // Listen to cropper events that should trigger auto-save
     const events = ['cropend', 'zoom.cropper']
-    
+
     events.forEach(event => {
       this.cropper.element.addEventListener(event, () => {
         this.scheduleAutoSave()
@@ -66,14 +72,14 @@ export class HistoryManager {
 
   private scheduleAutoSave(): void {
     const now = Date.now()
-    
+
     // Don't save too frequently
     if (now - this.lastSaveTime < this.options.saveInterval) {
       // Clear existing timer
       if (this.autoSaveTimer) {
         clearTimeout(this.autoSaveTimer)
       }
-      
+
       // Schedule save after interval
       this.autoSaveTimer = window.setTimeout(() => {
         this.saveState()
@@ -97,20 +103,20 @@ export class HistoryManager {
 
       // Remove any states after current index
       this.history = this.history.slice(0, this.currentIndex + 1)
-      
+
       // Add new state
       this.history.push(state)
       this.currentIndex++
-      
+
       // Limit history size
       if (this.history.length > this.options.maxSize) {
         this.history.shift()
         this.currentIndex--
       }
-      
+
       this.lastSaveTime = Date.now()
       this.emit('change', { canUndo: this.canUndo(), canRedo: this.canRedo() })
-      
+
     } catch (error) {
       console.error('Failed to save history state:', error)
     }
@@ -153,7 +159,7 @@ export class HistoryManager {
 
       // Re-enable auto-save
       this.options.autoSave = autoSave
-      
+
       this.emit('restore', state)
     } catch (error) {
       console.error('Failed to restore history state:', error)
@@ -186,14 +192,15 @@ export class HistoryManager {
 
   public clear(): void {
     this.history = []
+    this.historyCache.clear()
     this.currentIndex = -1
     this.lastSaveTime = 0
-    
+
     if (this.autoSaveTimer) {
       clearTimeout(this.autoSaveTimer)
       this.autoSaveTimer = null
     }
-    
+
     this.emit('change', { canUndo: false, canRedo: false })
     this.emit('clear')
   }
@@ -251,11 +258,11 @@ export class HistoryManager {
       if (data.history && Array.isArray(data.history)) {
         this.history = data.history
         this.currentIndex = data.currentIndex || 0
-        
+
         if (this.currentIndex >= 0 && this.currentIndex < this.history.length) {
           this.restoreState(this.history[this.currentIndex])
         }
-        
+
         this.emit('change', { canUndo: this.canUndo(), canRedo: this.canRedo() })
         return true
       }
