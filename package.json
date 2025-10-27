@@ -1,67 +1,25 @@
 {
-  "name": "@ldesign/cropper",
+  "name": "@ldesign/cropper-workspace",
   "version": "2.0.0",
+  "private": true,
   "description": "A powerful, high-performance image cropper library with advanced filters, batch processing, and drawing tools. Works with any framework.",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./vue": {
-      "types": "./dist/adapters/vue/index.d.ts",
-      "import": "./dist/adapters/vue/index.js",
-      "require": "./dist/adapters/vue/index.cjs"
-    },
-    "./react": {
-      "types": "./dist/adapters/react/index.d.ts",
-      "import": "./dist/adapters/react/index.js",
-      "require": "./dist/adapters/react/index.cjs"
-    },
-    "./angular": {
-      "types": "./dist/adapters/angular/index.d.ts",
-      "import": "./dist/adapters/angular/index.js",
-      "require": "./dist/adapters/angular/index.cjs"
-    },
-    "./filters": {
-      "types": "./dist/filters/index.d.ts",
-      "import": "./dist/filters/index.js",
-      "require": "./dist/filters/index.cjs"
-    },
-    "./drawing": {
-      "types": "./dist/drawing/index.d.ts",
-      "import": "./dist/drawing/index.js",
-      "require": "./dist/drawing/index.cjs"
-    },
-    "./constants": {
-      "types": "./dist/config/constants.d.ts",
-      "import": "./dist/config/constants.js",
-      "require": "./dist/config/constants.cjs"
-    },
-    "./style.css": "./dist/style.css",
-    "./dist/style.css": "./dist/style.css"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && tsc --emitDeclarationOnly",
-    "build:analyze": "vite build --mode analyze",
-    "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
-    "test:e2e": "playwright test",
-    "lint": "tsc --noEmit",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "dev": "echo 'Please run dev in specific package'",
+    "build": "pnpm -r build",
+    "build:core": "pnpm --filter @ldesign/cropper-core build",
+    "build:vanilla": "pnpm --filter @ldesign/cropper build",
+    "build:vue": "pnpm --filter @ldesign/cropper-vue build",
+    "build:react": "pnpm --filter @ldesign/cropper-react build",
+    "build:lit": "pnpm --filter @ldesign/cropper-lit build",
+    "demo:vanilla": "pnpm --filter vanilla-cropper-demo dev",
+    "demo:vue": "pnpm --filter vue-cropper-demo dev",
+    "demo:react": "pnpm --filter react-cropper-demo dev",
+    "demo:lit": "pnpm --filter lit-cropper-demo dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r --parallel run clean",
+    "install:all": "pnpm install"
   },
   "keywords": [
     "cropper",
@@ -73,7 +31,8 @@
     "batch-processing",
     "vue",
     "react",
-    "angular",
+    "lit",
+    "web-components",
     "typescript",
     "performance",
     "filters",
@@ -83,43 +42,5 @@
     "annotations"
   ],
   "author": "ldesign",
-  "license": "MIT",
-  "devDependencies": {
-    "@angular/core": "^17.0.0",
-    "@playwright/test": "^1.40.0",
-    "@types/node": "^20.10.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-vue": "^5.0.0",
-    "@vitest/ui": "^1.0.0",
-    "jsdom": "^23.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "typescript": "^5.3.0",
-    "vite": "^5.0.0",
-    "vite-plugin-dts": "^3.7.0",
-    "vitepress": "^1.0.0",
-    "vitest": "^1.0.0",
-    "vue": "^3.4.0"
-  },
-  "peerDependencies": {
-    "vue": "^3.0.0",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "@angular/core": "^15.0.0 || ^16.0.0 || ^17.0.0"
-  },
-  "peerDependenciesMeta": {
-    "vue": {
-      "optional": true
-    },
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
-    "@angular/core": {
-      "optional": true
-    }
-  }
+  "license": "MIT"
 }

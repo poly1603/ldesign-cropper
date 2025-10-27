@@ -13,7 +13,8 @@ export default defineConfig({
         'adapters/angular/index': resolve(__dirname, 'src/adapters/angular/index.ts'),
         // Separate entries for tree-shaking
         'filters/index': resolve(__dirname, 'src/filters/index.ts'),
-        'drawing/index': resolve(__dirname, 'src/drawing/index.ts')
+        'drawing/index': resolve(__dirname, 'src/drawing/index.ts'),
+        'workers/index': resolve(__dirname, 'src/workers/index.ts')
       },
       name: 'LDesignCropper',
       formats: ['es', 'cjs'],
@@ -70,5 +71,14 @@ export default defineConfig({
   optimizeDeps: {
     include: [],
     exclude: ['vue', 'react', 'react-dom', '@angular/core']
+  },
+  // Web Worker configuration
+  worker: {
+    format: 'es',
+    rollupOptions: {
+      output: {
+        entryFileNames: 'workers/[name].js'
+      }
+    }
   }
 })

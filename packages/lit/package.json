@@ -1,0 +1,59 @@
+{
+  "name": "@ldesign/cropper-lit",
+  "version": "2.0.0",
+  "description": "Lit Web Component wrapper for @ldesign/cropper",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss",
+    "**/*.less"
+  ],
+  "exports": {
+    ".": {
+      "types": "./es/index.d.ts",
+      "import": "./es/index.js",
+      "require": "./lib/index.cjs"
+    },
+    "./es/*": "./es/*",
+    "./lib/*": "./lib/*",
+    "./dist/*": "./dist/*"
+  },
+  "main": "./lib/index.cjs",
+  "module": "./es/index.js",
+  "types": "./es/index.d.ts",
+  "files": [
+    "es",
+    "lib",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "ldesign-builder --watch",
+    "build": "ldesign-builder",
+    "clean": "rimraf es lib dist",
+    "lint": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@ldesign/cropper-core": "workspace:*",
+    "lit": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0",
+    "rimraf": "^5.0.0"
+  },
+  "keywords": [
+    "cropper",
+    "image-cropper",
+    "lit",
+    "web-components",
+    "custom-elements"
+  ],
+  "author": "ldesign",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
