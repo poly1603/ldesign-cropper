@@ -39,5 +39,3 @@ const cropper = new Cropper('#container', {
 ## License
 
 MIT
-
-

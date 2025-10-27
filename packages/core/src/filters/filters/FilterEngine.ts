@@ -5,7 +5,6 @@
 
 import { canvasPool } from '../utils/performance'
 import { FILTERS } from '../config/constants'
-import { WorkerManager } from '../workers/WorkerManager'
 
 export interface FilterOptions {
   intensity?: number
@@ -26,12 +25,6 @@ export interface FilterLayer {
   enabled: boolean
 }
 
-export interface FilterEngineOptions {
-  useWorker?: boolean
-  workerManager?: WorkerManager
-}
-
-
 /**
  * Filter Engine
  * Manages filter pipeline and application
@@ -42,16 +35,6 @@ export class FilterEngine {
   private originalImageData: ImageData | null = null
   private cachedResult: ImageData | null = null
   private cacheKey: string = ''
-<<<<<<< HEAD
-  private useWorker: boolean
-  private workerManager?: WorkerManager
-
-  constructor(options: FilterEngineOptions = {}) {
-    this.useWorker = options.useWorker ?? false
-    this.workerManager = options.workerManager
-  }
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
 
   /**
    * Register a filter
@@ -201,38 +184,6 @@ export class FilterEngine {
   }
 
   /**
-<<<<<<< HEAD
-   * Apply all enabled filters asynchronously (with optional Worker support)
-   */
-  async applyFiltersAsync(
-    imageData?: ImageData,
-    onProgress?: (progress: number) => void
-  ): Promise<ImageData> {
-    // Use worker if available and configured
-    if (this.useWorker && this.workerManager && this.filterLayers.length === 1) {
-      const layer = this.filterLayers[0]
-      if (layer.enabled) {
-        const source = imageData || this.originalImageData
-        if (!source) {
-          throw new Error('No image data available')
-        }
-
-        return await this.workerManager.applyFilter(
-          source,
-          layer.filter.name,
-          layer.options
-        )
-      }
-    }
-
-    // Fall back to synchronous processing
-    const result = this.applyFilters(imageData)
-    return Promise.resolve(result)
-  }
-
-  /**
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
    * Apply single filter without modifying pipeline
    */
   applyFilter(

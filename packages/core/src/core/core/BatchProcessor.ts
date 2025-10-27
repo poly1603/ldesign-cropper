@@ -6,8 +6,6 @@
 import { Cropper, type CropperOptions } from './Cropper'
 import type { GetCroppedCanvasOptions } from '../types'
 import { canvasToBlob } from '../utils/image'
-import { WorkerManager } from '../workers/WorkerManager'
-import { FilterEngine } from '../filters/FilterEngine'
 
 export interface BatchItem {
   id: string
@@ -18,7 +16,6 @@ export interface BatchItem {
   progress: number
   error?: Error
   result?: Blob
-  imageData?: ImageData
 }
 
 export interface BatchProcessorOptions {
@@ -27,12 +24,6 @@ export interface BatchProcessorOptions {
   parallelProcessing?: boolean
   maxConcurrent?: number
   autoStart?: boolean
-<<<<<<< HEAD
-  useWorker?: boolean
-  workerManager?: WorkerManager
-  filters?: Array<{ name: string; options: any }>
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   onProgress?: (item: BatchItem, index: number, total: number) => void
   onItemComplete?: (item: BatchItem, index: number) => void
   onComplete?: (items: BatchItem[]) => void
@@ -198,22 +189,10 @@ export class BatchProcessor {
    * Process single item
    */
   private async processItem(item: BatchItem, index: number): Promise<void> {
-<<<<<<< HEAD
-    if (item.status !== 'pending' || this.cancelled) return
-
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
     try {
       item.status = 'processing'
       item.progress = 0
 
-<<<<<<< HEAD
-      // If using worker and filters are specified
-      if (this.options.useWorker && this.options.workerManager && this.options.filters) {
-        await this.processItemWithWorker(item, index)
-      } else {
-        await this.processItemWithCropper(item, index)
-=======
       // Create temporary container
       const container = document.createElement('div')
       container.style.position = 'absolute'
@@ -268,7 +247,6 @@ export class BatchProcessor {
       // Report progress
       if (this.options.onProgress) {
         this.options.onProgress(item, index, this.items.length)
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
       }
     } catch (error) {
       item.status = 'failed'
@@ -281,134 +259,6 @@ export class BatchProcessor {
   }
 
   /**
-<<<<<<< HEAD
-   * Process item with worker
-   */
-  private async processItemWithWorker(item: BatchItem, index: number): Promise<void> {
-    try {
-      // Load image
-      const img = new Image()
-      await new Promise((resolve, reject) => {
-        img.onload = resolve
-        img.onerror = reject
-        img.src = item.url
-      })
-
-      item.progress = 20
-
-      // Create canvas and get image data
-      const canvas = document.createElement('canvas')
-      canvas.width = img.width
-      canvas.height = img.height
-      const ctx = canvas.getContext('2d')
-      if (!ctx) throw new Error('Failed to get canvas context')
-
-      ctx.drawImage(img, 0, 0)
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-      item.imageData = imageData
-
-      item.progress = 40
-
-      // Apply filters using worker
-      if (this.options.filters && this.options.workerManager) {
-        let processedData = imageData
-        for (const filter of this.options.filters) {
-          processedData = await this.options.workerManager.applyFilter(
-            processedData,
-            filter.name,
-            filter.options
-          )
-          item.progress += 20 / this.options.filters.length
-        }
-        item.imageData = processedData
-      }
-
-      item.progress = 80
-
-      // Convert back to blob
-      ctx.putImageData(item.imageData, 0, 0)
-      const blob = await canvasToBlob(canvas)
-      item.result = blob
-      item.progress = 100
-      item.status = 'completed'
-
-      if (this.options.onItemComplete) {
-        this.options.onItemComplete(item, index)
-      }
-
-      // Report progress
-      if (this.options.onProgress) {
-        this.options.onProgress(item, index, this.items.length)
-      }
-    } catch (error) {
-      throw error
-    }
-  }
-
-  /**
-   * Process item with traditional cropper
-   */
-  private async processItemWithCropper(item: BatchItem, index: number): Promise<void> {
-    // Create temporary container
-    const container = document.createElement('div')
-    container.style.position = 'absolute'
-    container.style.left = '-9999px'
-    container.style.width = '800px'
-    container.style.height = '600px'
-    document.body.appendChild(container)
-
-    // Create cropper
-    const cropper = new Cropper(container, {
-      ...this.options.cropperOptions,
-      src: item.url,
-      ready: async () => {
-        try {
-          item.progress = 50
-
-          // Get cropped canvas
-          const canvas = cropper.getCroppedCanvas(this.options.canvasOptions)
-
-          if (!canvas) {
-            throw new Error('Failed to get cropped canvas')
-          }
-
-          item.progress = 75
-
-          // Convert to blob
-          const blob = await canvasToBlob(canvas)
-          item.result = blob
-          item.progress = 100
-          item.status = 'completed'
-
-          if (this.options.onItemComplete) {
-            this.options.onItemComplete(item, index)
-          }
-        } catch (error) {
-          item.status = 'failed'
-          item.error = error as Error
-
-          if (this.options.onError) {
-            this.options.onError(item, error as Error)
-          }
-        } finally {
-          // Cleanup
-          cropper.destroy()
-          document.body.removeChild(container)
-        }
-      }
-    })
-
-    item.cropper = cropper
-
-    // Report progress
-    if (this.options.onProgress) {
-      this.options.onProgress(item, index, this.items.length)
-    }
-  }
-
-  /**
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
    * Cancel batch processing
    */
   cancel(): void {

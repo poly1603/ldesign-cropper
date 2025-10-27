@@ -23,5 +23,3 @@ export const CropperPlugin = {
 
 // Export core functionality
 export * from '@ldesign/cropper-core'
-
-

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cropper Core - 原生 JS 示例</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .upload-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .file-input-wrapper {
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin: 5px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .cropper-wrapper {
+      background: #f5f5f5;
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #cropper-container {
+      width: 100%;
+      height: 500px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .result-section {
+      margin-top: 20px;
+    }
+
+    .result-section h3 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    #result-canvas {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state svg {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🖼️ Cropper Core - 原生 JS 示例</h1>
+
+    <div class="card">
+      <div class="upload-section">
+        <div class="file-input-wrapper">
+          <button class="btn">
+            📁 选择图片
+          </button>
+          <input type="file" id="file-input" accept="image/*">
+        </div>
+      </div>
+
+      <div class="cropper-wrapper">
+        <div id="cropper-container">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+            </svg>
+            <p>请选择一张图片开始裁剪</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="rotate-left">↶ 左旋转</button>
+        <button class="btn" id="rotate-right">↷ 右旋转</button>
+        <button class="btn" id="flip-h">↔️ 水平翻转</button>
+        <button class="btn" id="flip-v">↕️ 垂直翻转</button>
+        <button class="btn btn-secondary" id="reset">🔄 重置</button>
+        <button class="btn btn-success" id="crop">✂️ 裁剪</button>
+      </div>
+    </div>
+
+    <div class="card result-section" id="result-section" style="display: none;">
+      <h3>裁剪结果</h3>
+      <canvas id="result-canvas"></canvas>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

@@ -126,5 +126,3 @@ export function useCropper(options: UseCropperOptions = {}): UseCropperReturn {
     disable
   }
 }
-
-

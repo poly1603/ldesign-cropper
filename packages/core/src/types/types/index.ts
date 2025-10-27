@@ -135,21 +135,13 @@ export interface CropperOptions {
 
   // Highlight
   highlight?: boolean
-<<<<<<< HEAD
-
-=======
   
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Highlight opacity (0-1, default: 0.05)
   highlightOpacity?: number
 
   // Background
   background?: boolean
-<<<<<<< HEAD
-
-=======
   
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Modal opacity (0-1, default: 0.5)
   modalOpacity?: number
 
@@ -158,11 +150,7 @@ export interface CropperOptions {
 
   // Auto crop area
   autoCropArea?: number
-<<<<<<< HEAD
-
-=======
   
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Initial crop box size ratio (relative to the smaller dimension)
   initialCropBoxSize?: number
 
@@ -280,84 +268,6 @@ export interface CropperOptions {
     className?: string
   }
 
-<<<<<<< HEAD
-  // Web Worker options
-  useWorker?: boolean
-  workerOptions?: {
-    maxWorkers?: number
-    workerPath?: string
-    timeout?: number
-  }
-
-  // Touch gesture options
-  touchGestures?: boolean
-  touchOptions?: {
-    enabled?: boolean
-    pinchZoom?: boolean
-    doubleTapZoom?: boolean
-    swipeGestures?: boolean
-    rotationGestures?: boolean
-    momentum?: boolean
-    elasticBounds?: boolean
-    tapThreshold?: number
-    swipeThreshold?: number
-    doubleTapDelay?: number
-    momentumFriction?: number
-  }
-
-  // Mobile UI options
-  mobileUI?: boolean
-  mobileOptions?: {
-    enabled?: boolean
-    autoDetect?: boolean
-    breakpoint?: number
-    simplifiedControls?: boolean
-    largeButtons?: boolean
-    gestureHints?: boolean
-    orientation?: 'auto' | 'portrait' | 'landscape'
-    theme?: 'light' | 'dark' | 'auto'
-  }
-
-  // Accessibility options
-  accessibility?: boolean
-  accessibilityOptions?: {
-    enabled?: boolean
-    language?: string
-    announceActions?: boolean
-    announceValues?: boolean
-    keyboardHelp?: boolean
-    highContrast?: boolean
-    reducedMotion?: boolean
-    focusIndicator?: boolean
-  }
-
-  // Selection options
-  selection?: boolean
-  selectionOptions?: {
-    enabled?: boolean
-    type?: 'rectangle' | 'ellipse' | 'lasso' | 'polygon' | 'magic-wand' | 'brush'
-    mode?: 'new' | 'add' | 'subtract' | 'intersect'
-    feather?: number
-    antiAlias?: boolean
-    tolerance?: number
-    brushSize?: number
-    showToolbar?: boolean
-  }
-
-  // Mask options
-  masks?: boolean
-  maskOptions?: {
-    enabled?: boolean
-    opacity?: number
-    color?: string
-    showOverlay?: boolean
-    invertMask?: boolean
-    quickMask?: boolean
-    autoCreateFromSelection?: boolean
-  }
-
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Events
   ready?: (event: CustomEvent) => void
   cropstart?: (event: CustomEvent) => void
