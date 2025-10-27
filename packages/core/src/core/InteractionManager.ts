@@ -1,0 +1,325 @@
+/**
+ * InteractionManager - Handles user interactions (mouse, touch, gestures)
+ */
+
+import type { Point, Action } from '../types'
+import { on, off, getPointer, getCenter, getTouchDistance, preventDefault } from '../utils/events'
+import { supportsTouchEvents, getEventListenerOptions } from '../utils/compatibility'
+import { getData } from '../utils/dom'
+import { throttle, debounce } from '../utils/performance'
+
+export interface InteractionCallbacks {
+  onStart?: (action: Action, point: Point, event: MouseEvent | TouchEvent) => void
+  onMove?: (action: Action, point: Point, deltaX: number, deltaY: number, event: MouseEvent | TouchEvent) => void
+  onEnd?: (action: Action, point: Point, event: MouseEvent | TouchEvent) => void
+  onZoom?: (delta: number, point: Point, event: WheelEvent | TouchEvent) => void
+}
+
+export class InteractionManager {
+  private element: HTMLElement
+  private callbacks: InteractionCallbacks
+  private isActive = false
+  private startPoint: Point = { x: 0, y: 0 }
+  private currentPoint: Point = { x: 0, y: 0 }
+  private currentAction: Action = 'crop'
+  private initialTouchDistance = 0
+  private isDragging = false
+
+  // Options
+  private movable: boolean
+  private zoomable: boolean
+  private zoomOnTouch: boolean
+  private zoomOnWheel: boolean
+  private wheelZoomRatio: number
+
+  // Bound event handlers (to properly remove listeners)
+  private boundHandleStart: (event: MouseEvent | TouchEvent) => void
+  private boundHandleMove: (event: MouseEvent | TouchEvent) => void
+  private boundHandleEnd: (event: MouseEvent | TouchEvent) => void
+  private boundHandleWheel: (event: WheelEvent) => void
+  private boundPreventDrag: (event: Event) => void
+
+  // Throttled/debounced handlers
+  private throttledMove: (event: MouseEvent | TouchEvent) => void
+  private debouncedWheel: (event: WheelEvent) => void
+
+  constructor(
+    element: HTMLElement,
+    callbacks: InteractionCallbacks,
+    options: {
+      movable?: boolean
+      zoomable?: boolean
+      zoomOnTouch?: boolean
+      zoomOnWheel?: boolean
+      wheelZoomRatio?: number
+    } = {}
+  ) {
+    this.element = element
+    this.callbacks = callbacks
+
+    this.movable = options.movable ?? true
+    this.zoomable = options.zoomable ?? true
+    this.zoomOnTouch = options.zoomOnTouch ?? true
+    this.zoomOnWheel = options.zoomOnWheel ?? true
+    this.wheelZoomRatio = options.wheelZoomRatio ?? 0.1
+
+    // Bind event handlers once
+    this.boundHandleStart = this.handleStart.bind(this)
+    this.boundHandleEnd = this.handleEnd.bind(this)
+    this.boundHandleWheel = this.handleWheel.bind(this)
+    this.boundPreventDrag = (e: Event) => preventDefault(e)
+
+    // Create throttled handlers for performance
+    this.boundHandleMove = this.handleMove.bind(this)
+    this.throttledMove = throttle(this.boundHandleMove, 16) // ~60fps
+    this.debouncedWheel = debounce(this.boundHandleWheel, 50)
+
+    this.bindEvents()
+  }
+
+  /**
+   * Bind events
+   */
+  private bindEvents(): void {
+    // Use passive listeners where we don't prevent default
+    const passiveOptions = getEventListenerOptions(true) as any
+    const activeOptions = getEventListenerOptions(false) as any
+
+    // Mouse events - need active for preventDefault
+    on(this.element, 'mousedown', this.boundHandleStart as any, activeOptions)
+    on(document, 'mousemove', this.throttledMove as any, activeOptions)
+    on(document, 'mouseup', this.boundHandleEnd as any, activeOptions)
+
+    // Touch events
+    if (supportsTouchEvents()) {
+      on(this.element, 'touchstart', this.boundHandleStart as any, activeOptions)
+      on(document, 'touchmove', this.throttledMove as any, activeOptions)
+      on(document, 'touchend', this.boundHandleEnd as any, activeOptions)
+      on(document, 'touchcancel', this.boundHandleEnd as any, activeOptions)
+    }
+
+    // Wheel event for zoom - use debounced version
+    if (this.zoomOnWheel) {
+      on(this.element, 'wheel', this.debouncedWheel as any, activeOptions)
+    }
+
+    // Prevent default drag behavior
+    on(this.element, 'dragstart', this.boundPreventDrag as any)
+  }
+
+  /**
+   * Unbind events
+   */
+  private unbindEvents(): void {
+    off(this.element, 'mousedown', this.boundHandleStart)
+    off(document, 'mousemove', this.throttledMove)
+    off(document, 'mouseup', this.boundHandleEnd)
+
+    if (supportsTouchEvents()) {
+      off(this.element, 'touchstart', this.boundHandleStart)
+      off(document, 'touchmove', this.throttledMove)
+      off(document, 'touchend', this.boundHandleEnd)
+      off(document, 'touchcancel', this.boundHandleEnd)
+    }
+
+    if (this.zoomOnWheel) {
+      off(this.element, 'wheel', this.debouncedWheel)
+    }
+
+    off(this.element, 'dragstart', this.boundPreventDrag)
+  }
+
+  /**
+   * Handle interaction start
+   */
+  private handleStart(event: MouseEvent | TouchEvent): void {
+    // Prevent default to avoid text selection
+    preventDefault(event)
+
+    // Get action from target element
+    const target = event.target as HTMLElement
+    this.currentAction = this.getAction(target)
+
+    // Get start point
+    if ((event as TouchEvent).touches) {
+      const touchEvent = event as TouchEvent
+      this.startPoint = getPointer(touchEvent)
+
+      // Handle pinch zoom
+      if (this.zoomOnTouch && touchEvent.touches.length === 2) {
+        this.initialTouchDistance = getTouchDistance(touchEvent)
+        return
+      }
+    } else {
+      this.startPoint = getPointer(event)
+    }
+
+    this.currentPoint = { ...this.startPoint }
+    this.isActive = true
+    this.isDragging = false
+
+    // Callback
+    if (this.callbacks.onStart) {
+      this.callbacks.onStart(this.currentAction, this.startPoint, event)
+    }
+  }
+
+  /**
+   * Handle interaction move
+   */
+  private handleMove(event: MouseEvent | TouchEvent): void {
+    if (!this.isActive) return
+
+    preventDefault(event)
+
+    // Handle pinch zoom on touch
+    if ((event as TouchEvent).touches) {
+      const touchEvent = event as TouchEvent
+
+      if (this.zoomOnTouch && touchEvent.touches.length === 2) {
+        this.handlePinchZoom(touchEvent)
+        return
+      }
+
+      this.currentPoint = getPointer(touchEvent)
+    } else {
+      this.currentPoint = getPointer(event)
+    }
+
+    const deltaX = this.currentPoint.x - this.startPoint.x
+    const deltaY = this.currentPoint.y - this.startPoint.y
+
+    // Mark as dragging if moved more than 1px
+    if (!this.isDragging && (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1)) {
+      this.isDragging = true
+    }
+
+    // Callback
+    if (this.callbacks.onMove && this.isDragging) {
+      this.callbacks.onMove(this.currentAction, this.currentPoint, deltaX, deltaY, event)
+    }
+
+    // Update start point for next move
+    this.startPoint = { ...this.currentPoint }
+  }
+
+  /**
+   * Handle interaction end
+   */
+  private handleEnd(event: MouseEvent | TouchEvent): void {
+    if (!this.isActive) return
+
+    const endPoint = getPointer(event, true)
+
+    // Callback
+    if (this.callbacks.onEnd) {
+      this.callbacks.onEnd(this.currentAction, endPoint, event)
+    }
+
+    this.isActive = false
+    this.isDragging = false
+    this.initialTouchDistance = 0
+  }
+
+  /**
+   * Handle wheel zoom
+   */
+  private handleWheel(event: WheelEvent): void {
+    if (!this.zoomable) return
+
+    preventDefault(event)
+
+    // Normalize deltaY and apply zoom ratio
+    // deltaY is typically around 100 per wheel tick
+    // We want a small zoom step, so divide by 1000 to get 0.1 zoom step per tick
+    const delta = -event.deltaY * 0.001
+    const point = getPointer(event)
+
+    // Callback
+    if (this.callbacks.onZoom) {
+      this.callbacks.onZoom(delta, point, event)
+    }
+  }
+
+  /**
+   * Handle pinch zoom
+   */
+  private handlePinchZoom(event: TouchEvent): void {
+    if (!this.zoomable) return
+
+    const currentDistance = getTouchDistance(event)
+    const delta = (currentDistance - this.initialTouchDistance) * 0.01
+    const point = getCenter(event)
+
+    // Callback
+    if (this.callbacks.onZoom) {
+      this.callbacks.onZoom(delta, point, event)
+    }
+
+    this.initialTouchDistance = currentDistance
+  }
+
+  /**
+   * Get action from target element
+   */
+  private getAction(target: HTMLElement): Action {
+    const action = getData(target, 'action')
+
+    if (action) {
+      return action as Action
+    }
+
+    // Check class names for action - check target and parent elements
+    let element: HTMLElement | null = target
+
+    // Search up the DOM tree up to 3 levels
+    for (let i = 0; i < 3 && element; i++) {
+      // Check class names for action
+      if (element.classList.contains('cropper-face')) {
+        return 'move'
+      }
+
+      if (element.classList.contains('point-n')) return 'n'
+      if (element.classList.contains('point-e')) return 'e'
+      if (element.classList.contains('point-s')) return 's'
+      if (element.classList.contains('point-w')) return 'w'
+      if (element.classList.contains('point-ne')) return 'ne'
+      if (element.classList.contains('point-nw')) return 'nw'
+      if (element.classList.contains('point-se')) return 'se'
+      if (element.classList.contains('point-sw')) return 'sw'
+
+      if (element.classList.contains('line-n')) return 'n'
+      if (element.classList.contains('line-e')) return 'e'
+      if (element.classList.contains('line-s')) return 's'
+      if (element.classList.contains('line-w')) return 'w'
+
+      // Move to parent
+      element = element.parentElement
+    }
+
+    // Default action is 'crop' (drag the image)
+    return 'crop'
+  }
+
+  /**
+   * Enable interactions
+   */
+  enable(): void {
+    this.bindEvents()
+  }
+
+  /**
+   * Disable interactions
+   */
+  disable(): void {
+    this.unbindEvents()
+    this.isActive = false
+  }
+
+  /**
+   * Destroy
+   */
+  destroy(): void {
+    this.unbindEvents()
+  }
+}
