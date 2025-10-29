@@ -1,8 +1,16 @@
 {
   "name": "@ldesign/cropper-qwik",
+  "type": "module",
   "version": "2.0.0",
   "description": "Qwik wrapper for @ldesign/cropper",
-  "type": "module",
+  "author": "ldesign",
+  "license": "MIT",
+  "keywords": [
+    "cropper",
+    "image-cropper",
+    "qwik",
+    "component"
+  ],
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
@@ -22,19 +30,22 @@
   "module": "./es/index.js",
   "types": "./es/index.d.ts",
   "files": [
-    "es",
-    "lib",
+    "README.md",
     "dist",
-    "README.md"
+    "es",
+    "lib"
   ],
   "scripts": {
-    "dev": "ldesign-builder --watch",
-    "build": "ldesign-builder build",
+    "dev": "rollup -c -w",
+    "build": "rimraf es lib && rollup -c",
     "clean": "rimraf es lib dist",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "typecheck": "tsc --noEmit",
     "test": "vitest"
+  },
+  "peerDependencies": {
+    "@builder.io/qwik": "^1.0.0"
   },
   "dependencies": {
     "@ldesign/cropper-core": "workspace:*"
@@ -42,23 +53,16 @@
   "devDependencies": {
     "@antfu/eslint-config": "^6.0.0",
     "@builder.io/qwik": "^1.0.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
     "@types/node": "^20.10.0",
     "eslint": "^9.18.0",
     "rimraf": "^5.0.0",
+    "rollup": "^4.0.0",
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"
   },
-  "peerDependencies": {
-    "@builder.io/qwik": "^1.0.0"
-  },
-  "keywords": [
-    "cropper",
-    "image-cropper",
-    "qwik",
-    "component"
-  ],
-  "author": "ldesign",
-  "license": "MIT",
   "publishConfig": {
     "access": "public"
   }

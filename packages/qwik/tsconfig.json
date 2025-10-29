@@ -1,11 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "es",
-    "declarationDir": "es",
-    "rootDir": "src",
     "jsx": "react-jsx",
-    "jsxImportSource": "@builder.io/qwik"
+    "jsxImportSource": "@builder.io/qwik",
+    "rootDir": "src",
+    "allowImportingTsExtensions": false,
+    "declarationMap": false,
+    "outDir": null
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "es", "lib", "dist"]

@@ -18,7 +18,7 @@ export const CropperPlugin = {
   install(app: App) {
     app.component('LCropper', Cropper)
     app.component('LDesignCropper', Cropper)
-  }
+  },
 }
 
 // Export core functionality

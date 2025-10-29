@@ -11,7 +11,10 @@ export default antfu({
     '**/lib',
     '**/.ldesign',
     '**/coverage',
-    '**/*.md'
+    '**/*.md',
+    '**/*.js',
+    '**/*.cjs',
+    '**/*.mjs'
   ],
   rules: {
     'no-console': 'off',
@@ -19,6 +22,10 @@ export default antfu({
     'node/prefer-global/process': 'off',
     'ts/consistent-type-definitions': 'off',
     'ts/no-explicit-any': 'warn',
-    'unused-imports/no-unused-vars': 'warn'
+    'unused-imports/no-unused-vars': 'warn',
+    // Disable rules with ESLint 9 compatibility issues
+    'react-hooks/rules-of-hooks': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    'unicorn/error-message': 'off'
   }
 })

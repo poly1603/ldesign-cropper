@@ -22,7 +22,8 @@ fileInput.addEventListener('change', async (e) => {
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
 
-  if (!file) return
+  if (!file)
+    return
 
   // 销毁旧的 cropper
   if (cropper) {
@@ -53,7 +54,7 @@ fileInput.addEventListener('change', async (e) => {
       console.log('Cropper is ready')
       // 释放临时 URL
       URL.revokeObjectURL(imageUrl)
-    }
+    },
   })
 
   // 隐藏空状态
@@ -106,12 +107,13 @@ resetBtn.addEventListener('click', () => {
 
 // 裁剪
 cropBtn.addEventListener('click', () => {
-  if (!cropper) return
+  if (!cropper)
+    return
 
   const canvas = cropper.getCroppedCanvas({
     width: 1920,
     height: 1080,
-    fillColor: '#fff'
+    fillColor: '#fff',
   })
 
   if (canvas) {
@@ -146,7 +148,7 @@ cropBtn.addEventListener('click', () => {
 // 禁用按钮直到图片加载
 function updateButtonsState(enabled: boolean) {
   const buttons = [rotateLeftBtn, rotateRightBtn, flipHBtn, flipVBtn, resetBtn, cropBtn]
-  buttons.forEach(btn => {
+  buttons.forEach((btn) => {
     btn.disabled = !enabled
     btn.style.opacity = enabled ? '1' : '0.5'
     btn.style.cursor = enabled ? 'pointer' : 'not-allowed'
@@ -160,4 +162,3 @@ updateButtonsState(false)
 container.addEventListener('ready', () => {
   updateButtonsState(true)
 })
-

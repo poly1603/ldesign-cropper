@@ -32,7 +32,7 @@ export function getOrientation(file: File): Promise<number> {
     reader.onload = (e) => {
       const view = new DataView(e.target?.result as ArrayBuffer)
 
-      if (view.getUint16(0, false) !== 0xffd8) {
+      if (view.getUint16(0, false) !== 0xFFD8) {
         resolve(1)
         return
       }
@@ -48,7 +48,7 @@ export function getOrientation(file: File): Promise<number> {
         const marker = view.getUint16(offset, false)
         offset += 2
 
-        if (marker === 0xffe1) {
+        if (marker === 0xFFE1) {
           offset += 2
           if (view.getUint32(offset, false) !== 0x45786966) {
             resolve(1)
@@ -66,9 +66,11 @@ export function getOrientation(file: File): Promise<number> {
               return
             }
           }
-        } else if ((marker & 0xff00) !== 0xff00) {
+        }
+        else if ((marker & 0xFF00) !== 0xFF00) {
           break
-        } else {
+        }
+        else {
           offset += view.getUint16(offset, false)
         }
       }
@@ -85,7 +87,7 @@ export function getOrientation(file: File): Promise<number> {
  */
 export function createCanvas(
   image: HTMLImageElement,
-  options: GetCroppedCanvasOptions = {}
+  options: GetCroppedCanvasOptions = {},
 ): HTMLCanvasElement {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
@@ -99,7 +101,7 @@ export function createCanvas(
     height = image.naturalHeight,
     fillColor,
     imageSmoothingEnabled = true,
-    imageSmoothingQuality = 'high'
+    imageSmoothingQuality = 'high',
   } = options
 
   canvas.width = width
@@ -122,19 +124,20 @@ export function createCanvas(
 export function canvasToBlob(
   canvas: HTMLCanvasElement,
   type = 'image/png',
-  quality = 1
+  quality = 1,
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
         if (blob) {
           resolve(blob)
-        } else {
+        }
+        else {
           reject(new Error('Failed to convert canvas to blob'))
         }
       },
       type,
-      quality
+      quality,
     )
   })
 }
@@ -145,7 +148,7 @@ export function canvasToBlob(
 export function canvasToDataURL(
   canvas: HTMLCanvasElement,
   type = 'image/png',
-  quality = 1
+  quality = 1,
 ): string {
   return canvas.toDataURL(type, quality)
 }
@@ -157,7 +160,7 @@ export function downloadCanvas(
   canvas: HTMLCanvasElement,
   filename: string,
   type = 'image/png',
-  quality = 1
+  quality = 1,
 ): void {
   const url = canvasToDataURL(canvas, type, quality)
   const link = document.createElement('a')

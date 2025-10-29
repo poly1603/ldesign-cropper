@@ -1,9 +1,16 @@
 {
   "name": "@ldesign/cropper-svelte",
+  "type": "module",
   "version": "2.0.0",
   "description": "Svelte wrapper for @ldesign/cropper",
-  "type": "module",
-  "svelte": "./es/index.js",
+  "author": "ldesign",
+  "license": "MIT",
+  "keywords": [
+    "cropper",
+    "image-cropper",
+    "svelte",
+    "component"
+  ],
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
@@ -12,22 +19,21 @@
   "exports": {
     ".": {
       "types": "./es/index.d.ts",
-      "svelte": "./es/index.js",
       "import": "./es/index.js",
       "require": "./lib/index.cjs"
-    },
-    "./es/*": "./es/*",
-    "./lib/*": "./lib/*",
-    "./dist/*": "./dist/*"
+    }
   },
   "main": "./lib/index.cjs",
   "module": "./es/index.js",
+  "unpkg": "./dist/index.min.js",
+  "jsdelivr": "./dist/index.min.js",
   "types": "./es/index.d.ts",
   "files": [
+    "LICENSE",
+    "README.md",
     "es",
     "lib",
-    "dist",
-    "README.md"
+    "package.json"
   ],
   "scripts": {
     "dev": "ldesign-builder --watch",
@@ -37,6 +43,9 @@
     "lint:fix": "eslint src --fix",
     "typecheck": "tsc --noEmit",
     "test": "vitest"
+  },
+  "peerDependencies": {
+    "svelte": "^4.0.0 || ^5.0.0"
   },
   "dependencies": {
     "@ldesign/cropper-core": "workspace:*"
@@ -51,18 +60,8 @@
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"
   },
-  "peerDependencies": {
-    "svelte": "^4.0.0 || ^5.0.0"
-  },
-  "keywords": [
-    "cropper",
-    "image-cropper",
-    "svelte",
-    "component"
-  ],
-  "author": "ldesign",
-  "license": "MIT",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "svelte": "./es/index.js"
 }

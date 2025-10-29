@@ -3,26 +3,26 @@
  * Individual layer in the layer system
  */
 
-import { dispatch } from '../utils/events'
 import { generateId } from '../utils/dom'
+import { dispatch } from '../utils/events'
 
-export type BlendMode =
-  | 'normal'
-  | 'multiply'
-  | 'screen'
-  | 'overlay'
-  | 'darken'
-  | 'lighten'
-  | 'color-dodge'
-  | 'color-burn'
-  | 'hard-light'
-  | 'soft-light'
-  | 'difference'
-  | 'exclusion'
-  | 'hue'
-  | 'saturation'
-  | 'color'
-  | 'luminosity'
+export type BlendMode
+  = | 'normal'
+    | 'multiply'
+    | 'screen'
+    | 'overlay'
+    | 'darken'
+    | 'lighten'
+    | 'color-dodge'
+    | 'color-burn'
+    | 'hard-light'
+    | 'soft-light'
+    | 'difference'
+    | 'exclusion'
+    | 'hue'
+    | 'saturation'
+    | 'color'
+    | 'luminosity'
 
 export interface LayerOptions {
   name?: string
@@ -66,7 +66,7 @@ export class Layer {
     scaleY: 1,
     rotation: 0,
     skewX: 0,
-    skewY: 0
+    skewY: 0,
   }
 
   // Original image data (for non-destructive editing)
@@ -90,7 +90,7 @@ export class Layer {
 
     const ctx = this.canvas.getContext('2d', {
       willReadFrequently: true,
-      alpha: true
+      alpha: true,
     })
 
     if (!ctx) {
@@ -100,8 +100,10 @@ export class Layer {
     this.ctx = ctx
 
     // Set initial position if provided
-    if (options.x !== undefined) this.transform.x = options.x
-    if (options.y !== undefined) this.transform.y = options.y
+    if (options.x !== undefined)
+      this.transform.x = options.x
+    if (options.y !== undefined)
+      this.transform.y = options.y
   }
 
   /**
@@ -143,7 +145,7 @@ export class Layer {
     this.originalImageData = new ImageData(
       new Uint8ClampedArray(imageData.data),
       imageData.width,
-      imageData.height
+      imageData.height,
     )
 
     this.notifyChange()
@@ -188,7 +190,8 @@ export class Layer {
    * Set visibility
    */
   setVisible(visible: boolean): void {
-    if (this.visible === visible) return
+    if (this.visible === visible)
+      return
 
     this.visible = visible
     this.notifyChange()
@@ -196,7 +199,7 @@ export class Layer {
     if (this.layerSystem) {
       dispatch(this.layerSystem.container, 'layer:visibility', {
         layerId: this.id,
-        visible
+        visible,
       })
     }
   }
@@ -206,7 +209,8 @@ export class Layer {
    */
   setOpacity(opacity: number): void {
     const newOpacity = Math.max(0, Math.min(1, opacity))
-    if (this.opacity === newOpacity) return
+    if (this.opacity === newOpacity)
+      return
 
     this.opacity = newOpacity
     this.notifyChange()
@@ -214,7 +218,7 @@ export class Layer {
     if (this.layerSystem) {
       dispatch(this.layerSystem.container, 'layer:opacity', {
         layerId: this.id,
-        opacity: newOpacity
+        opacity: newOpacity,
       })
     }
   }
@@ -223,7 +227,8 @@ export class Layer {
    * Set blend mode
    */
   setBlendMode(mode: BlendMode): void {
-    if (this.blendMode === mode) return
+    if (this.blendMode === mode)
+      return
 
     this.blendMode = mode
     this.notifyChange()
@@ -231,7 +236,7 @@ export class Layer {
     if (this.layerSystem) {
       dispatch(this.layerSystem.container, 'layer:blendmode', {
         layerId: this.id,
-        blendMode: mode
+        blendMode: mode,
       })
     }
   }
@@ -240,14 +245,15 @@ export class Layer {
    * Set locked state
    */
   setLocked(locked: boolean): void {
-    if (this.locked === locked) return
+    if (this.locked === locked)
+      return
 
     this.locked = locked
 
     if (this.layerSystem) {
       dispatch(this.layerSystem.container, 'layer:lock', {
         layerId: this.id,
-        locked
+        locked,
       })
     }
   }
@@ -256,14 +262,15 @@ export class Layer {
    * Set name
    */
   setName(name: string): void {
-    if (this.name === name) return
+    if (this.name === name)
+      return
 
     this.name = name
 
     if (this.layerSystem) {
       dispatch(this.layerSystem.container, 'layer:rename', {
         layerId: this.id,
-        name
+        name,
       })
     }
   }
@@ -282,7 +289,7 @@ export class Layer {
     if (this.layerSystem) {
       dispatch(this.layerSystem.container, 'layer:transform', {
         layerId: this.id,
-        transform: this.transform
+        transform: this.transform,
       })
     }
   }
@@ -293,7 +300,7 @@ export class Layer {
   move(deltaX: number, deltaY: number): void {
     this.setTransform({
       x: this.transform.x + deltaX,
-      y: this.transform.y + deltaY
+      y: this.transform.y + deltaY,
     })
   }
 
@@ -303,7 +310,7 @@ export class Layer {
   scale(scaleX: number, scaleY?: number): void {
     this.setTransform({
       scaleX: this.transform.scaleX * scaleX,
-      scaleY: this.transform.scaleY * (scaleY ?? scaleX)
+      scaleY: this.transform.scaleY * (scaleY ?? scaleX),
     })
   }
 
@@ -312,7 +319,7 @@ export class Layer {
    */
   rotate(angle: number): void {
     this.setTransform({
-      rotation: this.transform.rotation + angle
+      rotation: this.transform.rotation + angle,
     })
   }
 
@@ -321,7 +328,7 @@ export class Layer {
    */
   flipHorizontal(): void {
     this.setTransform({
-      scaleX: -this.transform.scaleX
+      scaleX: -this.transform.scaleX,
     })
   }
 
@@ -330,7 +337,7 @@ export class Layer {
    */
   flipVertical(): void {
     this.setTransform({
-      scaleY: -this.transform.scaleY
+      scaleY: -this.transform.scaleY,
     })
   }
 
@@ -345,7 +352,7 @@ export class Layer {
       scaleY: 1,
       rotation: 0,
       skewX: 0,
-      skewY: 0
+      skewY: 0,
     })
   }
 
@@ -389,7 +396,7 @@ export class Layer {
     this.ctx.drawImage(
       layer.canvas,
       -layer.canvas.width / 2,
-      -layer.canvas.height / 2
+      -layer.canvas.height / 2,
     )
 
     this.ctx.restore()
@@ -410,7 +417,7 @@ export class Layer {
       visible: this.visible,
       opacity: this.opacity,
       blendMode: this.blendMode,
-      locked: false
+      locked: false,
     })
 
     // Copy content
@@ -424,7 +431,7 @@ export class Layer {
       cloned.originalImageData = new ImageData(
         new Uint8ClampedArray(this.originalImageData.data),
         this.originalImageData.width,
-        this.originalImageData.height
+        this.originalImageData.height,
       )
     }
 
@@ -468,7 +475,7 @@ export class Layer {
       x: t.x,
       y: t.y,
       width: w,
-      height: h
+      height: h,
     }
   }
 
@@ -478,10 +485,10 @@ export class Layer {
   containsPoint(x: number, y: number): boolean {
     const bbox = this.getBoundingBox()
     return (
-      x >= bbox.x &&
-      x <= bbox.x + bbox.width &&
-      y >= bbox.y &&
-      y <= bbox.y + bbox.height
+      x >= bbox.x
+      && x <= bbox.x + bbox.width
+      && y >= bbox.y
+      && y <= bbox.y + bbox.height
     )
   }
 
@@ -494,12 +501,13 @@ export class Layer {
         (blob) => {
           if (blob) {
             resolve(blob)
-          } else {
+          }
+          else {
             reject(new Error('Failed to create blob'))
           }
         },
         type,
-        quality
+        quality,
       )
     })
   }
@@ -543,7 +551,7 @@ export class Layer {
       locked: this.locked,
       width: this.canvas.width,
       height: this.canvas.height,
-      transform: { ...this.transform }
+      transform: { ...this.transform },
     }
   }
 
@@ -556,5 +564,3 @@ export class Layer {
     this.layerSystem = null
   }
 }
-
-

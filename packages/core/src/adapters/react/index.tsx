@@ -2,16 +2,18 @@
  * React Adapter - Complete implementation with Component and Hook
  */
 
+import type { CSSProperties } from 'react'
+import type { CropData, CropperOptions, GetCroppedCanvasOptions } from '../../types'
 import React, {
-  useEffect,
-  useRef,
+
   forwardRef,
+  useEffect,
   useImperativeHandle,
-  type CSSProperties
+  useRef,
 } from 'react'
 import { Cropper } from '../../core/Cropper'
-import type { CropperOptions, GetCroppedCanvasOptions, CropData } from '../../types'
-import '../../styles/cropper.css'
+// TODO: Re-enable CSS import after fixing PostCSS configuration
+// import '../../styles/cropper.css'
 
 // Export hook
 export { useCropper } from './useCropper'
@@ -65,7 +67,8 @@ export const ReactCropper = forwardRef<ReactCropperRef, ReactCropperProps>(
 
     // Initialize cropper
     useEffect(() => {
-      if (!containerRef.current || !src) return
+      if (!containerRef.current || !src)
+        return
 
       const options: CropperOptions = {
         ...cropperOptions,
@@ -80,7 +83,7 @@ export const ReactCropper = forwardRef<ReactCropperRef, ReactCropperProps>(
         cropmove: onCropMove,
         cropend: onCropEnd,
         crop: onCrop,
-        zoom: onZoom
+        zoom: onZoom,
       }
 
       cropperRef.current = new Cropper(containerRef.current, options)
@@ -116,7 +119,7 @@ export const ReactCropper = forwardRef<ReactCropperRef, ReactCropperProps>(
           skewX: 0,
           skewY: 0,
           translateX: 0,
-          translateY: 0
+          translateY: 0,
         },
       setData: (data: any) => cropperRef.current?.setData(data),
       rotate: (degrees: number) => cropperRef.current?.rotate(degrees),
@@ -128,7 +131,7 @@ export const ReactCropper = forwardRef<ReactCropperRef, ReactCropperProps>(
       clear: () => cropperRef.current?.clear(),
       enable: () => cropperRef.current?.enable(),
       disable: () => cropperRef.current?.disable(),
-      destroy: () => cropperRef.current?.destroy()
+      destroy: () => cropperRef.current?.destroy(),
     }))
 
     return (
@@ -138,11 +141,11 @@ export const ReactCropper = forwardRef<ReactCropperRef, ReactCropperProps>(
         style={{
           width: '100%',
           height: '100%',
-          ...style
+          ...style,
         }}
       />
     )
-  }
+  },
 )
 
 ReactCropper.displayName = 'ReactCropper'

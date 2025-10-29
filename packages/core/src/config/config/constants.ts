@@ -18,7 +18,7 @@ export const PERFORMANCE = {
   /** Maximum history states to keep */
   MAX_HISTORY_SIZE: 50,
   /** Auto-save interval for history (ms) */
-  HISTORY_SAVE_INTERVAL_MS: 1000
+  HISTORY_SAVE_INTERVAL_MS: 1000,
 } as const
 
 // Memory constants
@@ -32,7 +32,7 @@ export const MEMORY = {
   /** Memory pressure critical threshold (%) */
   MEMORY_CRITICAL_THRESHOLD: 80,
   /** Maximum allowed memory usage (bytes) - 500MB */
-  MAX_MEMORY_USAGE: 500 * 1024 * 1024
+  MAX_MEMORY_USAGE: 500 * 1024 * 1024,
 } as const
 
 // UI constants
@@ -54,7 +54,7 @@ export const UI = {
   /** Maximum placeholder file size (MB) */
   MAX_PLACEHOLDER_FILE_SIZE: 10,
   /** Drag detection threshold (px) */
-  DRAG_THRESHOLD: 1
+  DRAG_THRESHOLD: 1,
 } as const
 
 // Transform constants
@@ -70,7 +70,7 @@ export const TRANSFORM = {
   /** Minimum scale value */
   MIN_SCALE: 0.1,
   /** Maximum scale value */
-  MAX_SCALE: 10
+  MAX_SCALE: 10,
 } as const
 
 // Image constants
@@ -86,20 +86,20 @@ export const IMAGE = {
   /** Progressive rendering chunk size (px) */
   PROGRESSIVE_CHUNK_SIZE: 512,
   /** Image smoothing quality */
-  IMAGE_SMOOTHING_QUALITY: 'high' as ImageSmoothingQuality
+  IMAGE_SMOOTHING_QUALITY: 'high' as ImageSmoothingQuality,
 } as const
 
 // Preset constants
 export const PRESETS = {
   /** Common aspect ratios */
   ASPECT_RATIOS: {
-    FREE: NaN,
+    FREE: Number.NaN,
     SQUARE: 1,
     LANDSCAPE_4_3: 4 / 3,
     LANDSCAPE_16_9: 16 / 9,
     LANDSCAPE_21_9: 21 / 9,
     PORTRAIT_3_4: 3 / 4,
-    PORTRAIT_9_16: 9 / 16
+    PORTRAIT_9_16: 9 / 16,
   },
   /** Common social media sizes */
   SOCIAL_MEDIA: {
@@ -112,14 +112,14 @@ export const PRESETS = {
     YOUTUBE_THUMBNAIL: { width: 1280, height: 720 },
     YOUTUBE_BANNER: { width: 2560, height: 1440 },
     LINKEDIN_POST: { width: 1200, height: 1200 },
-    LINKEDIN_COVER: { width: 1584, height: 396 }
+    LINKEDIN_COVER: { width: 1584, height: 396 },
   },
   /** Common document sizes */
   DOCUMENT: {
     A4_PORTRAIT: { width: 210, height: 297 },
     A4_LANDSCAPE: { width: 297, height: 210 },
     LETTER_PORTRAIT: { width: 216, height: 279 },
-    LETTER_LANDSCAPE: { width: 279, height: 216 }
+    LETTER_LANDSCAPE: { width: 279, height: 216 },
   },
   /** Common sizes */
   SIZES: {
@@ -130,8 +130,8 @@ export const PRESETS = {
     THUMBNAIL_MEDIUM: { width: 300, height: 300 },
     HD_720P: { width: 1280, height: 720 },
     FHD_1080P: { width: 1920, height: 1080 },
-    UHD_4K: { width: 3840, height: 2160 }
-  }
+    UHD_4K: { width: 3840, height: 2160 },
+  },
 } as const
 
 // Filter constants
@@ -155,7 +155,7 @@ export const FILTERS = {
   MAX_SATURATION: 100,
   /** Hue range */
   MIN_HUE: -180,
-  MAX_HUE: 180
+  MAX_HUE: 180,
 } as const
 
 // Keyboard shortcuts
@@ -176,7 +176,7 @@ export const KEYBOARD = {
   /** Keyboard movement step (px) */
   MOVE_STEP: 10,
   /** Keyboard movement step with shift (px) */
-  MOVE_STEP_LARGE: 50
+  MOVE_STEP_LARGE: 50,
 } as const
 
 // Export quality presets
@@ -185,24 +185,24 @@ export const QUALITY_PRESETS = {
     maxWidth: 1920,
     maxHeight: 1080,
     quality: 0.85,
-    format: 'image/jpeg' as const
+    format: 'image/jpeg' as const,
   },
   PRINT: {
     maxWidth: 4096,
     maxHeight: 4096,
     quality: 0.95,
-    format: 'image/jpeg' as const
+    format: 'image/jpeg' as const,
   },
   ARCHIVE: {
     quality: 1,
-    format: 'image/png' as const
+    format: 'image/png' as const,
   },
   THUMBNAIL: {
     maxWidth: 300,
     maxHeight: 300,
     quality: 0.8,
-    format: 'image/jpeg' as const
-  }
+    format: 'image/jpeg' as const,
+  },
 } as const
 
 // CSS class names
@@ -224,7 +224,7 @@ export const CSS_CLASSES = {
   PLACEHOLDER: 'cropper-placeholder',
   HIDDEN: 'cropper-hidden',
   DISABLED: 'cropper-disabled',
-  ACTIVE: 'cropper-active'
+  ACTIVE: 'cropper-active',
 } as const
 
 // Event names
@@ -240,7 +240,7 @@ export const EVENTS = {
   PRESET_APPLIED: 'preset:applied',
   PRESET_CLEARED: 'preset:cleared',
   FILTER_APPLIED: 'filter:applied',
-  FILTER_CLEARED: 'filter:cleared'
+  FILTER_CLEARED: 'filter:cleared',
 } as const
 
 // Error messages
@@ -251,6 +251,5 @@ export const ERRORS = {
   INVALID_DIMENSIONS: 'Invalid image dimensions',
   MEMORY_LIMIT_EXCEEDED: 'Memory limit exceeded',
   INVALID_FORMAT: 'Invalid image format',
-  OPERATION_CANCELLED: 'Operation was cancelled'
+  OPERATION_CANCELLED: 'Operation was cancelled',
 } as const
-

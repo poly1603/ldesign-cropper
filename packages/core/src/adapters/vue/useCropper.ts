@@ -2,9 +2,10 @@
  * Vue Composable for Cropper
  */
 
-import { ref, onMounted, onBeforeUnmount, watch, type Ref } from 'vue'
-import { Cropper } from '../../core/Cropper'
+import type { Ref } from 'vue'
 import type { CropperOptions, GetCroppedCanvasOptions } from '../../types'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { Cropper } from '../../core/Cropper'
 
 export interface UseCropperOptions extends Omit<CropperOptions, 'src'> {
   src?: string
@@ -15,7 +16,7 @@ export interface UseCropperOptions extends Omit<CropperOptions, 'src'> {
 
 export function useCropper(
   containerRef: Ref<HTMLElement | undefined>,
-  options: UseCropperOptions = {}
+  options: UseCropperOptions = {},
 ) {
   const cropperInstance = ref<Cropper>()
   const cropData = ref<any>({})
@@ -24,7 +25,8 @@ export function useCropper(
   const isReady = ref(false)
 
   const initCropper = () => {
-    if (!containerRef.value) return
+    if (!containerRef.value)
+      return
 
     const { src, onReady, onCrop, onZoom, ...cropperOptions } = options
 
@@ -41,7 +43,7 @@ export function useCropper(
       },
       zoom: (e) => {
         onZoom?.(e)
-      }
+      },
     })
   }
 
@@ -138,19 +140,19 @@ export function useCropper(
       if (newSrc && cropperInstance.value) {
         replace(newSrc)
       }
-    }
+    },
   )
 
   return {
     // Instance
     cropperInstance,
-    
+
     // State
     isReady,
     cropData,
     imageData,
     canvasData,
-    
+
     // Methods
     replace,
     getCroppedCanvas,
@@ -168,8 +170,8 @@ export function useCropper(
     enable,
     disable,
     setCropBoxStyle,
-    
+
     // Lifecycle
-    destroy: destroyCropper
+    destroy: destroyCropper,
   }
 }

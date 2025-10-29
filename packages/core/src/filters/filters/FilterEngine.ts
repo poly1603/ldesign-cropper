@@ -3,7 +3,6 @@
  * Core system for applying filters to images
  */
 
-import { canvasPool } from '../utils/performance'
 import { FILTERS } from '../config/constants'
 
 export interface FilterOptions {
@@ -15,7 +14,7 @@ export interface Filter {
   name: string
   apply: (
     imageData: ImageData,
-    options?: FilterOptions
+    options?: FilterOptions,
   ) => ImageData
 }
 
@@ -70,7 +69,7 @@ export class FilterEngine {
   addFilterLayer(
     filterName: string,
     options: FilterOptions = {},
-    enabled: boolean = true
+    enabled: boolean = true,
   ): boolean {
     const filter = this.filters.get(filterName)
     if (!filter) {
@@ -81,7 +80,7 @@ export class FilterEngine {
     this.filterLayers.push({
       filter,
       options: { intensity: FILTERS.DEFAULT_INTENSITY, ...options },
-      enabled
+      enabled,
     })
 
     this.invalidateCache()
@@ -107,7 +106,7 @@ export class FilterEngine {
   updateFilterLayer(
     index: number,
     options?: FilterOptions,
-    enabled?: boolean
+    enabled?: boolean,
   ): boolean {
     if (index < 0 || index >= this.filterLayers.length) {
       return false
@@ -167,11 +166,13 @@ export class FilterEngine {
     let currentData = this.cloneImageData(source)
 
     for (const layer of this.filterLayers) {
-      if (!layer.enabled) continue
+      if (!layer.enabled)
+        continue
 
       try {
         currentData = layer.filter.apply(currentData, layer.options)
-      } catch (error) {
+      }
+      catch (error) {
         console.error(`Failed to apply filter "${layer.filter.name}":`, error)
       }
     }
@@ -189,7 +190,7 @@ export class FilterEngine {
   applyFilter(
     filterName: string,
     imageData: ImageData,
-    options: FilterOptions = {}
+    options: FilterOptions = {},
   ): ImageData | null {
     const filter = this.filters.get(filterName)
     if (!filter) {
@@ -199,7 +200,8 @@ export class FilterEngine {
 
     try {
       return filter.apply(this.cloneImageData(imageData), options)
-    } catch (error) {
+    }
+    catch (error) {
       console.error(`Failed to apply filter "${filterName}":`, error)
       return null
     }
@@ -210,7 +212,7 @@ export class FilterEngine {
    */
   previewFilter(
     filterName: string,
-    options: FilterOptions = {}
+    options: FilterOptions = {},
   ): ImageData | null {
     if (!this.originalImageData) {
       return null
@@ -224,9 +226,10 @@ export class FilterEngine {
     try {
       return filter.apply(
         this.cloneImageData(this.originalImageData),
-        options
+        options,
       )
-    } catch (error) {
+    }
+    catch (error) {
       console.error(`Failed to preview filter "${filterName}":`, error)
       return null
     }
@@ -239,7 +242,7 @@ export class FilterEngine {
     return new ImageData(
       new Uint8ClampedArray(imageData.data),
       imageData.width,
-      imageData.height
+      imageData.height,
     )
   }
 
@@ -248,8 +251,8 @@ export class FilterEngine {
    */
   private getCacheKey(): string {
     return this.filterLayers
-      .filter((l) => l.enabled)
-      .map((l) => `${l.filter.name}:${JSON.stringify(l.options)}`)
+      .filter(l => l.enabled)
+      .map(l => `${l.filter.name}:${JSON.stringify(l.options)}`)
       .join('|')
   }
 
@@ -284,11 +287,11 @@ export class FilterEngine {
    */
   exportConfig(): any {
     return {
-      filters: this.filterLayers.map((layer) => ({
+      filters: this.filterLayers.map(layer => ({
         name: layer.filter.name,
         options: layer.options,
-        enabled: layer.enabled
-      }))
+        enabled: layer.enabled,
+      })),
     }
   }
 
@@ -303,7 +306,8 @@ export class FilterEngine {
     this.clearFilters()
 
     for (const item of config.filters) {
-      if (!item.name) continue
+      if (!item.name)
+        continue
       this.addFilterLayer(item.name, item.options, item.enabled ?? true)
     }
 
@@ -326,10 +330,11 @@ export class FilterEngine {
  * Helper function to get image data from canvas
  */
 export function getImageDataFromCanvas(
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
 ): ImageData | null {
   const ctx = canvas.getContext('2d')
-  if (!ctx) return null
+  if (!ctx)
+    return null
 
   return ctx.getImageData(0, 0, canvas.width, canvas.height)
 }
@@ -339,10 +344,11 @@ export function getImageDataFromCanvas(
  */
 export function putImageDataToCanvas(
   canvas: HTMLCanvasElement,
-  imageData: ImageData
+  imageData: ImageData,
 ): boolean {
   const ctx = canvas.getContext('2d')
-  if (!ctx) return false
+  if (!ctx)
+    return false
 
   ctx.putImageData(imageData, 0, 0)
   return true
@@ -354,25 +360,24 @@ export function putImageDataToCanvas(
 export function blendImageData(
   base: ImageData,
   overlay: ImageData,
-  opacity: number = 1
+  opacity: number = 1,
 ): ImageData {
   const result = new ImageData(
     new Uint8ClampedArray(base.data),
     base.width,
-    base.height
+    base.height,
   )
 
   const alpha = Math.max(0, Math.min(1, opacity))
 
   for (let i = 0; i < result.data.length; i += 4) {
     result.data[i] = base.data[i] * (1 - alpha) + overlay.data[i] * alpha
-    result.data[i + 1] =
-      base.data[i + 1] * (1 - alpha) + overlay.data[i + 1] * alpha
-    result.data[i + 2] =
-      base.data[i + 2] * (1 - alpha) + overlay.data[i + 2] * alpha
+    result.data[i + 1]
+      = base.data[i + 1] * (1 - alpha) + overlay.data[i + 1] * alpha
+    result.data[i + 2]
+      = base.data[i + 2] * (1 - alpha) + overlay.data[i + 2] * alpha
     result.data[i + 3] = Math.max(base.data[i + 3], overlay.data[i + 3])
   }
 
   return result
 }
-

@@ -3,9 +3,10 @@
  * UI for drawing tool selection and options
  */
 
-import { DrawingEngine } from './DrawingEngine'
-import { DrawingTool, getAllDrawingTools } from './DrawingTools'
+import type { DrawingEngine } from './DrawingEngine'
+import type { DrawingTool } from './DrawingTools'
 import { createElement } from '../utils/dom'
+import { getAllDrawingTools } from './DrawingTools'
 
 export interface DrawingToolbarOptions {
   position?: 'top' | 'bottom' | 'left' | 'right'
@@ -28,7 +29,7 @@ export class DrawingToolbar {
   constructor(
     engine: DrawingEngine,
     container: HTMLElement,
-    options: DrawingToolbarOptions = {}
+    options: DrawingToolbarOptions = {},
   ) {
     this.engine = engine
     this.container = container
@@ -37,11 +38,18 @@ export class DrawingToolbar {
       tools: ['pen', 'line', 'rectangle', 'circle', 'arrow', 'text', 'eraser', 'blur', 'highlight'],
       defaultTool: 'pen',
       colorPalette: [
-        '#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff',
-        '#ffff00', '#ff00ff', '#00ffff', '#808080'
+        '#000000',
+        '#ffffff',
+        '#ff0000',
+        '#00ff00',
+        '#0000ff',
+        '#ffff00',
+        '#ff00ff',
+        '#00ffff',
+        '#808080',
       ],
       brushSizes: [1, 2, 4, 8, 16, 32],
-      ...options
+      ...options,
     }
 
     this.tools = getAllDrawingTools(engine)
@@ -91,7 +99,7 @@ export class DrawingToolbar {
       text: 'A',
       eraser: '🧹',
       blur: '🔲',
-      highlight: '🖍️'
+      highlight: '🖍️',
     }
 
     this.options.tools?.forEach((toolName) => {
@@ -163,7 +171,7 @@ export class DrawingToolbar {
     slider.value = String(this.currentSize)
     slider.addEventListener('input', (e) => {
       const input = e.target as HTMLInputElement
-      this.setSize(parseInt(input.value))
+      this.setSize(Number.parseInt(input.value))
       valueDisplay.textContent = input.value
     })
 
@@ -236,7 +244,8 @@ export class DrawingToolbar {
       const button = btn as HTMLElement
       if (button.dataset.tool === toolName) {
         button.classList.add('active')
-      } else {
+      }
+      else {
         button.classList.remove('active')
       }
     })
@@ -246,14 +255,14 @@ export class DrawingToolbar {
     if (tool) {
       tool.setOptions({
         color: this.currentColor,
-        lineWidth: this.currentSize
+        lineWidth: this.currentSize,
       })
     }
 
     // Dispatch event
     const event = new CustomEvent('drawing:toolchange', {
       detail: { tool: toolName },
-      bubbles: true
+      bubbles: true,
     })
     this.container.dispatchEvent(event)
   }
@@ -313,4 +322,3 @@ export class DrawingToolbar {
     }
   }
 }
-

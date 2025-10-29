@@ -1,11 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "es",
-    "declarationDir": "es",
-    "rootDir": "src",
-    "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "rootDir": "src",
+    "declarationDir": "es",
+    "outDir": "es",
     "skipLibCheck": true
   },
   "include": ["src/**/*"],

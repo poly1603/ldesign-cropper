@@ -126,7 +126,7 @@ export class LRUCache<K, V> {
    * Get all values
    */
   values(): V[] {
-    return this.usageOrder.map((key) => this.cache.get(key)!)
+    return this.usageOrder.map(key => this.cache.get(key)!)
   }
 
   /**
@@ -261,7 +261,7 @@ export class TTLCache<K, V> {
       }
     })
 
-    keysToDelete.forEach((key) => this.cache.delete(key))
+    keysToDelete.forEach(key => this.cache.delete(key))
   }
 
   /**
@@ -296,7 +296,7 @@ export class TTLCache<K, V> {
  * Simple memory size-aware cache
  */
 export class SizeAwareCache<K, V> {
-  private cache: Map<K, { value: V; size: number }>
+  private cache: Map<K, { value: V, size: number }>
   private maxSize: number
   private currentSize: number = 0
   private getSizeFunc: (value: V) => number
@@ -396,4 +396,3 @@ export class SizeAwareCache<K, V> {
     return (this.currentSize / this.maxSize) * 100
   }
 }
-

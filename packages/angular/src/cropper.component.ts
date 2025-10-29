@@ -1,22 +1,25 @@
-import {
-  Component,
+import type {
   ElementRef,
-  EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
+} from '@angular/core'
+import type { CropBoxData, CropperOptions, ImageData } from '@ldesign/cropper-core'
+import {
+  Component,
+  EventEmitter,
+  Input,
   Output,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core'
-import { Cropper as CropperCore, type CropperOptions, type CropBoxData, type ImageData } from '@ldesign/cropper-core'
+import { Cropper as CropperCore } from '@ldesign/cropper-core'
 
 @Component({
   selector: 'l-cropper',
   standalone: true,
   template: `<div #cropperContainer class="cropper-container"></div>`,
   styleUrls: ['./cropper.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class CropperComponent implements OnInit, OnDestroy {
   @ViewChild('cropperContainer', { static: true }) containerRef!: ElementRef<HTMLDivElement>
@@ -51,12 +54,12 @@ export class CropperComponent implements OnInit, OnDestroy {
       aspectRatio: this.aspectRatio,
       viewMode: this.viewMode,
       dragMode: this.dragMode,
-      ready: (e) => this.ready.emit(e),
-      cropstart: (e) => this.cropstart.emit(e),
-      cropmove: (e) => this.cropmove.emit(e),
-      cropend: (e) => this.cropend.emit(e),
-      crop: (e) => this.crop.emit(e),
-      zoom: (e) => this.zoom.emit(e)
+      ready: e => this.ready.emit(e),
+      cropstart: e => this.cropstart.emit(e),
+      cropmove: e => this.cropmove.emit(e),
+      cropend: e => this.cropend.emit(e),
+      crop: e => this.crop.emit(e),
+      zoom: e => this.zoom.emit(e),
     }
 
     this.cropper = new CropperCore(this.containerRef.nativeElement, options)

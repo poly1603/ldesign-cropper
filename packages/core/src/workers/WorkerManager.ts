@@ -4,18 +4,18 @@
  */
 
 import type {
-  WorkerMessage,
-  WorkerResponse,
-  WorkerMessageType,
-  FilterWorkerData,
   BatchFilterWorkerData,
+  CompositionSuggestion,
+  CropWorkerData,
+  FaceDetectionResult,
+  FilterWorkerData,
+  ImageAnalysisResult,
   ResizeWorkerData,
   RotateWorkerData,
-  CropWorkerData,
   ThumbnailWorkerData,
-  ImageAnalysisResult,
-  FaceDetectionResult,
-  CompositionSuggestion
+  WorkerMessage,
+  WorkerMessageType,
+  WorkerResponse,
 } from './types'
 
 export interface WorkerManagerOptions {
@@ -76,7 +76,8 @@ export class WorkerManager {
 
       this.workers.push(worker)
       this.availableWorkers.push(worker)
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to create worker:', error)
     }
   }
@@ -94,7 +95,8 @@ export class WorkerManager {
     }
 
     const pendingTask = this.pendingTasks.get(id)
-    if (!pendingTask) return
+    if (!pendingTask)
+      return
 
     // Clear timeout
     clearTimeout(pendingTask.timeout)
@@ -105,7 +107,8 @@ export class WorkerManager {
     // Resolve or reject promise
     if (success) {
       pendingTask.resolve(data)
-    } else {
+    }
+    else {
       pendingTask.reject(new Error(error || 'Unknown worker error'))
     }
 
@@ -153,7 +156,8 @@ export class WorkerManager {
     return new Promise((resolve) => {
       this.taskQueue.push(() => {
         const worker = this.availableWorkers.pop()
-        if (worker) resolve(worker)
+        if (worker)
+          resolve(worker)
       })
     })
   }
@@ -177,7 +181,7 @@ export class WorkerManager {
   private async sendMessage<T>(
     type: WorkerMessageType,
     data: any,
-    onProgress?: (progress: number) => void
+    onProgress?: (progress: number) => void,
   ): Promise<T> {
     const worker = await this.getWorker()
     const id = `task_${++this.taskCounter}`
@@ -213,12 +217,12 @@ export class WorkerManager {
   async applyFilter(
     imageData: ImageData,
     filterName: string,
-    filterOptions: any = {}
+    filterOptions: any = {},
   ): Promise<ImageData> {
     const data: FilterWorkerData = {
       imageData,
       filterName,
-      filterOptions
+      filterOptions,
     }
 
     return this.sendMessage<ImageData>('applyFilter', data)
@@ -231,12 +235,12 @@ export class WorkerManager {
     images: ImageData[],
     filterName: string,
     filterOptions: any = {},
-    onProgress?: (progress: number) => void
+    onProgress?: (progress: number) => void,
   ): Promise<ImageData[]> {
     const data: BatchFilterWorkerData = {
       images,
       filterName,
-      filterOptions
+      filterOptions,
     }
 
     return this.sendMessage<ImageData[]>('applyFilterBatch', data, onProgress)
@@ -249,13 +253,13 @@ export class WorkerManager {
     imageData: ImageData,
     width: number,
     height: number,
-    options: Partial<ResizeWorkerData> = {}
+    options: Partial<ResizeWorkerData> = {},
   ): Promise<ImageData> {
     const data: ResizeWorkerData = {
       imageData,
       width,
       height,
-      ...options
+      ...options,
     }
 
     return this.sendMessage<ImageData>('resizeImage', data)
@@ -267,12 +271,12 @@ export class WorkerManager {
   async rotateImage(
     imageData: ImageData,
     angle: number,
-    fillColor?: string
+    fillColor?: string,
   ): Promise<ImageData> {
     const data: RotateWorkerData = {
       imageData,
       angle,
-      fillColor
+      fillColor,
     }
 
     return this.sendMessage<ImageData>('rotateImage', data)
@@ -286,14 +290,14 @@ export class WorkerManager {
     x: number,
     y: number,
     width: number,
-    height: number
+    height: number,
   ): Promise<ImageData> {
     const data: CropWorkerData = {
       imageData,
       x,
       y,
       width,
-      height
+      height,
     }
 
     return this.sendMessage<ImageData>('cropImage', data)
@@ -306,13 +310,13 @@ export class WorkerManager {
     imageData: ImageData,
     width: number,
     height: number,
-    quality?: number
+    quality?: number,
   ): Promise<ImageData> {
     const data: ThumbnailWorkerData = {
       imageData,
       width,
       height,
-      quality
+      quality,
     }
 
     return this.sendMessage<ImageData>('generateThumbnail', data)
@@ -359,7 +363,7 @@ export class WorkerManager {
       totalWorkers: this.workers.length,
       availableWorkers: this.availableWorkers.length,
       pendingTasks: this.pendingTasks.size,
-      queuedTasks: this.taskQueue.length
+      queuedTasks: this.taskQueue.length,
     }
   }
 
@@ -368,7 +372,7 @@ export class WorkerManager {
    */
   terminate(): void {
     // Clear all pending tasks
-    this.pendingTasks.forEach(task => {
+    this.pendingTasks.forEach((task) => {
       task.reject(new Error('WorkerManager terminated'))
     })
     this.pendingTasks.clear()
@@ -385,8 +389,3 @@ export class WorkerManager {
     this.progressCallbacks.clear()
   }
 }
-
-
-
-
-

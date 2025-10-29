@@ -135,13 +135,13 @@ export interface CropperOptions {
 
   // Highlight
   highlight?: boolean
-  
+
   // Highlight opacity (0-1, default: 0.05)
   highlightOpacity?: number
 
   // Background
   background?: boolean
-  
+
   // Modal opacity (0-1, default: 0.5)
   modalOpacity?: number
 
@@ -150,7 +150,7 @@ export interface CropperOptions {
 
   // Auto crop area
   autoCropArea?: number
-  
+
   // Initial crop box size ratio (relative to the smaller dimension)
   initialCropBoxSize?: number
 
@@ -310,19 +310,19 @@ export interface Rectangle {
 }
 
 // Action types
-export type Action =
-  | 'all'
-  | 'crop'
-  | 'move'
-  | 'zoom'
-  | 'e'
-  | 'w'
-  | 's'
-  | 'n'
-  | 'se'
-  | 'sw'
-  | 'ne'
-  | 'nw'
+export type Action
+  = | 'all'
+    | 'crop'
+    | 'move'
+    | 'zoom'
+    | 'e'
+    | 'w'
+    | 's'
+    | 'n'
+    | 'se'
+    | 'sw'
+    | 'ne'
+    | 'nw'
 
 // Internal data structure
 export interface InternalData {

@@ -3,9 +3,8 @@
  * Provides optimized UI for mobile devices
  */
 
-import { createElement, addClass, removeClass } from '../utils/dom'
+import { createElement } from '../utils/dom'
 import { dispatch } from '../utils/events'
-import { CSS_CLASSES } from '../config/constants'
 
 export interface MobileUIOptions {
   enabled?: boolean
@@ -35,7 +34,7 @@ const DEFAULT_OPTIONS: Required<MobileUIOptions> = {
   largeButtons: true,
   gestureHints: true,
   orientation: 'auto',
-  theme: 'auto'
+  theme: 'auto',
 }
 
 const MOBILE_CONTROLS: MobileControl[] = [
@@ -43,38 +42,38 @@ const MOBILE_CONTROLS: MobileControl[] = [
     id: 'rotate',
     icon: '↻',
     label: '旋转',
-    action: () => { }
+    action: () => { },
   },
   {
     id: 'flip-h',
     icon: '↔',
     label: '水平翻转',
-    action: () => { }
+    action: () => { },
   },
   {
     id: 'flip-v',
     icon: '↕',
     label: '垂直翻转',
-    action: () => { }
+    action: () => { },
   },
   {
     id: 'aspect',
     icon: '▢',
     label: '比例',
-    action: () => { }
+    action: () => { },
   },
   {
     id: 'reset',
     icon: '↺',
     label: '重置',
-    action: () => { }
+    action: () => { },
   },
   {
     id: 'done',
     icon: '✓',
     label: '完成',
-    action: () => { }
-  }
+    action: () => { },
+  },
 ]
 
 export class MobileUI {
@@ -98,7 +97,7 @@ export class MobileUI {
     this.options = { ...DEFAULT_OPTIONS, ...options }
 
     // Initialize controls
-    MOBILE_CONTROLS.forEach(control => {
+    MOBILE_CONTROLS.forEach((control) => {
       this.controls.set(control.id, { ...control })
     })
 
@@ -153,7 +152,8 @@ export class MobileUI {
     if (wasMobile !== this.isMobile) {
       if (this.isMobile) {
         this.createMobileUI()
-      } else {
+      }
+      else {
         this.destroyMobileUI()
       }
     }
@@ -197,7 +197,7 @@ export class MobileUI {
     this.toolbar = createElement('div', 'cropper-mobile-toolbar')
 
     // Create controls
-    this.controls.forEach(control => {
+    this.controls.forEach((control) => {
       const button = this.createControl(control)
       this.toolbar!.appendChild(button)
     })
@@ -279,12 +279,12 @@ export class MobileUI {
       { gesture: 'pinch', text: '双指缩放' },
       { gesture: 'rotate', text: '双指旋转' },
       { gesture: 'drag', text: '拖动调整' },
-      { gesture: 'double-tap', text: '双击放大' }
+      { gesture: 'double-tap', text: '双击放大' },
     ]
 
     this.gestureHint = createElement('div', 'cropper-gesture-hints')
 
-    hints.forEach(hint => {
+    hints.forEach((hint) => {
       const hintEl = createElement('div', 'cropper-gesture-hint')
       hintEl.innerHTML = `
         <span class="gesture-icon gesture-${hint.gesture}"></span>
@@ -303,7 +303,8 @@ export class MobileUI {
    * Show gesture hints temporarily
    */
   showGestureHints(duration: number = 3000): void {
-    if (!this.gestureHint) return
+    if (!this.gestureHint)
+      return
 
     this.gestureHint.classList.add('visible')
 
@@ -345,7 +346,7 @@ export class MobileUI {
 
     // Dispatch event
     dispatch(this.container, 'mobileui:orientationchange', {
-      orientation: this.currentOrientation
+      orientation: this.currentOrientation,
     })
   }
 
@@ -360,9 +361,11 @@ export class MobileUI {
     if (this.orientationOverlay) {
       if (this.options.orientation === 'landscape' && isPortrait) {
         this.orientationOverlay.classList.add('visible')
-      } else if (this.options.orientation === 'portrait' && !isPortrait) {
+      }
+      else if (this.options.orientation === 'portrait' && !isPortrait) {
         this.orientationOverlay.classList.add('visible')
-      } else {
+      }
+      else {
         this.orientationOverlay.classList.remove('visible')
       }
     }
@@ -585,14 +588,16 @@ export class MobileUI {
    */
   updateControl(id: string, state: Partial<MobileControl>): void {
     const control = this.controls.get(id)
-    if (!control) return
+    if (!control)
+      return
 
     // Update control
     Object.assign(control, state)
 
     // Update UI
     const button = document.getElementById(`cropper-mobile-${id}`) as HTMLButtonElement
-    if (!button) return
+    if (!button)
+      return
 
     if (state.disabled !== undefined) {
       button.disabled = state.disabled
@@ -603,7 +608,8 @@ export class MobileUI {
       if (state.active) {
         button.classList.add('active')
         button.setAttribute('aria-pressed', 'true')
-      } else {
+      }
+      else {
         button.classList.remove('active')
         button.setAttribute('aria-pressed', 'false')
       }
@@ -612,12 +618,14 @@ export class MobileUI {
     if (state.label) {
       button.setAttribute('aria-label', state.label)
       const label = button.querySelector('.cropper-mobile-label')
-      if (label) label.textContent = state.label
+      if (label)
+        label.textContent = state.label
     }
 
     if (state.icon) {
       const icon = button.querySelector('.cropper-mobile-icon')
-      if (icon) icon.textContent = state.icon
+      if (icon)
+        icon.textContent = state.icon
     }
   }
 
@@ -671,7 +679,8 @@ export class MobileUI {
 
     if (enabled && !this.mobileContainer) {
       this.createMobileUI()
-    } else if (!enabled && this.mobileContainer) {
+    }
+    else if (!enabled && this.mobileContainer) {
       this.destroyMobileUI()
     }
   }
@@ -688,5 +697,3 @@ export class MobileUI {
     this.destroyMobileUI()
   }
 }
-
-

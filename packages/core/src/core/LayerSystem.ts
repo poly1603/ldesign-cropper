@@ -3,9 +3,10 @@
  * Manages multiple layers with compositing and operations
  */
 
-import { Layer, type BlendMode } from './Layer'
-import { dispatch } from '../utils/events'
+import type { BlendMode } from './Layer'
 import { createElement } from '../utils/dom'
+import { dispatch } from '../utils/events'
+import { Layer } from './Layer'
 
 export interface LayerSystemOptions {
   width?: number
@@ -43,6 +44,7 @@ export class LayerSystem {
     action: string
     data: any
   }> = []
+
   private historyIndex = -1
   private maxHistorySize = 50
 
@@ -53,7 +55,7 @@ export class LayerSystem {
       height: options.height || 600,
       maxLayers: options.maxLayers || 100,
       autoComposite: options.autoComposite ?? true,
-      preserveDrawingBuffer: options.preserveDrawingBuffer ?? false
+      preserveDrawingBuffer: options.preserveDrawingBuffer ?? false,
     }
 
     // Create composite canvas
@@ -64,7 +66,7 @@ export class LayerSystem {
 
     const ctx = this.compositeCanvas.getContext('2d', {
       willReadFrequently: this.options.preserveDrawingBuffer,
-      alpha: true
+      alpha: true,
     })
 
     if (!ctx) {
@@ -90,7 +92,7 @@ export class LayerSystem {
 
     const layer = new Layer(this.options.width, this.options.height, {
       name: name || `Layer ${this.layers.length + 1}`,
-      ...options
+      ...options,
     })
 
     layer.setLayerSystem(this)
@@ -116,7 +118,7 @@ export class LayerSystem {
 
     // Dispatch event
     dispatch(this.container, 'layer:create', {
-      layer: layer.getInfo()
+      layer: layer.getInfo(),
     })
 
     return layer
@@ -127,7 +129,8 @@ export class LayerSystem {
    */
   deleteLayer(layerId: string): boolean {
     const index = this.layers.findIndex(l => l.id === layerId)
-    if (index === -1) return false
+    if (index === -1)
+      return false
 
     const layer = this.layers[index]
 
@@ -156,7 +159,7 @@ export class LayerSystem {
       layerId: layer.id,
       layerData: layer.getImageData(),
       layerInfo: layer.getInfo(),
-      index
+      index,
     })
 
     // Destroy layer
@@ -181,7 +184,8 @@ export class LayerSystem {
    */
   duplicateLayer(layerId: string): Layer | null {
     const layer = this.getLayer(layerId)
-    if (!layer) return null
+    if (!layer)
+      return null
 
     const duplicated = layer.clone()
     duplicated.setLayerSystem(this)
@@ -193,7 +197,7 @@ export class LayerSystem {
     // Add to history
     this.addToHistory('duplicateLayer', {
       originalId: layerId,
-      duplicatedId: duplicated.id
+      duplicatedId: duplicated.id,
     })
 
     // Composite
@@ -207,7 +211,7 @@ export class LayerSystem {
     // Dispatch event
     dispatch(this.container, 'layer:duplicate', {
       originalId: layerId,
-      duplicatedLayer: duplicated.getInfo()
+      duplicatedLayer: duplicated.getInfo(),
     })
 
     return duplicated
@@ -220,8 +224,10 @@ export class LayerSystem {
     const source = this.getLayer(sourceId)
     const target = this.getLayer(targetId)
 
-    if (!source || !target) return false
-    if (source.locked || target.locked) return false
+    if (!source || !target)
+      return false
+    if (source.locked || target.locked)
+      return false
 
     // Store for history
     const sourceData = source.getImageData()
@@ -240,7 +246,7 @@ export class LayerSystem {
       targetId,
       sourceData,
       targetData,
-      sourceIndex
+      sourceIndex,
     })
 
     // Destroy source
@@ -265,15 +271,18 @@ export class LayerSystem {
    */
   moveLayer(layerId: string, newIndex: number): boolean {
     const currentIndex = this.layers.findIndex(l => l.id === layerId)
-    if (currentIndex === -1) return false
+    if (currentIndex === -1)
+      return false
 
     const layer = this.layers[currentIndex]
-    if (layer.locked) return false
+    if (layer.locked)
+      return false
 
     // Clamp new index
     newIndex = Math.max(0, Math.min(this.layers.length - 1, newIndex))
 
-    if (currentIndex === newIndex) return false
+    if (currentIndex === newIndex)
+      return false
 
     // Remove and reinsert
     this.layers.splice(currentIndex, 1)
@@ -283,7 +292,7 @@ export class LayerSystem {
     this.addToHistory('moveLayer', {
       layerId,
       oldIndex: currentIndex,
-      newIndex
+      newIndex,
     })
 
     // Composite
@@ -298,7 +307,7 @@ export class LayerSystem {
     dispatch(this.container, 'layer:move', {
       layerId,
       oldIndex: currentIndex,
-      newIndex
+      newIndex,
     })
 
     return true
@@ -309,7 +318,8 @@ export class LayerSystem {
    */
   setActiveLayer(layerId: string): boolean {
     const layer = this.getLayer(layerId)
-    if (!layer) return false
+    if (!layer)
+      return false
 
     this.activeLayer = layer
 
@@ -319,7 +329,7 @@ export class LayerSystem {
     // Dispatch event
     dispatch(this.container, 'layer:active', {
       layerId,
-      layer: layer.getInfo()
+      layer: layer.getInfo(),
     })
 
     return true
@@ -358,7 +368,7 @@ export class LayerSystem {
       opacity: layer.opacity,
       blendMode: layer.blendMode,
       locked: layer.locked,
-      thumbnail: this.generateThumbnail(layer)
+      thumbnail: this.generateThumbnail(layer),
     }))
   }
 
@@ -371,7 +381,8 @@ export class LayerSystem {
 
     // Draw each visible layer
     for (const layer of this.layers) {
-      if (!layer.visible) continue
+      if (!layer.visible)
+        continue
 
       this.compositeCtx.save()
 
@@ -385,7 +396,7 @@ export class LayerSystem {
       const t = layer.transform
       this.compositeCtx.translate(
         t.x + layer.canvas.width / 2,
-        t.y + layer.canvas.height / 2
+        t.y + layer.canvas.height / 2,
       )
       this.compositeCtx.rotate((t.rotation * Math.PI) / 180)
       this.compositeCtx.scale(t.scaleX, t.scaleY)
@@ -395,7 +406,7 @@ export class LayerSystem {
       this.compositeCtx.drawImage(
         layer.canvas,
         -layer.canvas.width / 2,
-        -layer.canvas.height / 2
+        -layer.canvas.height / 2,
       )
 
       this.compositeCtx.restore()
@@ -417,9 +428,10 @@ export class LayerSystem {
    */
   getCompositeImageData(): ImageData {
     return this.compositeCtx.getImageData(
-      0, 0,
+      0,
+      0,
       this.options.width,
-      this.options.height
+      this.options.height,
     )
   }
 
@@ -429,7 +441,7 @@ export class LayerSystem {
   flatten(): Layer {
     // Create new layer with composite
     const flattened = new Layer(this.options.width, this.options.height, {
-      name: 'Flattened'
+      name: 'Flattened',
     })
 
     // Draw composite to new layer
@@ -439,7 +451,7 @@ export class LayerSystem {
     const layersData = this.layers.map(l => ({
       id: l.id,
       data: l.getImageData(),
-      info: l.getInfo()
+      info: l.getInfo(),
     }))
 
     // Clear all layers except first
@@ -467,11 +479,11 @@ export class LayerSystem {
     const layersData = this.layers.map(l => ({
       id: l.id,
       data: l.getImageData(),
-      info: l.getInfo()
+      info: l.getInfo(),
     }))
 
     // Clear each layer
-    this.layers.forEach(layer => {
+    this.layers.forEach((layer) => {
       if (!layer.locked) {
         layer.clear()
       }
@@ -496,7 +508,7 @@ export class LayerSystem {
     // Store for history
     const oldSize = {
       width: this.options.width,
-      height: this.options.height
+      height: this.options.height,
     }
 
     // Update options
@@ -508,7 +520,7 @@ export class LayerSystem {
     this.compositeCanvas.height = height
 
     // Resize all layers
-    this.layers.forEach(layer => {
+    this.layers.forEach((layer) => {
       layer.resize(width, height)
     })
 
@@ -539,7 +551,7 @@ export class LayerSystem {
     // Dispatch event
     dispatch(this.container, 'layer:change', {
       layerId: layer.id,
-      layer: layer.getInfo()
+      layer: layer.getInfo(),
     })
   }
 
@@ -553,17 +565,20 @@ export class LayerSystem {
     canvas.height = thumbSize
 
     const ctx = canvas.getContext('2d')
-    if (!ctx) return ''
+    if (!ctx)
+      return ''
 
     // Draw scaled layer
     ctx.drawImage(
       layer.canvas,
-      0, 0,
+      0,
+      0,
       layer.canvas.width,
       layer.canvas.height,
-      0, 0,
+      0,
+      0,
       thumbSize,
-      thumbSize
+      thumbSize,
     )
 
     return canvas.toDataURL('image/png', 0.6)
@@ -573,7 +588,8 @@ export class LayerSystem {
    * Create layer panel UI
    */
   createLayerPanel(): void {
-    if (this.layerPanel) return
+    if (this.layerPanel)
+      return
 
     this.layerPanel = createElement('div', 'layer-panel')
     this.layerPanel.innerHTML = `
@@ -740,14 +756,16 @@ export class LayerSystem {
    * Set up layer panel events
    */
   private setupLayerPanelEvents(): void {
-    if (!this.layerPanel) return
+    if (!this.layerPanel)
+      return
 
     // Control buttons
     this.layerPanel.addEventListener('click', (e) => {
       const target = e.target as HTMLElement
       const action = target.dataset.action
 
-      if (!action) return
+      if (!action)
+        return
 
       switch (action) {
         case 'create':
@@ -782,7 +800,7 @@ export class LayerSystem {
     if (opacitySlider) {
       opacitySlider.addEventListener('input', () => {
         if (this.activeLayer) {
-          this.activeLayer.setOpacity(parseFloat(opacitySlider.value) / 100)
+          this.activeLayer.setOpacity(Number.parseFloat(opacitySlider.value) / 100)
         }
       })
     }
@@ -802,17 +820,19 @@ export class LayerSystem {
    * Update layer panel
    */
   private updateLayerPanel(): void {
-    if (!this.layerPanel) return
+    if (!this.layerPanel)
+      return
 
     const list = this.layerPanel.querySelector('.layer-panel-list')
-    if (!list) return
+    if (!list)
+      return
 
     // Clear list
     list.innerHTML = ''
 
     // Add layers (in reverse order - top to bottom)
     const reversedLayers = [...this.layers].reverse()
-    reversedLayers.forEach(layer => {
+    reversedLayers.forEach((layer) => {
       const item = createElement('div', 'layer-item')
       if (layer === this.activeLayer) {
         item.classList.add('active')
@@ -888,7 +908,8 @@ export class LayerSystem {
     // Limit history size
     if (this.history.length > this.maxHistorySize) {
       this.history.shift()
-    } else {
+    }
+    else {
       this.historyIndex++
     }
   }
@@ -897,7 +918,8 @@ export class LayerSystem {
    * Undo last action
    */
   undo(): boolean {
-    if (this.historyIndex < 0) return false
+    if (this.historyIndex < 0)
+      return false
 
     const entry = this.history[this.historyIndex]
 
@@ -918,7 +940,8 @@ export class LayerSystem {
    * Redo last undone action
    */
   redo(): boolean {
-    if (this.historyIndex >= this.history.length - 1) return false
+    if (this.historyIndex >= this.history.length - 1)
+      return false
 
     this.historyIndex++
     const entry = this.history[this.historyIndex]
@@ -948,8 +971,8 @@ export class LayerSystem {
         blendMode: layer.blendMode,
         locked: layer.locked,
         transform: layer.transform,
-        imageData: layer.getImageData()
-      }))
+        imageData: layer.getImageData(),
+      })),
     }
   }
 
@@ -972,7 +995,7 @@ export class LayerSystem {
         visible: layerData.visible,
         opacity: layerData.opacity,
         blendMode: layerData.blendMode,
-        locked: layerData.locked
+        locked: layerData.locked,
       })
 
       layer.setLayerSystem(this)
@@ -1020,4 +1043,3 @@ export class LayerSystem {
     this.history = []
   }
 }
-

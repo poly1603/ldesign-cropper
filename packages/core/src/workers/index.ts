@@ -2,22 +2,18 @@
  * Workers module exports
  */
 
-export { WorkerManager } from './WorkerManager'
 export type {
-  WorkerMessage,
-  WorkerResponse,
-  WorkerMessageType,
-  FilterWorkerData,
   BatchFilterWorkerData,
+  CompositionSuggestion,
+  CropWorkerData,
+  FaceDetectionResult,
+  FilterWorkerData,
+  ImageAnalysisResult,
   ResizeWorkerData,
   RotateWorkerData,
-  CropWorkerData,
   ThumbnailWorkerData,
-  ImageAnalysisResult,
-  FaceDetectionResult,
-  CompositionSuggestion
+  WorkerMessage,
+  WorkerMessageType,
+  WorkerResponse,
 } from './types'
-
-
-
-
+export { WorkerManager } from './WorkerManager'

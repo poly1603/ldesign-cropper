@@ -55,7 +55,7 @@ export class DrawingEngine {
       name,
       canvas,
       visible: true,
-      opacity: 1
+      opacity: 1,
     }
 
     this.layers.push(layer)
@@ -66,8 +66,9 @@ export class DrawingEngine {
    * Remove layer
    */
   removeLayer(id: string): boolean {
-    const index = this.layers.findIndex((l) => l.id === id)
-    if (index === -1 || this.layers.length === 1) return false
+    const index = this.layers.findIndex(l => l.id === id)
+    if (index === -1 || this.layers.length === 1)
+      return false
 
     const layer = this.layers[index]
     canvasPool.release(layer.canvas)
@@ -84,7 +85,7 @@ export class DrawingEngine {
    * Get layer by ID
    */
   getLayer(id: string): DrawingLayer | undefined {
-    return this.layers.find((l) => l.id === id)
+    return this.layers.find(l => l.id === id)
   }
 
   /**
@@ -98,7 +99,8 @@ export class DrawingEngine {
    * Set active layer
    */
   setActiveLayer(id: string): boolean {
-    if (!this.layers.find((l) => l.id === id)) return false
+    if (!this.layers.find(l => l.id === id))
+      return false
     this.activeLayerId = id
     return true
   }
@@ -107,16 +109,18 @@ export class DrawingEngine {
    * Get active layer
    */
   getActiveLayer(): DrawingLayer | null {
-    if (!this.activeLayerId) return null
-    return this.layers.find((l) => l.id === this.activeLayerId) || null
+    if (!this.activeLayerId)
+      return null
+    return this.layers.find(l => l.id === this.activeLayerId) || null
   }
 
   /**
    * Set layer visibility
    */
   setLayerVisibility(id: string, visible: boolean): boolean {
-    const layer = this.layers.find((l) => l.id === id)
-    if (!layer) return false
+    const layer = this.layers.find(l => l.id === id)
+    if (!layer)
+      return false
 
     layer.visible = visible
     return true
@@ -126,8 +130,9 @@ export class DrawingEngine {
    * Set layer opacity
    */
   setLayerOpacity(id: string, opacity: number): boolean {
-    const layer = this.layers.find((l) => l.id === id)
-    if (!layer) return false
+    const layer = this.layers.find(l => l.id === id)
+    if (!layer)
+      return false
 
     layer.opacity = Math.max(0, Math.min(1, opacity))
     return true
@@ -142,11 +147,13 @@ export class DrawingEngine {
     output.height = this.height
 
     const ctx = output.getContext('2d')
-    if (!ctx) return output
+    if (!ctx)
+      return output
 
     // Draw layers from bottom to top
     for (const layer of this.layers) {
-      if (!layer.visible) continue
+      if (!layer.visible)
+        continue
 
       ctx.globalAlpha = layer.opacity
       ctx.drawImage(layer.canvas, 0, 0)
@@ -161,10 +168,12 @@ export class DrawingEngine {
    */
   saveState(): void {
     const activeLayer = this.getActiveLayer()
-    if (!activeLayer) return
+    if (!activeLayer)
+      return
 
     const ctx = activeLayer.canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx)
+      return
 
     const imageData = ctx.getImageData(0, 0, this.width, this.height)
 
@@ -176,9 +185,9 @@ export class DrawingEngine {
       imageData: new ImageData(
         new Uint8ClampedArray(imageData.data),
         imageData.width,
-        imageData.height
+        imageData.height,
       ),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     })
 
     this.historyIndex++
@@ -194,7 +203,8 @@ export class DrawingEngine {
    * Undo
    */
   undo(): boolean {
-    if (this.historyIndex <= 0) return false
+    if (this.historyIndex <= 0)
+      return false
 
     this.historyIndex--
     this.restoreState(this.history[this.historyIndex])
@@ -205,7 +215,8 @@ export class DrawingEngine {
    * Redo
    */
   redo(): boolean {
-    if (this.historyIndex >= this.history.length - 1) return false
+    if (this.historyIndex >= this.history.length - 1)
+      return false
 
     this.historyIndex++
     this.restoreState(this.history[this.historyIndex])
@@ -217,10 +228,12 @@ export class DrawingEngine {
    */
   private restoreState(state: DrawingState): void {
     const activeLayer = this.getActiveLayer()
-    if (!activeLayer) return
+    if (!activeLayer)
+      return
 
     const ctx = activeLayer.canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx)
+      return
 
     ctx.putImageData(state.imageData, 0, 0)
   }
@@ -244,10 +257,12 @@ export class DrawingEngine {
    */
   clear(): void {
     const activeLayer = this.getActiveLayer()
-    if (!activeLayer) return
+    if (!activeLayer)
+      return
 
     const ctx = activeLayer.canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx)
+      return
 
     ctx.clearRect(0, 0, this.width, this.height)
     this.saveState()
@@ -282,4 +297,3 @@ export class DrawingEngine {
     this.historyIndex = -1
   }
 }
-

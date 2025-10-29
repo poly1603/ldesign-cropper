@@ -2,11 +2,11 @@
  * ImageProcessor - Handles image processing operations
  */
 
-import type { ImageData, CanvasData, GetCroppedCanvasOptions } from '../types'
-import { loadImage, createCanvas, canvasToBlob, canvasToDataURL } from '../utils/image'
+import type { GetCroppedCanvasOptions, ImageData } from '../types'
 import { createElement, setStyle } from '../utils/dom'
-import { getAspectRatio, clamp } from '../utils/math'
-import { raf, cancelRaf, canvasPool } from '../utils/performance'
+import { canvasToBlob, canvasToDataURL, loadImage } from '../utils/image'
+import { getAspectRatio } from '../utils/math'
+import { cancelRaf, canvasPool, raf } from '../utils/performance'
 
 export class ImageProcessor {
   private container: HTMLElement
@@ -46,11 +46,12 @@ export class ImageProcessor {
         translateY: 0,
         naturalWidth: image.naturalWidth,
         naturalHeight: image.naturalHeight,
-        aspectRatio: getAspectRatio(image.naturalWidth, image.naturalHeight)
+        aspectRatio: getAspectRatio(image.naturalWidth, image.naturalHeight),
       }
 
       this.render()
-    } catch (error) {
+    }
+    catch (error) {
       throw new Error(`Failed to load image: ${error}`)
     }
   }
@@ -59,7 +60,8 @@ export class ImageProcessor {
    * Render image to container
    */
   render(): void {
-    if (!this.imageElement || !this.imageData) return
+    if (!this.imageElement || !this.imageData)
+      return
 
     // Clear only the canvas element, not the entire container
     const existingCanvas = this.container.querySelector('.cropper-canvas')
@@ -86,7 +88,8 @@ export class ImageProcessor {
       // Image is wider - fit width and adjust height
       displayWidth = containerWidth
       displayHeight = containerWidth / imageAspect
-    } else {
+    }
+    else {
       // Image is taller - fit height and adjust width
       displayHeight = containerHeight
       displayWidth = containerHeight * imageAspect
@@ -104,7 +107,7 @@ export class ImageProcessor {
       left: `${this.imageData.left}px`,
       top: `${this.imageData.top}px`,
       width: `${displayWidth}px`,
-      height: `${displayHeight}px`
+      height: `${displayHeight}px`,
     })
 
     // Style the image element
@@ -113,7 +116,7 @@ export class ImageProcessor {
       width: '100%',
       height: '100%',
       maxWidth: 'none',
-      maxHeight: 'none'
+      maxHeight: 'none',
     })
 
     wrapper.appendChild(this.imageElement)
@@ -122,7 +125,8 @@ export class ImageProcessor {
     const bgElement = this.container.querySelector('.cropper-bg')
     if (bgElement && bgElement.nextSibling) {
       this.container.insertBefore(wrapper, bgElement.nextSibling)
-    } else {
+    }
+    else {
       this.container.appendChild(wrapper)
     }
 
@@ -134,7 +138,8 @@ export class ImageProcessor {
    * Uses RAF for smooth animations and GPU acceleration
    */
   updateTransform(): void {
-    if (!this.imageElement || !this.imageData) return
+    if (!this.imageElement || !this.imageData)
+      return
 
     // Cancel any pending transform update
     if (this.pendingTransformRaf !== null) {
@@ -143,7 +148,8 @@ export class ImageProcessor {
 
     // Schedule transform update in next frame
     this.pendingTransformRaf = raf(() => {
-      if (!this.imageElement || !this.imageData) return
+      if (!this.imageElement || !this.imageData)
+        return
 
       const { rotate, scaleX, scaleY, skewX, skewY, translateX, translateY } = this.imageData
 
@@ -153,12 +159,12 @@ export class ImageProcessor {
         `rotate(${rotate}deg)`,
         `scaleX(${scaleX})`,
         `scaleY(${scaleY})`,
-        `skew(${skewX}deg, ${skewY}deg)`
+        `skew(${skewX}deg, ${skewY}deg)`,
       ]
 
       setStyle(this.imageElement!, {
         transform: transforms.join(' '),
-        willChange: 'transform' // Hint browser to use GPU
+        willChange: 'transform', // Hint browser to use GPU
       })
 
       this.pendingTransformRaf = null
@@ -169,7 +175,8 @@ export class ImageProcessor {
    * Rotate image
    */
   rotate(degrees: number): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.rotate = (this.imageData.rotate + degrees) % 360
     this.updateTransform()
@@ -179,7 +186,8 @@ export class ImageProcessor {
    * Scale image
    */
   scale(scaleX: number, scaleY?: number): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.scaleX = scaleX
     this.imageData.scaleY = scaleY ?? scaleX
@@ -190,7 +198,8 @@ export class ImageProcessor {
    * Flip horizontal
    */
   flipHorizontal(): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.scaleX *= -1
     this.updateTransform()
@@ -200,7 +209,8 @@ export class ImageProcessor {
    * Flip vertical
    */
   flipVertical(): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.scaleY *= -1
     this.updateTransform()
@@ -210,7 +220,8 @@ export class ImageProcessor {
    * Skew image
    */
   skew(skewX: number, skewY?: number): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.skewX = skewX
     this.imageData.skewY = skewY ?? skewX
@@ -221,7 +232,8 @@ export class ImageProcessor {
    * Skew X
    */
   skewX(skewX: number): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.skewX = skewX
     this.updateTransform()
@@ -231,7 +243,8 @@ export class ImageProcessor {
    * Skew Y
    */
   skewY(skewY: number): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.skewY = skewY
     this.updateTransform()
@@ -241,7 +254,8 @@ export class ImageProcessor {
    * Translate image
    */
   translate(x: number, y: number): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.translateX = x
     this.imageData.translateY = y
@@ -252,7 +266,8 @@ export class ImageProcessor {
    * Move image (relative)
    */
   move(deltaX: number, deltaY: number): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.translateX += deltaX
     this.imageData.translateY += deltaY
@@ -263,7 +278,8 @@ export class ImageProcessor {
    * Reset image
    */
   reset(): void {
-    if (!this.imageData) return
+    if (!this.imageData)
+      return
 
     this.imageData.rotate = 0
     this.imageData.scaleX = 1
@@ -288,10 +304,11 @@ export class ImageProcessor {
    * @param options - Canvas options
    */
   getCroppedCanvas(
-    cropBoxData: { left: number; top: number; width: number; height: number },
-    options: GetCroppedCanvasOptions = {}
+    cropBoxData: { left: number, top: number, width: number, height: number },
+    options: GetCroppedCanvasOptions = {},
   ): HTMLCanvasElement | null {
-    if (!this.imageElement || !this.imageData) return null
+    if (!this.imageElement || !this.imageData)
+      return null
 
     const { maxWidth, maxHeight, minWidth, minHeight, fillColor } = options
     let { width, height } = options
@@ -306,20 +323,24 @@ export class ImageProcessor {
       // No size specified, use crop box size
       width = cropWidth
       height = cropHeight
-    } else if (width && !height) {
+    }
+    else if (width && !height) {
       // Width specified, calculate height to maintain aspect ratio
       height = width / cropAspectRatio
-    } else if (!width && height) {
+    }
+    else if (!width && height) {
       // Height specified, calculate width to maintain aspect ratio
       width = height * cropAspectRatio
-    } else if (width && height) {
+    }
+    else if (width && height) {
       // Both specified, adjust to maintain aspect ratio
       const specifiedRatio = width / height
       if (Math.abs(specifiedRatio - cropAspectRatio) > 0.01) {
         // Aspect ratios don't match, adjust to maintain crop box ratio
         if (width / cropAspectRatio <= height) {
           height = width / cropAspectRatio
-        } else {
+        }
+        else {
           width = height * cropAspectRatio
         }
       }
@@ -348,7 +369,8 @@ export class ImageProcessor {
 
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
-    if (!ctx) return null
+    if (!ctx)
+      return null
 
     canvas.width = finalWidth
     canvas.height = finalHeight
@@ -375,7 +397,8 @@ export class ImageProcessor {
       ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
       ctx.closePath()
       ctx.clip()
-    } else if (cropShape === 'rounded') {
+    }
+    else if (cropShape === 'rounded') {
       // Rounded rectangle
       const radius = Math.min(finalWidth, finalHeight) * 0.1 // 10% radius
       ctx.beginPath()
@@ -408,7 +431,8 @@ export class ImageProcessor {
 
     // Get the actual display rect of the transformed image
     const displayRect = this.getDisplayRect()
-    if (!displayRect) return null
+    if (!displayRect)
+      return null
 
     // The displayRect contains the actual position and size of the scaled image
     const imageLeft = displayRect.left
@@ -421,15 +445,16 @@ export class ImageProcessor {
     const cropTop = cropBoxData.top - imageTop
 
     // Check if we need to fill background (crop area extends beyond image)
-    const needsBackground = cropLeft < 0 || cropTop < 0 ||
-      cropLeft + cropWidth > scaledWidth ||
-      cropTop + cropHeight > scaledHeight
+    const needsBackground = cropLeft < 0 || cropTop < 0
+      || cropLeft + cropWidth > scaledWidth
+      || cropTop + cropHeight > scaledHeight
 
     if (needsBackground) {
       if (fillColor && fillColor !== 'transparent') {
         ctx.fillStyle = fillColor
         ctx.fillRect(0, 0, finalWidth, finalHeight)
-      } else if (fillBackground) {
+      }
+      else if (fillBackground) {
         ctx.fillStyle = 'white'
         ctx.fillRect(0, 0, finalWidth, finalHeight)
       }
@@ -462,7 +487,8 @@ export class ImageProcessor {
       // Crop box starts before image, adjust source width
       sourceWidth = Math.min(cropWidth + cropLeft, scaledWidth) / totalScaleX
       sourceX = 0
-    } else if (cropLeft + cropWidth > scaledWidth) {
+    }
+    else if (cropLeft + cropWidth > scaledWidth) {
       // Crop box extends past image right edge
       sourceWidth = (scaledWidth - cropLeft) / totalScaleX
     }
@@ -471,7 +497,8 @@ export class ImageProcessor {
       // Crop box starts above image, adjust source height
       sourceHeight = Math.min(cropHeight + cropTop, scaledHeight) / totalScaleY
       sourceY = 0
-    } else if (cropTop + cropHeight > scaledHeight) {
+    }
+    else if (cropTop + cropHeight > scaledHeight) {
       // Crop box extends past image bottom edge
       sourceHeight = (scaledHeight - cropTop) / totalScaleY
     }
@@ -516,8 +543,10 @@ export class ImageProcessor {
         ctx.save()
         ctx.translate(destX + destWidth / 2, destY + destHeight / 2)
         ctx.rotate((rotate * Math.PI) / 180)
-        if (scaleX < 0) ctx.scale(-1, 1)
-        if (scaleY < 0) ctx.scale(1, -1)
+        if (scaleX < 0)
+          ctx.scale(-1, 1)
+        if (scaleY < 0)
+          ctx.scale(1, -1)
 
         ctx.drawImage(
           this.imageElement,
@@ -528,11 +557,12 @@ export class ImageProcessor {
           -destWidth / 2,
           -destHeight / 2,
           destWidth,
-          destHeight
+          destHeight,
         )
 
         ctx.restore()
-      } else {
+      }
+      else {
         // Direct drawing without transformations
         ctx.drawImage(
           this.imageElement,
@@ -543,7 +573,7 @@ export class ImageProcessor {
           destX,
           destY,
           destWidth,
-          destHeight
+          destHeight,
         )
       }
     }
@@ -558,11 +588,12 @@ export class ImageProcessor {
    * Get cropped image as blob
    */
   async getCroppedBlob(
-    cropBoxData: { left: number; top: number; width: number; height: number },
-    options: GetCroppedCanvasOptions & { type?: string; quality?: number; cropShape?: string; fillBackground?: boolean } = {}
+    cropBoxData: { left: number, top: number, width: number, height: number },
+    options: GetCroppedCanvasOptions & { type?: string, quality?: number, cropShape?: string, fillBackground?: boolean } = {},
   ): Promise<Blob | null> {
     const canvas = this.getCroppedCanvas(cropBoxData, options)
-    if (!canvas) return null
+    if (!canvas)
+      return null
 
     const { type = 'image/png', quality = 1 } = options
     return await canvasToBlob(canvas, type, quality)
@@ -572,11 +603,12 @@ export class ImageProcessor {
    * Get cropped image as data URL
    */
   getCroppedDataURL(
-    cropBoxData: { left: number; top: number; width: number; height: number },
-    options: GetCroppedCanvasOptions & { type?: string; quality?: number; cropShape?: string; fillBackground?: boolean } = {}
+    cropBoxData: { left: number, top: number, width: number, height: number },
+    options: GetCroppedCanvasOptions & { type?: string, quality?: number, cropShape?: string, fillBackground?: boolean } = {},
   ): string | null {
     const canvas = this.getCroppedCanvas(cropBoxData, options)
-    if (!canvas) return null
+    if (!canvas)
+      return null
 
     const { type = 'image/png', quality = 1 } = options
     return canvasToDataURL(canvas, type, quality)
@@ -593,8 +625,9 @@ export class ImageProcessor {
    * Get current display rect of the image within container
    * This returns the actual bounding rect after all transformations (scale, rotate, translate)
    */
-  getDisplayRect(): { left: number; top: number; width: number; height: number } | null {
-    if (!this.imageData) return null
+  getDisplayRect(): { left: number, top: number, width: number, height: number } | null {
+    if (!this.imageData)
+      return null
 
     const { left, top, width, height, scaleX, scaleY, rotate, translateX, translateY } = this.imageData
 
@@ -622,9 +655,10 @@ export class ImageProcessor {
         left: centerX - rotatedWidth / 2,
         top: centerY - rotatedHeight / 2,
         width: rotatedWidth,
-        height: rotatedHeight
+        height: rotatedHeight,
       }
-    } else {
+    }
+    else {
       // Without rotation, apply scaling and translation
       // CSS transform scale scales from the center of the element
       // So we need to calculate the new position after scaling from center
@@ -642,7 +676,7 @@ export class ImageProcessor {
         left: scaledLeft,
         top: scaledTop,
         width: actualWidth,
-        height: actualHeight
+        height: actualHeight,
       }
     }
   }

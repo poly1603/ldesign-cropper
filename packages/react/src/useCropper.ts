@@ -1,6 +1,6 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
-import { Cropper, type CropperOptions } from '@ldesign/cropper-core'
-import type { CropBoxData, CropData } from '@ldesign/cropper-core'
+import type { CropBoxData, CropData, Cropper, type CropperOptions } from '@ldesign/cropper-core'
+
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface UseCropperOptions extends CropperOptions {
   onReady?: (cropper: Cropper) => void
@@ -31,7 +31,8 @@ export function useCropper(options: UseCropperOptions = {}): UseCropperReturn {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    if (!containerRef.current) return
+    if (!containerRef.current)
+      return
 
     const { onReady, ...cropperOptions } = options
 
@@ -43,7 +44,7 @@ export function useCropper(options: UseCropperOptions = {}): UseCropperReturn {
         if (cropperOptions.ready) {
           cropperOptions.ready(e)
         }
-      }
+      },
     })
 
     setCropper(instance)
@@ -123,6 +124,6 @@ export function useCropper(options: UseCropperOptions = {}): UseCropperReturn {
     move,
     zoom,
     enable,
-    disable
+    disable,
   }
 }

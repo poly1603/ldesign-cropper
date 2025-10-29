@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Cropper Types
  */
 
@@ -382,19 +382,19 @@ export interface Rectangle {
 }
 
 // Action types
-export type Action =
-  | 'all'
-  | 'crop'
-  | 'move'
-  | 'zoom'
-  | 'e'
-  | 'w'
-  | 's'
-  | 'n'
-  | 'se'
-  | 'sw'
-  | 'ne'
-  | 'nw'
+export type Action
+  = | 'all'
+    | 'crop'
+    | 'move'
+    | 'zoom'
+    | 'e'
+    | 'w'
+    | 's'
+    | 'n'
+    | 'se'
+    | 'sw'
+    | 'ne'
+    | 'nw'
 
 // Internal data structure
 export interface InternalData {

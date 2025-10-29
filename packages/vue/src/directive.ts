@@ -2,9 +2,9 @@
  * Vue Directive for Cropper
  */
 
+import type { CropperOptions } from '@ldesign/cropper-core'
 import type { Directive, DirectiveBinding } from 'vue'
 import { Cropper } from '@ldesign/cropper-core'
-import type { CropperOptions } from '@ldesign/cropper-core/dist/types'
 
 const cropperMap = new WeakMap<HTMLElement, Cropper>()
 
@@ -35,18 +35,19 @@ export const vCropper: Directive<HTMLElement, CropperDirectiveValue> = {
         onZoom?.(e)
         // Emit event on element
         el.dispatchEvent(new CustomEvent('cropper:zoom', { detail: e.detail }))
-      }
+      },
     })
 
     cropperMap.set(el, cropper)
 
-      // Expose cropper instance on element
-      ; (el as any).__cropper__ = cropper
+    // Expose cropper instance on element
+    ; (el as any).__cropper__ = cropper
   },
 
   updated(el: HTMLElement, binding: DirectiveBinding<CropperDirectiveValue>) {
     const cropper = cropperMap.get(el)
-    if (!cropper) return
+    if (!cropper)
+      return
 
     const newOptions = binding.value || {}
     const oldOptions = binding.oldValue || {}
@@ -79,7 +80,7 @@ export const vCropper: Directive<HTMLElement, CropperDirectiveValue> = {
       cropperMap.delete(el)
       delete (el as any).__cropper__
     }
-  }
+  },
 }
 
 // Alias for v-cropper

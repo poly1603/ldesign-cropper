@@ -2,12 +2,12 @@
  * Utility function tests
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { throttle, debounce, memoize } from '../src/utils/performance'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { LRUCache, SizeAwareCache, TTLCache } from '../src/utils/cache'
 import { clamp, getAspectRatio, round } from '../src/utils/math'
-import { LRUCache, TTLCache, SizeAwareCache } from '../src/utils/cache'
+import { debounce, memoize, throttle } from '../src/utils/performance'
 
-describe('Performance Utilities', () => {
+describe('performance Utilities', () => {
   beforeEach(() => {
     vi.useFakeTimers()
   })
@@ -21,16 +21,25 @@ describe('Performance Utilities', () => {
       const fn = vi.fn()
       const throttled = throttle(fn, 100)
 
+      // First call executes immediately
       throttled()
-      throttled()
-      throttled()
-
       expect(fn).toHaveBeenCalledTimes(1)
 
-      vi.advanceTimersByTime(100)
+      // Multiple calls within throttle window
       throttled()
+      throttled()
+      // Still only called once during this window
+      expect(fn).toHaveBeenCalledTimes(1)
 
+      // Wait for throttle period to end
+      vi.advanceTimersByTime(100)
+      // The trailing call should have been queued
       expect(fn).toHaveBeenCalledTimes(2)
+
+      // New call after throttle period
+      throttled()
+      // Should execute immediately as new throttle window
+      expect(fn).toHaveBeenCalledTimes(3)
     })
 
     it('should pass arguments correctly', () => {
@@ -100,7 +109,7 @@ describe('Performance Utilities', () => {
   })
 })
 
-describe('Math Utilities', () => {
+describe('math Utilities', () => {
   describe('clamp', () => {
     it('should clamp values within range', () => {
       expect(clamp(5, 0, 10)).toBe(5)
@@ -134,8 +143,8 @@ describe('Math Utilities', () => {
   })
 })
 
-describe('Cache Utilities', () => {
-  describe('LRUCache', () => {
+describe('cache Utilities', () => {
+  describe('lRUCache', () => {
     it('should store and retrieve values', () => {
       const cache = new LRUCache<string, number>(3)
 
@@ -185,7 +194,7 @@ describe('Cache Utilities', () => {
     })
   })
 
-  describe('TTLCache', () => {
+  describe('tTLCache', () => {
     beforeEach(() => {
       vi.useFakeTimers()
     })
@@ -223,11 +232,11 @@ describe('Cache Utilities', () => {
     })
   })
 
-  describe('SizeAwareCache', () => {
+  describe('sizeAwareCache', () => {
     it('should track cache size', () => {
       const cache = new SizeAwareCache<string, string>(
         100,
-        (val) => val.length
+        val => val.length,
       )
 
       cache.set('a', 'x'.repeat(30))
@@ -239,7 +248,7 @@ describe('Cache Utilities', () => {
     it('should evict items when size limit reached', () => {
       const cache = new SizeAwareCache<string, string>(
         100,
-        (val) => val.length
+        val => val.length,
       )
 
       cache.set('a', 'x'.repeat(60))
@@ -252,7 +261,7 @@ describe('Cache Utilities', () => {
     it('should not store items larger than max size', () => {
       const cache = new SizeAwareCache<string, string>(
         100,
-        (val) => val.length
+        val => val.length,
       )
 
       const result = cache.set('a', 'x'.repeat(150))
@@ -261,4 +270,3 @@ describe('Cache Utilities', () => {
     })
   })
 })
-

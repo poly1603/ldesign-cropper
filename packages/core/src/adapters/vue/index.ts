@@ -2,129 +2,131 @@
  * Vue 3 Adapter - Complete implementation with Component, Composable, and Directive
  */
 
+import type { PropType } from 'vue'
+import type { CropperOptions, GetCroppedCanvasOptions, ToolbarOptions } from '../../types'
 import {
   defineComponent,
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  watch,
   h,
-  type PropType
+  onBeforeUnmount,
+  onMounted,
+
+  ref,
+  watch,
 } from 'vue'
 import { Cropper } from '../../core/Cropper'
-import type { CropperOptions, GetCroppedCanvasOptions, ToolbarOptions } from '../../types'
-import '../../styles/cropper.css'
+// TODO: Re-enable CSS import after fixing PostCSS configuration
+// import '../../styles/cropper.css'
 
+export { cropperDirective, getCropperInstance, vCropper } from './directive'
+export type { CropperDirectiveValue } from './directive'
 // Export composable and directive
 export { useCropper } from './useCropper'
 export type { UseCropperOptions } from './useCropper'
-export { vCropper, cropperDirective, getCropperInstance } from './directive'
-export type { CropperDirectiveValue } from './directive'
 
 export const VueCropper = defineComponent({
   name: 'VueCropper',
   props: {
     src: {
       type: String,
-      required: true
+      required: true,
     },
     alt: String,
     aspectRatio: Number,
     viewMode: {
       type: Number as PropType<0 | 1 | 2 | 3>,
-      default: 0
+      default: 0,
     },
     dragMode: {
       type: String as PropType<'crop' | 'move' | 'none'>,
-      default: 'crop'
+      default: 'crop',
     },
     autoCrop: {
       type: Boolean,
-      default: true
+      default: true,
     },
     autoCropArea: {
       type: Number,
-      default: 0.8
+      default: 0.8,
     },
     movable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     rotatable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     scalable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     zoomable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     zoomOnTouch: {
       type: Boolean,
-      default: true
+      default: true,
     },
     zoomOnWheel: {
       type: Boolean,
-      default: true
+      default: true,
     },
     cropBoxMovable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     cropBoxResizable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     background: {
       type: Boolean,
-      default: true
+      default: true,
     },
     guides: {
       type: Boolean,
-      default: true
+      default: true,
     },
     center: {
       type: Boolean,
-      default: true
+      default: true,
     },
     highlight: {
       type: Boolean,
-      default: true
+      default: true,
     },
     responsive: {
       type: Boolean,
-      default: true
+      default: true,
     },
     cropBoxStyle: {
       type: String as PropType<'default' | 'rounded' | 'circle' | 'minimal' | 'dotted' | 'solid' | 'gradient'>,
-      default: 'default'
+      default: 'default',
     },
     themeColor: {
       type: String,
-      default: '#39f'
+      default: '#39f',
     },
     skewable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     translatable: {
       type: Boolean,
-      default: true
+      default: true,
     },
-  scaleStep: {
-    type: Number,
-    default: 0.1
-  },
-  toolbar: {
-    type: [Boolean, Object] as PropType<boolean | ToolbarOptions>,
-    default: true
-  },
-  onToolbarCrop: {
-    type: Function as PropType<(canvas: HTMLCanvasElement) => void>
-  }
+    scaleStep: {
+      type: Number,
+      default: 0.1,
+    },
+    toolbar: {
+      type: [Boolean, Object] as PropType<boolean | ToolbarOptions>,
+      default: true,
+    },
+    onToolbarCrop: {
+      type: Function as PropType<(canvas: HTMLCanvasElement) => void>,
+    },
   },
   emits: ['ready', 'cropstart', 'cropmove', 'cropend', 'crop', 'zoom'],
   setup(props, { emit, expose }) {
@@ -132,7 +134,8 @@ export const VueCropper = defineComponent({
     const cropperInstance = ref<Cropper>()
 
     const initCropper = () => {
-      if (!containerRef.value) return
+      if (!containerRef.value)
+        return
 
       const options: CropperOptions = {
         src: props.src,
@@ -162,12 +165,12 @@ export const VueCropper = defineComponent({
         scaleStep: props.scaleStep,
         toolbar: props.toolbar,
         onToolbarCrop: props.onToolbarCrop,
-        ready: (e) => emit('ready', e),
-        cropstart: (e) => emit('cropstart', e),
-        cropmove: (e) => emit('cropmove', e),
-        cropend: (e) => emit('cropend', e),
-        crop: (e) => emit('crop', e),
-        zoom: (e) => emit('zoom', e)
+        ready: e => emit('ready', e),
+        cropstart: e => emit('cropstart', e),
+        cropmove: e => emit('cropmove', e),
+        cropend: e => emit('cropend', e),
+        crop: e => emit('crop', e),
+        zoom: e => emit('zoom', e),
       }
 
       cropperInstance.value = new Cropper(containerRef.value, options)
@@ -190,7 +193,7 @@ export const VueCropper = defineComponent({
         if (cropperInstance.value && newSrc) {
           cropperInstance.value.replace(newSrc)
         }
-      }
+      },
     )
 
     // Watch aspectRatio changes
@@ -200,7 +203,7 @@ export const VueCropper = defineComponent({
         if (cropperInstance.value) {
           cropperInstance.value.setData({ width: 0, height: 0 })
         }
-      }
+      },
     )
 
     // Watch cropBoxStyle changes
@@ -210,7 +213,7 @@ export const VueCropper = defineComponent({
         if (cropperInstance.value) {
           cropperInstance.value.setCropBoxStyle(newStyle)
         }
-      }
+      },
     )
 
     // Watch themeColor changes
@@ -220,7 +223,7 @@ export const VueCropper = defineComponent({
         if (newColor) {
           document.documentElement.style.setProperty('--cropper-theme-color', newColor)
         }
-      }
+      },
     )
 
     // Expose methods
@@ -239,7 +242,7 @@ export const VueCropper = defineComponent({
       clear: () => cropperInstance.value?.clear(),
       enable: () => cropperInstance.value?.enable(),
       disable: () => cropperInstance.value?.disable(),
-      destroy: () => cropperInstance.value?.destroy()
+      destroy: () => cropperInstance.value?.destroy(),
     })
 
     return () =>
@@ -248,10 +251,10 @@ export const VueCropper = defineComponent({
         class: 'vue-cropper-container',
         style: {
           width: '100%',
-          height: '100%'
-        }
+          height: '100%',
+        },
       })
-  }
+  },
 })
 
 export default VueCropper

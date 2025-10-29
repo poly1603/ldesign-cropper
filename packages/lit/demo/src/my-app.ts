@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit'
-import { customElement, state, query } from 'lit/decorators.js'
+import { css, html, LitElement } from 'lit'
+import { customElement, query, state } from 'lit/decorators.js'
 import '@ldesign/cropper-lit'
 // import '@ldesign/cropper-lit/es/style.css'
 
@@ -93,12 +93,14 @@ export class MyApp extends LitElement {
           @cropper-crop=${this.handleCrop}
         ></l-cropper>
         
-        ${this.croppedImage ? html`
+        ${this.croppedImage
+          ? html`
           <div class="result">
             <h3>Cropped Result:</h3>
             <img src=${this.croppedImage} alt="Cropped" />
           </div>
-        ` : ''}
+        `
+          : ''}
       </div>
     `
   }
@@ -147,4 +149,3 @@ declare global {
     'my-app': MyApp
   }
 }
-

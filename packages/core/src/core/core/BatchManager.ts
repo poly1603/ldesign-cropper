@@ -3,9 +3,10 @@
  * User interface for batch processing
  */
 
-import { BatchProcessor, BatchItem } from './BatchProcessor'
 import type { CropperOptions, GetCroppedCanvasOptions } from '../types'
-import { createElement, setStyle } from '../utils/dom'
+import type { BatchItem } from './BatchProcessor'
+import { createElement } from '../utils/dom'
+import { BatchProcessor } from './BatchProcessor'
 
 export interface BatchManagerOptions {
   container: HTMLElement
@@ -31,7 +32,7 @@ export class BatchManager {
       thumbnailSize: 150,
       allowRemove: true,
       autoStart: false,
-      ...options
+      ...options,
     }
 
     this.processor = new BatchProcessor({
@@ -41,7 +42,7 @@ export class BatchManager {
       onProgress: this.handleProgress.bind(this),
       onItemComplete: this.handleItemComplete.bind(this),
       onComplete: this.handleComplete.bind(this),
-      onError: this.handleError.bind(this)
+      onError: this.handleError.bind(this),
     })
 
     this.render()
@@ -186,7 +187,8 @@ export class BatchManager {
    */
   private handleFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement
-    if (!input.files) return
+    if (!input.files)
+      return
 
     const files = Array.from(input.files)
     this.addFiles(files)
@@ -216,10 +218,11 @@ export class BatchManager {
     event.stopPropagation()
 
     const files = event.dataTransfer?.files
-    if (!files) return
+    if (!files)
+      return
 
-    const imageFiles = Array.from(files).filter((f) =>
-      f.type.startsWith('image/')
+    const imageFiles = Array.from(files).filter(f =>
+      f.type.startsWith('image/'),
     )
     this.addFiles(imageFiles)
   }
@@ -241,7 +244,8 @@ export class BatchManager {
    */
   private addItemToGrid(id: string, file: File): void {
     const grid = this.element?.querySelector('#batch-items-grid')
-    if (!grid) return
+    if (!grid)
+      return
 
     const item = createElement('div', 'batch-item')
     item.dataset.id = id
@@ -315,7 +319,8 @@ export class BatchManager {
    */
   private updateInfo(): void {
     const info = this.element?.querySelector('#batch-info')
-    if (!info) return
+    if (!info)
+      return
 
     const items = this.processor.getItems()
     info.textContent = `${items.length} image${items.length !== 1 ? 's' : ''} selected`
@@ -328,13 +333,17 @@ export class BatchManager {
     const startBtn = this.element?.querySelector('#batch-start-btn') as HTMLButtonElement
     const cancelBtn = this.element?.querySelector('#batch-cancel-btn') as HTMLButtonElement
 
-    if (startBtn) startBtn.style.display = 'none'
-    if (cancelBtn) cancelBtn.style.display = ''
+    if (startBtn)
+      startBtn.style.display = 'none'
+    if (cancelBtn)
+      cancelBtn.style.display = ''
 
     await this.processor.start()
 
-    if (startBtn) startBtn.style.display = ''
-    if (cancelBtn) cancelBtn.style.display = 'none'
+    if (startBtn)
+      startBtn.style.display = ''
+    if (cancelBtn)
+      cancelBtn.style.display = 'none'
   }
 
   /**
@@ -346,8 +355,10 @@ export class BatchManager {
     const startBtn = this.element?.querySelector('#batch-start-btn') as HTMLButtonElement
     const cancelBtn = this.element?.querySelector('#batch-cancel-btn') as HTMLButtonElement
 
-    if (startBtn) startBtn.style.display = ''
-    if (cancelBtn) cancelBtn.style.display = 'none'
+    if (startBtn)
+      startBtn.style.display = ''
+    if (cancelBtn)
+      cancelBtn.style.display = 'none'
   }
 
   /**
@@ -373,7 +384,8 @@ export class BatchManager {
     this.updateProgress(0)
 
     const exportBtn = this.element?.querySelector('#batch-export-btn') as HTMLButtonElement
-    if (exportBtn) exportBtn.style.display = 'none'
+    if (exportBtn)
+      exportBtn.style.display = 'none'
   }
 
   /**
@@ -381,7 +393,8 @@ export class BatchManager {
    */
   private handleProgress(item: BatchItem, index: number, total: number): void {
     const element = this.itemElements.get(item.id)
-    if (!element) return
+    if (!element)
+      return
 
     const status = element.querySelector('.batch-item-status')
     if (status) {
@@ -403,7 +416,8 @@ export class BatchManager {
    */
   private handleItemComplete(item: BatchItem, index: number): void {
     const element = this.itemElements.get(item.id)
-    if (!element) return
+    if (!element)
+      return
 
     const status = element.querySelector('.batch-item-status')
     if (status) {
@@ -422,12 +436,13 @@ export class BatchManager {
    */
   private handleComplete(items: BatchItem[]): void {
     const exportBtn = this.element?.querySelector('#batch-export-btn') as HTMLButtonElement
-    if (exportBtn) exportBtn.style.display = ''
+    if (exportBtn)
+      exportBtn.style.display = ''
 
     // Dispatch event
     const event = new CustomEvent('batch:complete', {
       detail: { items },
-      bubbles: true
+      bubbles: true,
     })
     this.container.dispatchEvent(event)
   }
@@ -437,7 +452,8 @@ export class BatchManager {
    */
   private handleError(item: BatchItem, error: Error): void {
     const element = this.itemElements.get(item.id)
-    if (!element) return
+    if (!element)
+      return
 
     const status = element.querySelector('.batch-item-status')
     if (status) {
@@ -462,13 +478,14 @@ export class BatchManager {
    * Format file size
    */
   private formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes'
+    if (bytes === 0)
+      return '0 Bytes'
 
     const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+    return `${Math.round((bytes / k ** i) * 100) / 100} ${sizes[i]}`
   }
 
   /**
@@ -492,4 +509,3 @@ export class BatchManager {
     this.itemElements.clear()
   }
 }
-

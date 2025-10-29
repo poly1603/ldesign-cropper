@@ -13,8 +13,8 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: () => {},
     addEventListener: () => {},
     removeEventListener: () => {},
-    dispatchEvent: () => true
-  })
+    dispatchEvent: () => true,
+  }),
 })
 
 // Mock IntersectionObserver
@@ -25,6 +25,7 @@ global.IntersectionObserver = class IntersectionObserver {
   takeRecords() {
     return []
   }
+
   unobserve() {}
 } as any
 
@@ -35,3 +36,27 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 } as any
+
+// Mock ImageData for canvas tests
+if (typeof ImageData === 'undefined') {
+  global.ImageData = class ImageData {
+    data: Uint8ClampedArray
+    width: number
+    height: number
+
+    constructor(width: number, height: number)
+    constructor(data: Uint8ClampedArray, width: number, height?: number)
+    constructor(dataOrWidth: Uint8ClampedArray | number, widthOrHeight: number, height?: number) {
+      if (typeof dataOrWidth === 'number') {
+        this.width = dataOrWidth
+        this.height = widthOrHeight
+        this.data = new Uint8ClampedArray(dataOrWidth * widthOrHeight * 4)
+      }
+      else {
+        this.data = dataOrWidth
+        this.width = widthOrHeight
+        this.height = height || dataOrWidth.length / (widthOrHeight * 4)
+      }
+    }
+  } as any
+}

@@ -1,13 +1,13 @@
-﻿/**
+/**
  * Batch Processor
  * Handles batch processing of multiple images
  */
 
-import { Cropper, type CropperOptions } from './Cropper'
 import type { GetCroppedCanvasOptions } from '../types'
+import type { WorkerManager } from '../workers/WorkerManager'
+import type { CropperOptions } from './Cropper'
 import { canvasToBlob } from '../utils/image'
-import { WorkerManager } from '../workers/WorkerManager'
-import { FilterEngine } from '../filters/FilterEngine'
+import { Cropper } from './Cropper'
 
 export interface BatchItem {
   id: string
@@ -29,7 +29,7 @@ export interface BatchProcessorOptions {
   autoStart?: boolean
   useWorker?: boolean
   workerManager?: WorkerManager
-  filters?: Array<{ name: string; options: any }>
+  filters?: Array<{ name: string, options: any }>
   onProgress?: (item: BatchItem, index: number, total: number) => void
   onItemComplete?: (item: BatchItem, index: number) => void
   onComplete?: (items: BatchItem[]) => void
@@ -49,7 +49,7 @@ export class BatchProcessor {
       parallelProcessing: false,
       maxConcurrent: 1,
       autoStart: false,
-      ...options
+      ...options,
     }
   }
 
@@ -65,7 +65,7 @@ export class BatchProcessor {
       file,
       url,
       status: 'pending',
-      progress: 0
+      progress: 0,
     }
 
     this.items.push(item)
@@ -81,15 +81,16 @@ export class BatchProcessor {
    * Add multiple items
    */
   addItems(files: File[]): string[] {
-    return files.map((file) => this.addItem(file))
+    return files.map(file => this.addItem(file))
   }
 
   /**
    * Remove item
    */
   removeItem(id: string): boolean {
-    const index = this.items.findIndex((item) => item.id === id)
-    if (index === -1) return false
+    const index = this.items.findIndex(item => item.id === id)
+    if (index === -1)
+      return false
 
     const item = this.items[index]
 
@@ -127,7 +128,8 @@ export class BatchProcessor {
    * Start batch processing
    */
   async start(): Promise<void> {
-    if (this.processing) return
+    if (this.processing)
+      return
 
     this.processing = true
     this.cancelled = false
@@ -135,7 +137,8 @@ export class BatchProcessor {
 
     if (this.options.parallelProcessing) {
       await this.processParallel()
-    } else {
+    }
+    else {
       await this.processSequential()
     }
 
@@ -151,10 +154,12 @@ export class BatchProcessor {
    */
   private async processSequential(): Promise<void> {
     for (let i = 0; i < this.items.length; i++) {
-      if (this.cancelled) break
+      if (this.cancelled)
+        break
 
       const item = this.items[i]
-      if (item.status === 'cancelled' || item.status === 'completed') continue
+      if (item.status === 'cancelled' || item.status === 'completed')
+        continue
 
       this.currentIndex = i
       await this.processItem(item, i)
@@ -169,10 +174,12 @@ export class BatchProcessor {
     const promises: Promise<void>[] = []
 
     for (let i = 0; i < this.items.length; i++) {
-      if (this.cancelled) break
+      if (this.cancelled)
+        break
 
       const item = this.items[i]
-      if (item.status === 'cancelled' || item.status === 'completed') continue
+      if (item.status === 'cancelled' || item.status === 'completed')
+        continue
 
       // Wait if we've reached max concurrent
       if (this.workers.size >= maxConcurrent) {
@@ -195,7 +202,8 @@ export class BatchProcessor {
    * Process single item
    */
   private async processItem(item: BatchItem, index: number): Promise<void> {
-    if (item.status !== 'pending' || this.cancelled) return
+    if (item.status !== 'pending' || this.cancelled)
+      return
 
     try {
       item.status = 'processing'
@@ -204,64 +212,12 @@ export class BatchProcessor {
       // If using worker and filters are specified
       if (this.options.useWorker && this.options.workerManager && this.options.filters) {
         await this.processItemWithWorker(item, index)
-      } else {
-        await this.processItemWithCropper(item, index)
-      // Create temporary container
-      const container = document.createElement('div')
-      container.style.position = 'absolute'
-      container.style.left = '-9999px'
-      container.style.width = '800px'
-      container.style.height = '600px'
-      document.body.appendChild(container)
-
-      // Create cropper
-      const cropper = new Cropper(container, {
-        ...this.options.cropperOptions,
-        src: item.url,
-        ready: async () => {
-          try {
-            item.progress = 50
-
-            // Get cropped canvas
-            const canvas = cropper.getCroppedCanvas(this.options.canvasOptions)
-
-            if (!canvas) {
-              throw new Error('Failed to get cropped canvas')
-            }
-
-            item.progress = 75
-
-            // Convert to blob
-            const blob = await canvasToBlob(canvas)
-            item.result = blob
-            item.progress = 100
-            item.status = 'completed'
-
-            if (this.options.onItemComplete) {
-              this.options.onItemComplete(item, index)
-            }
-          } catch (error) {
-            item.status = 'failed'
-            item.error = error as Error
-
-            if (this.options.onError) {
-              this.options.onError(item, error as Error)
-            }
-          } finally {
-            // Cleanup
-            cropper.destroy()
-            document.body.removeChild(container)
-          }
-        }
-      })
-
-      item.cropper = cropper
-
-      // Report progress
-      if (this.options.onProgress) {
-        this.options.onProgress(item, index, this.items.length)
       }
-    } catch (error) {
+      else {
+        await this.processItemWithCropper(item, index)
+      }
+    }
+    catch (error) {
       item.status = 'failed'
       item.error = error as Error
 
@@ -291,7 +247,8 @@ export class BatchProcessor {
       canvas.width = img.width
       canvas.height = img.height
       const ctx = canvas.getContext('2d')
-      if (!ctx) throw new Error('Failed to get canvas context')
+      if (!ctx)
+        throw new Error('Failed to get canvas context')
 
       ctx.drawImage(img, 0, 0)
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
@@ -306,7 +263,7 @@ export class BatchProcessor {
           processedData = await this.options.workerManager.applyFilter(
             processedData,
             filter.name,
-            filter.options
+            filter.options,
           )
           item.progress += 20 / this.options.filters.length
         }
@@ -330,7 +287,8 @@ export class BatchProcessor {
       if (this.options.onProgress) {
         this.options.onProgress(item, index, this.items.length)
       }
-    } catch (error) {
+    }
+    catch (error) {
       throw error
     }
   }
@@ -373,19 +331,21 @@ export class BatchProcessor {
           if (this.options.onItemComplete) {
             this.options.onItemComplete(item, index)
           }
-        } catch (error) {
+        }
+        catch (error) {
           item.status = 'failed'
           item.error = error as Error
 
           if (this.options.onError) {
             this.options.onError(item, error as Error)
           }
-        } finally {
+        }
+        finally {
           // Cleanup
           cropper.destroy()
           document.body.removeChild(container)
         }
-      }
+      },
     })
 
     item.cropper = cropper
@@ -421,7 +381,8 @@ export class BatchProcessor {
    * Resume processing
    */
   async resume(): Promise<void> {
-    if (this.processing) return
+    if (this.processing)
+      return
 
     this.cancelled = false
     await this.start()
@@ -431,7 +392,7 @@ export class BatchProcessor {
    * Get item by ID
    */
   getItem(id: string): BatchItem | undefined {
-    return this.items.find((item) => item.id === id)
+    return this.items.find(item => item.id === id)
   }
 
   /**
@@ -445,14 +406,14 @@ export class BatchProcessor {
    * Get completed items
    */
   getCompletedItems(): BatchItem[] {
-    return this.items.filter((item) => item.status === 'completed')
+    return this.items.filter(item => item.status === 'completed')
   }
 
   /**
    * Get failed items
    */
   getFailedItems(): BatchItem[] {
-    return this.items.filter((item) => item.status === 'failed')
+    return this.items.filter(item => item.status === 'failed')
   }
 
   /**
@@ -467,12 +428,12 @@ export class BatchProcessor {
     percentage: number
   } {
     const total = this.items.length
-    const completed = this.items.filter((item) => item.status === 'completed')
+    const completed = this.items.filter(item => item.status === 'completed')
       .length
-    const failed = this.items.filter((item) => item.status === 'failed').length
-    const pending = this.items.filter((item) => item.status === 'pending').length
+    const failed = this.items.filter(item => item.status === 'failed').length
+    const pending = this.items.filter(item => item.status === 'pending').length
     const processing = this.items.filter(
-      (item) => item.status === 'processing'
+      item => item.status === 'processing',
     ).length
 
     return {
@@ -481,7 +442,7 @@ export class BatchProcessor {
       failed,
       pending,
       processing,
-      percentage: total > 0 ? (completed / total) * 100 : 0
+      percentage: total > 0 ? (completed / total) * 100 : 0,
     }
   }
 
@@ -550,4 +511,3 @@ export class BatchProcessor {
     this.clear()
   }
 }
-

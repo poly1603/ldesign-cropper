@@ -3,10 +3,10 @@
  * Provides UI controls for selection and mask tools
  */
 
+import type { MaskManager } from '../core/MaskManager'
+import type { Selection, SelectionMode, SelectionType } from '../core/Selection'
 import { createElement, setStyles } from '../utils/dom'
 import { dispatch } from '../utils/events'
-import type { Selection, SelectionType, SelectionMode } from '../core/Selection'
-import type { MaskManager } from '../core/MaskManager'
 
 export interface SelectionToolbarOptions {
   position?: 'top' | 'bottom' | 'left' | 'right'
@@ -46,7 +46,7 @@ export class SelectionToolbar {
     this.options = {
       position: options.position || 'top',
       theme: options.theme || 'light',
-      compact: options.compact ?? false
+      compact: options.compact ?? false,
     }
 
     this.initTools()
@@ -65,7 +65,7 @@ export class SelectionToolbar {
         icon: '⬜',
         label: 'Rectangle',
         tooltip: 'Rectangle Selection (M)',
-        group: 'selection'
+        group: 'selection',
       },
       {
         id: 'ellipse',
@@ -73,7 +73,7 @@ export class SelectionToolbar {
         icon: '⭕',
         label: 'Ellipse',
         tooltip: 'Ellipse Selection (Shift+M)',
-        group: 'selection'
+        group: 'selection',
       },
       {
         id: 'lasso',
@@ -81,7 +81,7 @@ export class SelectionToolbar {
         icon: '✂️',
         label: 'Lasso',
         tooltip: 'Lasso Selection (L)',
-        group: 'selection'
+        group: 'selection',
       },
       {
         id: 'polygon',
@@ -89,7 +89,7 @@ export class SelectionToolbar {
         icon: '⬟',
         label: 'Polygon',
         tooltip: 'Polygon Selection (P)',
-        group: 'selection'
+        group: 'selection',
       },
       {
         id: 'magic-wand',
@@ -97,7 +97,7 @@ export class SelectionToolbar {
         icon: '✨',
         label: 'Magic Wand',
         tooltip: 'Magic Wand Selection (W)',
-        group: 'selection'
+        group: 'selection',
       },
       {
         id: 'brush',
@@ -105,8 +105,8 @@ export class SelectionToolbar {
         icon: '🖌️',
         label: 'Brush',
         tooltip: 'Brush Selection (B)',
-        group: 'selection'
-      }
+        group: 'selection',
+      },
     ]
 
     // Selection mode tools
@@ -117,7 +117,7 @@ export class SelectionToolbar {
         icon: '🆕',
         label: 'New',
         tooltip: 'New Selection',
-        group: 'mode'
+        group: 'mode',
       },
       {
         id: 'mode-add',
@@ -125,7 +125,7 @@ export class SelectionToolbar {
         icon: '➕',
         label: 'Add',
         tooltip: 'Add to Selection',
-        group: 'mode'
+        group: 'mode',
       },
       {
         id: 'mode-subtract',
@@ -133,7 +133,7 @@ export class SelectionToolbar {
         icon: '➖',
         label: 'Subtract',
         tooltip: 'Subtract from Selection',
-        group: 'mode'
+        group: 'mode',
       },
       {
         id: 'mode-intersect',
@@ -141,8 +141,8 @@ export class SelectionToolbar {
         icon: '🔄',
         label: 'Intersect',
         tooltip: 'Intersect Selection',
-        group: 'mode'
-      }
+        group: 'mode',
+      },
     ]
 
     // Action tools
@@ -152,36 +152,36 @@ export class SelectionToolbar {
         type: 'action',
         icon: '⬛',
         label: 'All',
-        tooltip: 'Select All (Ctrl+A)'
+        tooltip: 'Select All (Ctrl+A)',
       },
       {
         id: 'deselect',
         type: 'action',
         icon: '⬜',
         label: 'None',
-        tooltip: 'Deselect (Ctrl+D)'
+        tooltip: 'Deselect (Ctrl+D)',
       },
       {
         id: 'invert',
         type: 'action',
         icon: '🔄',
         label: 'Invert',
-        tooltip: 'Invert Selection (Ctrl+Shift+I)'
+        tooltip: 'Invert Selection (Ctrl+Shift+I)',
       },
       {
         id: 'expand',
         type: 'action',
         icon: '📐',
         label: 'Expand',
-        tooltip: 'Expand Selection'
+        tooltip: 'Expand Selection',
       },
       {
         id: 'contract',
         type: 'action',
         icon: '📏',
         label: 'Contract',
-        tooltip: 'Contract Selection'
-      }
+        tooltip: 'Contract Selection',
+      },
     ]
 
     // Mask tools
@@ -191,41 +191,41 @@ export class SelectionToolbar {
         type: 'mask',
         icon: '🎭',
         label: 'Create Mask',
-        tooltip: 'Create Mask from Selection'
+        tooltip: 'Create Mask from Selection',
       },
       {
         id: 'quick-mask',
         type: 'mask',
         icon: '🔴',
         label: 'Quick Mask',
-        tooltip: 'Toggle Quick Mask (Q)'
+        tooltip: 'Toggle Quick Mask (Q)',
       },
       {
         id: 'edit-mask',
         type: 'mask',
         icon: '✏️',
         label: 'Edit',
-        tooltip: 'Edit Mask'
+        tooltip: 'Edit Mask',
       },
       {
         id: 'invert-mask',
         type: 'mask',
         icon: '🔃',
         label: 'Invert',
-        tooltip: 'Invert Mask'
+        tooltip: 'Invert Mask',
       },
       {
         id: 'refine-edge',
         type: 'mask',
         icon: '✨',
         label: 'Refine',
-        tooltip: 'Refine Mask Edge'
-      }
+        tooltip: 'Refine Mask Edge',
+      },
     ]
 
     // Add all tools to map
     const allTools = [...selectionTools, ...modeTools, ...actionTools, ...maskTools]
-    allTools.forEach(tool => {
+    allTools.forEach((tool) => {
       this.tools.set(tool.id, tool)
     })
   }
@@ -246,8 +246,8 @@ export class SelectionToolbar {
         padding: this.options.compact ? '4px' : '8px',
         display: 'flex',
         flexDirection: this.options.position === 'left' || this.options.position === 'right' ? 'column' : 'row',
-        gap: '8px'
-      }
+        gap: '8px',
+      },
     })
 
     // Position toolbar
@@ -273,7 +273,8 @@ export class SelectionToolbar {
    * Position toolbar
    */
   private positionToolbar(): void {
-    if (!this.toolbar) return
+    if (!this.toolbar)
+      return
 
     const styles: any = {}
 
@@ -307,19 +308,20 @@ export class SelectionToolbar {
    * Create tool group
    */
   private createToolGroup(groupId: string, label: string): void {
-    if (!this.toolbar) return
+    if (!this.toolbar)
+      return
 
     const group = createElement('div', {
       className: 'tool-group',
       style: {
         display: 'flex',
         flexDirection: this.options.position === 'left' || this.options.position === 'right' ? 'column' : 'row',
-        gap: '4px'
-      }
+        gap: '4px',
+      },
     })
 
     // Add tools in group
-    this.tools.forEach(tool => {
+    this.tools.forEach((tool) => {
       if (tool.group === groupId) {
         const button = this.createToolButton(tool)
         group.appendChild(button)
@@ -334,20 +336,21 @@ export class SelectionToolbar {
    * Create action tools
    */
   private createActionTools(): void {
-    if (!this.toolbar) return
+    if (!this.toolbar)
+      return
 
     const group = createElement('div', {
       className: 'action-group',
       style: {
         display: 'flex',
         flexDirection: this.options.position === 'left' || this.options.position === 'right' ? 'column' : 'row',
-        gap: '4px'
-      }
+        gap: '4px',
+      },
     })
 
     const actionIds = ['select-all', 'deselect', 'invert', 'expand', 'contract']
 
-    actionIds.forEach(id => {
+    actionIds.forEach((id) => {
       const tool = this.tools.get(id)
       if (tool) {
         const button = this.createToolButton(tool)
@@ -363,20 +366,21 @@ export class SelectionToolbar {
    * Create mask tools
    */
   private createMaskTools(): void {
-    if (!this.toolbar) return
+    if (!this.toolbar)
+      return
 
     const group = createElement('div', {
       className: 'mask-group',
       style: {
         display: 'flex',
         flexDirection: this.options.position === 'left' || this.options.position === 'right' ? 'column' : 'row',
-        gap: '4px'
-      }
+        gap: '4px',
+      },
     })
 
     const maskIds = ['create-mask', 'quick-mask', 'edit-mask', 'invert-mask', 'refine-edge']
 
-    maskIds.forEach(id => {
+    maskIds.forEach((id) => {
       const tool = this.tools.get(id)
       if (tool) {
         const button = this.createToolButton(tool)
@@ -406,8 +410,8 @@ export class SelectionToolbar {
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: this.options.compact ? '16px' : '20px',
-        transition: 'background-color 0.2s'
-      }
+        transition: 'background-color 0.2s',
+      },
     })
 
     button.innerHTML = tool.icon
@@ -437,7 +441,8 @@ export class SelectionToolbar {
    * Create separator
    */
   private createSeparator(): void {
-    if (!this.toolbar) return
+    if (!this.toolbar)
+      return
 
     const separator = createElement('div', {
       className: 'toolbar-separator',
@@ -446,8 +451,8 @@ export class SelectionToolbar {
         height: this.options.position === 'left' || this.options.position === 'right' ? '1px' : '24px',
         backgroundColor: this.options.theme === 'dark'
           ? 'rgba(255, 255, 255, 0.1)'
-          : 'rgba(0, 0, 0, 0.1)'
-      }
+          : 'rgba(0, 0, 0, 0.1)',
+      },
     })
 
     this.toolbar.appendChild(separator)
@@ -471,8 +476,8 @@ export class SelectionToolbar {
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
         padding: '12px',
         display: 'none',
-        zIndex: '1001'
-      }
+        zIndex: '1001',
+      },
     })
 
     // Size slider
@@ -514,13 +519,13 @@ export class SelectionToolbar {
     min: number,
     max: number,
     value: number,
-    onChange: (value: number) => void
+    onChange: (value: number) => void,
   ): HTMLElement {
     const control = createElement('div', {
       className: 'slider-control',
       style: {
-        marginBottom: '8px'
-      }
+        marginBottom: '8px',
+      },
     })
 
     const labelEl = createElement('label', {
@@ -528,8 +533,8 @@ export class SelectionToolbar {
         display: 'block',
         fontSize: '12px',
         marginBottom: '4px',
-        color: this.options.theme === 'dark' ? '#ecf0f1' : '#2c3e50'
-      }
+        color: this.options.theme === 'dark' ? '#ecf0f1' : '#2c3e50',
+      },
     })
     labelEl.textContent = label
 
@@ -539,21 +544,21 @@ export class SelectionToolbar {
       max: max.toString(),
       value: value.toString(),
       style: {
-        width: '150px'
-      }
+        width: '150px',
+      },
     }) as HTMLInputElement
 
     const valueDisplay = createElement('span', {
       style: {
         marginLeft: '8px',
         fontSize: '12px',
-        color: this.options.theme === 'dark' ? '#ecf0f1' : '#2c3e50'
-      }
+        color: this.options.theme === 'dark' ? '#ecf0f1' : '#2c3e50',
+      },
     })
     valueDisplay.textContent = value.toString()
 
     slider.addEventListener('input', () => {
-      const val = parseInt(slider.value)
+      const val = Number.parseInt(slider.value)
       valueDisplay.textContent = val.toString()
       onChange(val)
     })
@@ -592,7 +597,7 @@ export class SelectionToolbar {
    */
   private setActiveSelectionTool(toolId: SelectionType): void {
     // Update active state
-    this.tools.forEach(tool => {
+    this.tools.forEach((tool) => {
       if (tool.group === 'selection') {
         tool.active = tool.id === toolId
         const button = this.toolButtons.get(tool.id)
@@ -614,7 +619,8 @@ export class SelectionToolbar {
     // Show/hide brush controls
     if (toolId === 'brush' && this.brushControls) {
       this.brushControls.style.display = 'block'
-    } else if (this.brushControls) {
+    }
+    else if (this.brushControls) {
       this.brushControls.style.display = 'none'
     }
   }
@@ -623,7 +629,8 @@ export class SelectionToolbar {
    * Handle action tool
    */
   private handleActionTool(toolId: string): void {
-    if (!this.selection) return
+    if (!this.selection)
+      return
 
     switch (toolId) {
       case 'mode-new':
@@ -661,7 +668,7 @@ export class SelectionToolbar {
 
     // Update mode button states
     if (toolId.startsWith('mode-')) {
-      this.tools.forEach(tool => {
+      this.tools.forEach((tool) => {
         if (tool.group === 'mode') {
           tool.active = tool.id === toolId
           const button = this.toolButtons.get(tool.id)
@@ -679,7 +686,8 @@ export class SelectionToolbar {
    * Handle mask tool
    */
   private handleMaskTool(toolId: string): void {
-    if (!this.maskManager) return
+    if (!this.maskManager)
+      return
 
     switch (toolId) {
       case 'create-mask':
@@ -707,7 +715,7 @@ export class SelectionToolbar {
   private showExpandDialog(): void {
     const pixels = prompt('Expand selection by (pixels):', '5')
     if (pixels && this.selection) {
-      const value = parseInt(pixels)
+      const value = Number.parseInt(pixels)
       if (!isNaN(value) && value > 0) {
         this.selection.expandSelection(value)
       }
@@ -720,7 +728,7 @@ export class SelectionToolbar {
   private showContractDialog(): void {
     const pixels = prompt('Contract selection by (pixels):', '5')
     if (pixels && this.selection) {
-      const value = parseInt(pixels)
+      const value = Number.parseInt(pixels)
       if (!isNaN(value) && value > 0) {
         this.selection.contractSelection(value)
       }
@@ -736,7 +744,7 @@ export class SelectionToolbar {
       radius: 2,
       smooth: 1,
       feather: 0,
-      contrast: 0
+      contrast: 0,
     }
 
     if (this.maskManager) {
@@ -748,7 +756,8 @@ export class SelectionToolbar {
    * Toggle mask editing
    */
   private toggleMaskEditing(): void {
-    if (!this.maskManager) return
+    if (!this.maskManager)
+      return
 
     const tool = this.tools.get('edit-mask')
     const button = this.toolButtons.get('edit-mask')
@@ -766,7 +775,8 @@ export class SelectionToolbar {
         if (this.brushControls) {
           this.brushControls.style.display = 'block'
         }
-      } else {
+      }
+      else {
         this.maskManager.stopEditing()
         button.style.backgroundColor = 'transparent'
 
@@ -844,4 +854,3 @@ export class SelectionToolbar {
     this.tools.clear()
   }
 }
-

@@ -1,18 +1,14 @@
-<template>
-  <div ref="containerRef" class="cropper-container"></div>
-</template>
-
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
-import { Cropper as CropperCore, type CropperOptions } from '@ldesign/cropper-core'
-import type { CropBoxData, CropData } from '@ldesign/cropper-core'
+import type { CropBoxData, CropData, Cropper as CropperCore, type CropperOptions } from '@ldesign/cropper-core'
+
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 export interface CropperProps extends CropperOptions {
   modelValue?: string
 }
 
 const props = withDefaults(defineProps<CropperProps>(), {
-  aspectRatio: NaN,
+  aspectRatio: Number.NaN,
   viewMode: 0,
   dragMode: 'crop',
   responsive: true,
@@ -34,52 +30,59 @@ const props = withDefaults(defineProps<CropperProps>(), {
   wheelZoomRatio: 0.1,
   cropBoxMovable: true,
   cropBoxResizable: true,
-  toggleDragModeOnDblclick: true
+  toggleDragModeOnDblclick: true,
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
-  ready: [event: CustomEvent]
-  cropstart: [event: CustomEvent]
-  cropmove: [event: CustomEvent]
-  cropend: [event: CustomEvent]
-  crop: [event: CustomEvent]
-  zoom: [event: CustomEvent]
+  'ready': [event: CustomEvent]
+  'cropstart': [event: CustomEvent]
+  'cropmove': [event: CustomEvent]
+  'cropend': [event: CustomEvent]
+  'crop': [event: CustomEvent]
+  'zoom': [event: CustomEvent]
 }>()
 
 const containerRef = ref<HTMLElement>()
 let cropperInstance: CropperCore | null = null
 
 // 初始化裁剪器
-const initCropper = async () => {
-  if (!containerRef.value) return
+async function initCropper() {
+  if (!containerRef.value)
+    return
 
   const options: CropperOptions = {
     ...props,
     ready: (e) => {
       emit('ready', e)
-      if (props.ready) props.ready(e)
+      if (props.ready)
+        props.ready(e)
     },
     cropstart: (e) => {
       emit('cropstart', e)
-      if (props.cropstart) props.cropstart(e)
+      if (props.cropstart)
+        props.cropstart(e)
     },
     cropmove: (e) => {
       emit('cropmove', e)
-      if (props.cropmove) props.cropmove(e)
+      if (props.cropmove)
+        props.cropmove(e)
     },
     cropend: (e) => {
       emit('cropend', e)
-      if (props.cropend) props.cropend(e)
+      if (props.cropend)
+        props.cropend(e)
     },
     crop: (e) => {
       emit('crop', e)
-      if (props.crop) props.crop(e)
+      if (props.crop)
+        props.crop(e)
     },
     zoom: (e) => {
       emit('zoom', e)
-      if (props.zoom) props.zoom(e)
-    }
+      if (props.zoom)
+        props.zoom(e)
+    },
   }
 
   cropperInstance = new CropperCore(containerRef.value, options)
@@ -88,60 +91,60 @@ const initCropper = async () => {
 // 暴露方法给父组件
 const getCropper = () => cropperInstance
 
-const getCropBoxData = (): CropBoxData | null => {
+function getCropBoxData(): CropBoxData | null {
   return cropperInstance?.getCropBoxData() || null
 }
 
-const setCropBoxData = (data: Partial<CropBoxData>) => {
+function setCropBoxData(data: Partial<CropBoxData>) {
   cropperInstance?.setCropBoxData(data)
 }
 
-const getData = (rounded?: boolean): CropData | null => {
+function getData(rounded?: boolean): CropData | null {
   return cropperInstance?.getData(rounded) || null
 }
 
-const getCroppedCanvas = (options?: any) => {
+function getCroppedCanvas(options?: any) {
   return cropperInstance?.getCroppedCanvas(options) || null
 }
 
-const replace = async (src: string) => {
+async function replace(src: string) {
   await cropperInstance?.replace(src)
   emit('update:modelValue', src)
 }
 
-const reset = () => {
+function reset() {
   cropperInstance?.reset()
 }
 
-const clear = () => {
+function clear() {
   cropperInstance?.clear()
 }
 
-const rotate = (degree: number) => {
+function rotate(degree: number) {
   cropperInstance?.rotate(degree)
 }
 
-const scale = (scaleX: number, scaleY?: number) => {
+function scale(scaleX: number, scaleY?: number) {
   cropperInstance?.scale(scaleX, scaleY)
 }
 
-const move = (offsetX: number, offsetY?: number) => {
+function move(offsetX: number, offsetY?: number) {
   cropperInstance?.move(offsetX, offsetY)
 }
 
-const zoom = (ratio: number) => {
+function zoom(ratio: number) {
   cropperInstance?.zoom(ratio)
 }
 
-const enable = () => {
+function enable() {
   cropperInstance?.enable()
 }
 
-const disable = () => {
+function disable() {
   cropperInstance?.disable()
 }
 
-const destroy = () => {
+function destroy() {
   cropperInstance?.destroy()
   cropperInstance = null
 }
@@ -153,7 +156,7 @@ watch(
     if (newSrc && cropperInstance) {
       replace(newSrc)
     }
-  }
+  },
 )
 
 // 监听 modelValue 变化
@@ -163,7 +166,7 @@ watch(
     if (newValue && cropperInstance && newValue !== props.src) {
       replace(newValue)
     }
-  }
+  },
 )
 
 onMounted(() => {
@@ -190,12 +193,14 @@ defineExpose({
   zoom,
   enable,
   disable,
-  destroy
+  destroy,
 })
 </script>
+
+<template>
+  <div ref="containerRef" class="cropper-container" />
+</template>
 
 <style>
 @import '@ldesign/cropper-core/style.css';
 </style>
-
-

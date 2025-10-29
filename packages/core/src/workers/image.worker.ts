@@ -4,17 +4,17 @@
  */
 
 import type {
-  WorkerMessage,
-  WorkerResponse,
-  FilterWorkerData,
   BatchFilterWorkerData,
+  CompositionSuggestion,
+  CropWorkerData,
+  FaceDetectionResult,
+  FilterWorkerData,
+  ImageAnalysisResult,
   ResizeWorkerData,
   RotateWorkerData,
-  CropWorkerData,
   ThumbnailWorkerData,
-  ImageAnalysisResult,
-  FaceDetectionResult,
-  CompositionSuggestion
+  WorkerMessage,
+  WorkerResponse,
 } from './types'
 
 // Import filters (will be bundled with the worker)
@@ -72,15 +72,16 @@ self.addEventListener('message', async (event: MessageEvent<WorkerMessage>) => {
     const response: WorkerResponse = {
       id,
       success: true,
-      data: result
+      data: result,
     }
 
     self.postMessage(response)
-  } catch (error) {
+  }
+  catch (error) {
     const response: WorkerResponse = {
       id,
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
 
     self.postMessage(response)
@@ -124,7 +125,7 @@ async function applyFilterBatch(data: BatchFilterWorkerData): Promise<ImageData[
     const progressResponse: WorkerResponse = {
       id: 'progress',
       success: true,
-      progress
+      progress,
     }
     self.postMessage(progressResponse)
   }
@@ -218,7 +219,7 @@ async function rotateImage(data: RotateWorkerData): Promise<ImageData> {
   ctx.drawImage(
     tempCanvas,
     -imageData.width / 2,
-    -imageData.height / 2
+    -imageData.height / 2,
   )
 
   return ctx.getImageData(0, 0, newWidth, newHeight)
@@ -255,8 +256,14 @@ async function cropImage(data: CropWorkerData): Promise<ImageData> {
   // Draw cropped portion
   ctx.drawImage(
     tempCanvas,
-    cropX, cropY, cropWidth, cropHeight,
-    0, 0, cropWidth, cropHeight
+    cropX,
+    cropY,
+    cropWidth,
+    cropHeight,
+    0,
+    0,
+    cropWidth,
+    cropHeight,
   )
 
   return ctx.getImageData(0, 0, cropWidth, cropHeight)
@@ -273,7 +280,8 @@ async function generateThumbnail(data: ThumbnailWorkerData): Promise<ImageData> 
 
   if (aspectRatio > width / height) {
     targetHeight = width / aspectRatio
-  } else {
+  }
+  else {
     targetWidth = height * aspectRatio
   }
 
@@ -283,7 +291,7 @@ async function generateThumbnail(data: ThumbnailWorkerData): Promise<ImageData> 
     width: Math.round(targetWidth),
     height: Math.round(targetHeight),
     quality,
-    algorithm: 'bilinear'
+    algorithm: 'bilinear',
   })
 }
 
@@ -296,9 +304,9 @@ async function analyzeImage(imageData: ImageData): Promise<ImageAnalysisResult> 
   let totalSaturation = 0
   let hasTransparency = false
 
-  const redHistogram = new Array(256).fill(0)
-  const greenHistogram = new Array(256).fill(0)
-  const blueHistogram = new Array(256).fill(0)
+  const redHistogram = Array.from({ length: 256 }).fill(0)
+  const greenHistogram = Array.from({ length: 256 }).fill(0)
+  const blueHistogram = Array.from({ length: 256 }).fill(0)
 
   const colorMap = new Map<string, number>()
 
@@ -344,7 +352,7 @@ async function analyzeImage(imageData: ImageData): Promise<ImageAnalysisResult> 
     const g = pixels[i + 1]
     const b = pixels[i + 2]
     const brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-    brightnessVariance += Math.pow(brightness - avgBrightness, 2)
+    brightnessVariance += (brightness - avgBrightness) ** 2
   }
   const contrast = Math.sqrt(brightnessVariance / pixelCount)
 
@@ -353,7 +361,7 @@ async function analyzeImage(imageData: ImageData): Promise<ImageAnalysisResult> 
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
     .map(([key]) => {
-      const [r, g, b] = key.split(',').map(n => parseInt(n) * 32 + 16)
+      const [r, g, b] = key.split(',').map(n => Number.parseInt(n) * 32 + 16)
       return `rgb(${r},${g},${b})`
     })
 
@@ -365,9 +373,9 @@ async function analyzeImage(imageData: ImageData): Promise<ImageAnalysisResult> 
     histogram: {
       red: redHistogram,
       green: greenHistogram,
-      blue: blueHistogram
+      blue: blueHistogram,
     },
-    hasTransparency
+    hasTransparency,
   }
 }
 
@@ -382,9 +390,9 @@ async function detectFaces(imageData: ImageData): Promise<FaceDetectionResult> {
   const grayscale = new Uint8ClampedArray(imageData.width * imageData.height)
   for (let i = 0, j = 0; i < imageData.data.length; i += 4, j++) {
     const gray = Math.round(
-      0.299 * imageData.data[i] +
-      0.587 * imageData.data[i + 1] +
-      0.114 * imageData.data[i + 2]
+      0.299 * imageData.data[i]
+      + 0.587 * imageData.data[i + 1]
+      + 0.114 * imageData.data[i + 2],
     )
     grayscale[j] = gray
   }
@@ -402,7 +410,7 @@ async function detectFaces(imageData: ImageData): Promise<FaceDetectionResult> {
         y: region.y,
         width: region.width,
         height: region.height,
-        confidence: 0.5 + (1 - Math.abs(aspectRatio - 1)) * 0.3
+        confidence: 0.5 + (1 - Math.abs(aspectRatio - 1)) * 0.3,
       })
     }
   }
@@ -425,10 +433,10 @@ function detectSkinRegions(imageData: ImageData): Array<{ x: number, y: number, 
 
     // Simple skin detection rules
     const isSkin = (
-      r > 95 && g > 40 && b > 20 &&
-      r > g && r > b &&
-      Math.abs(r - g) > 15 &&
-      r - g > 15
+      r > 95 && g > 40 && b > 20
+      && r > g && r > b
+      && Math.abs(r - g) > 15
+      && r - g > 15
     )
 
     skinMask[j] = isSkin ? 255 : 0
@@ -448,7 +456,7 @@ function detectSkinRegions(imageData: ImageData): Array<{ x: number, y: number, 
             x: region.minX,
             y: region.minY,
             width: region.maxX - region.minX,
-            height: region.maxY - region.minY
+            height: region.maxY - region.minY,
           })
         }
       }
@@ -465,11 +473,11 @@ function floodFill(
   startX: number,
   startY: number,
   width: number,
-  height: number
+  height: number,
 ): { minX: number, maxX: number, minY: number, maxY: number, pixelCount: number } {
   const stack: Array<[number, number]> = [[startX, startY]]
-  let minX = startX, maxX = startX
-  let minY = startY, maxY = startY
+  let minX = startX; let maxX = startX
+  let minY = startY; let maxY = startY
   let pixelCount = 0
 
   while (stack.length > 0) {
@@ -506,10 +514,10 @@ async function suggestComposition(imageData: ImageData): Promise<CompositionSugg
       x: imageData.width * 0.1,
       y: imageData.height * 0.1,
       width: imageData.width * 0.8,
-      height: imageData.height * 0.8
+      height: imageData.height * 0.8,
     },
     score: 0.8,
-    description: 'Classic rule of thirds composition'
+    description: 'Classic rule of thirds composition',
   })
 
   // Golden ratio
@@ -524,10 +532,10 @@ async function suggestComposition(imageData: ImageData): Promise<CompositionSugg
         x: (imageData.width - goldenWidth) / 2,
         y: 0,
         width: goldenWidth,
-        height: imageData.height
+        height: imageData.height,
       },
       score: 0.85,
-      description: 'Golden ratio composition (horizontal)'
+      description: 'Golden ratio composition (horizontal)',
     })
   }
 
@@ -538,10 +546,10 @@ async function suggestComposition(imageData: ImageData): Promise<CompositionSugg
         x: 0,
         y: (imageData.height - goldenHeight) / 2,
         width: imageData.width,
-        height: goldenHeight
+        height: goldenHeight,
       },
       score: 0.85,
-      description: 'Golden ratio composition (vertical)'
+      description: 'Golden ratio composition (vertical)',
     })
   }
 
@@ -553,10 +561,10 @@ async function suggestComposition(imageData: ImageData): Promise<CompositionSugg
       x: (imageData.width - centerSize) / 2,
       y: (imageData.height - centerSize) / 2,
       width: centerSize,
-      height: centerSize
+      height: centerSize,
     },
     score: 0.7,
-    description: 'Centered square composition'
+    description: 'Centered square composition',
   })
 
   // Diagonal composition
@@ -566,10 +574,10 @@ async function suggestComposition(imageData: ImageData): Promise<CompositionSugg
       x: imageData.width * 0.05,
       y: imageData.height * 0.05,
       width: imageData.width * 0.9,
-      height: imageData.height * 0.9
+      height: imageData.height * 0.9,
     },
     score: 0.75,
-    description: 'Dynamic diagonal composition'
+    description: 'Dynamic diagonal composition',
   })
 
   // Sort by score
@@ -578,8 +586,3 @@ async function suggestComposition(imageData: ImageData): Promise<CompositionSugg
 
 // Export for TypeScript
 export { }
-
-
-
-
-

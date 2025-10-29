@@ -1,42 +1,43 @@
-﻿/**
+/**
  * Cropper - Main cropper class
  */
 
 import type {
-  CropperOptions,
-  CropBoxData,
-  ImageData,
+  Action,
   CanvasData,
   ContainerData,
+  CropBoxData,
   CropData,
+  CropperOptions,
+  DragMode,
   GetCroppedCanvasOptions,
-  Action,
+  ImageData,
   Point,
-  DragMode
 } from '../types'
-import { CropBox } from './CropBox'
-import { ImageProcessor } from './ImageProcessor'
-import { InteractionManager } from './InteractionManager'
-import { Toolbar, type ToolbarOptions } from './Toolbar'
-import { HistoryManager, type HistoryOptions } from './HistoryManager'
-import { PresetManager, type PresetOptions } from './PresetManager'
-import { WorkerManager } from '../workers/WorkerManager'
-import { TouchGestureManager, type TouchGestureOptions } from './TouchGestureManager'
-import { MobileUI, type MobileUIOptions } from './MobileUI'
-import { AccessibilityManager, type AccessibilityOptions } from './AccessibilityManager'
-import { Selection, type SelectionOptions, type SelectionType } from './Selection'
-import { MaskManager, type MaskOptions } from './MaskManager'
-import { SelectionToolbar, type SelectionToolbarOptions } from '../ui/SelectionToolbar'
-import { getElement, createElement, addClass, removeClass, setStyle } from '../utils/dom'
+import type { SelectionType } from './Selection'
+import { CSS_CLASSES, ERRORS, UI } from '../config/constants'
+import { SelectionToolbar } from '../ui/SelectionToolbar'
+import { addClass, createElement, getElement, removeClass } from '../utils/dom'
 import { dispatch } from '../utils/events'
 import { clamp } from '../utils/math'
-import { UI, CSS_CLASSES, EVENTS, ERRORS } from '../config/constants'
+import { WorkerManager } from '../workers/WorkerManager'
+import { AccessibilityManager } from './AccessibilityManager'
+import { CropBox } from './CropBox'
+import { HistoryManager } from './HistoryManager'
+import { ImageProcessor } from './ImageProcessor'
+import { InteractionManager } from './InteractionManager'
+import { MaskManager } from './MaskManager'
+import { MobileUI } from './MobileUI'
+import { PresetManager } from './PresetManager'
+import { Selection } from './Selection'
+import { Toolbar } from './Toolbar'
+import { TouchGestureManager } from './TouchGestureManager'
 
 const DEFAULTS = {
   viewMode: 0 as const,
   dragMode: 'crop' as const,
   initialAspectRatio: 1, // Default to square
-  aspectRatio: NaN,
+  aspectRatio: Number.NaN,
   responsive: true,
   restore: true,
   checkCrossOrigin: true,
@@ -76,7 +77,7 @@ const DEFAULTS = {
   alt: '',
   crossorigin: '',
   themeColor: '#39f',
-  toolbar: true,  // Default to show toolbar
+  toolbar: true, // Default to show toolbar
   placeholder: {
     text: 'Click or drag image here',
     subtext: 'Supports: JPG, PNG, GIF, WEBP',
@@ -85,38 +86,38 @@ const DEFAULTS = {
     dragAndDrop: true,
     acceptedFiles: 'image/*',
     maxFileSize: UI.MAX_PLACEHOLDER_FILE_SIZE,
-    className: ''
+    className: '',
   },
-  useWorker: false,  // Enable Web Worker for heavy operations
+  useWorker: false, // Enable Web Worker for heavy operations
   workerOptions: {
     maxWorkers: 4,
-    timeout: 30000
+    timeout: 30000,
   },
-  touchGestures: true,  // Enable touch gestures on mobile
+  touchGestures: true, // Enable touch gestures on mobile
   touchOptions: {
     pinchZoom: true,
     doubleTapZoom: true,
     swipeGestures: true,
     rotationGestures: true,
-    momentum: true
+    momentum: true,
   },
-  mobileUI: true,  // Enable mobile-optimized UI
+  mobileUI: true, // Enable mobile-optimized UI
   mobileOptions: {
     autoDetect: true,
     breakpoint: 768,
     simplifiedControls: true,
     largeButtons: true,
-    gestureHints: true
+    gestureHints: true,
   },
-  accessibility: true,  // Enable accessibility features
+  accessibility: true, // Enable accessibility features
   accessibilityOptions: {
     enabled: true,
     language: 'en',
     announceActions: true,
     announceValues: true,
-    keyboardHelp: true
+    keyboardHelp: true,
   },
-  selection: false,  // Enable selection tools
+  selection: false, // Enable selection tools
   selectionOptions: {
     enabled: true,
     type: 'rectangle',
@@ -125,9 +126,9 @@ const DEFAULTS = {
     antiAlias: true,
     tolerance: 32,
     brushSize: 20,
-    showToolbar: true
+    showToolbar: true,
   },
-  masks: false,  // Enable mask tools
+  masks: false, // Enable mask tools
   maskOptions: {
     enabled: true,
     opacity: 50,
@@ -135,12 +136,12 @@ const DEFAULTS = {
     showOverlay: true,
     invertMask: false,
     quickMask: false,
-    autoCreateFromSelection: true
-  }
+    autoCreateFromSelection: true,
+  },
 }
 
 export class Cropper {
-  public element: HTMLElement  // Public element property for HistoryManager
+  public element: HTMLElement // Public element property for HistoryManager
   private container: HTMLElement | null = null
   private wrapper: HTMLElement | null = null
   private options: CropperOptions
@@ -159,7 +160,7 @@ export class Cropper {
   private selection: Selection | null = null
   private maskManager: MaskManager | null = null
   private selectionToolbar: SelectionToolbar | null = null
-  public ready = false  // Changed to public for HistoryManager access
+  public ready = false // Changed to public for HistoryManager access
   private disabled = false
   private currentAction: Action = 'crop'
   private dragMode: DragMode = 'crop'
@@ -225,13 +226,14 @@ export class Cropper {
     // Merge placeholder options with defaults
     this.options.placeholder = {
       ...DEFAULTS.placeholder,
-      ...this.options.placeholder
+      ...this.options.placeholder,
     }
 
     // Load image if src provided, otherwise show placeholder
     if (this.options.src) {
       await this.replace(this.options.src)
-    } else {
+    }
+    else {
       this.showPlaceholder()
     }
   }
@@ -240,7 +242,8 @@ export class Cropper {
    * Replace image
    */
   async replace(src: string): Promise<void> {
-    if (!this.imageProcessor || !this.wrapper) return
+    if (!this.imageProcessor || !this.wrapper)
+      return
 
     try {
       // Hide placeholder if it exists
@@ -249,7 +252,7 @@ export class Cropper {
       // Load image
       await this.imageProcessor.load(
         src,
-        this.options.checkCrossOrigin ? this.options.crossorigin : undefined
+        this.options.checkCrossOrigin ? this.options.crossorigin : undefined,
       )
 
       // Initialize crop box
@@ -284,7 +287,8 @@ export class Cropper {
       if (this.options.ready) {
         this.options.ready(new CustomEvent('ready', { detail: { cropper: this } }))
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to load image:', error)
       // Show placeholder again if image load fails
       this.showPlaceholder()
@@ -296,14 +300,17 @@ export class Cropper {
    * Initialize crop box
    */
   private initCropBox(): void {
-    if (!this.wrapper || !this.imageProcessor) return
+    if (!this.wrapper || !this.imageProcessor)
+      return
 
     const imageData = this.imageProcessor.getImageData()
-    if (!imageData) return
+    if (!imageData)
+      return
 
     // Get the display rectangle of the image (including its offset in the container)
     const displayRect = this.imageProcessor.getDisplayRect()
-    if (!displayRect) return
+    if (!displayRect)
+      return
 
     // Create crop box
     this.cropBox = new CropBox(this.wrapper, {
@@ -319,7 +326,7 @@ export class Cropper {
       highlight: this.options.highlight,
       highlightOpacity: this.options.highlightOpacity,
       background: this.options.background,
-      style: this.options.cropBoxStyle
+      style: this.options.cropBoxStyle,
     })
 
     // Render crop box
@@ -342,7 +349,8 @@ export class Cropper {
         // For square crop box
         width = minImageDimension * sizeRatio
         height = width
-      } else if (aspectRatio > 1) {
+      }
+      else if (aspectRatio > 1) {
         // Landscape orientation
         // Start with the smaller dimension and calculate based on aspect ratio
         height = minImageDimension * sizeRatio
@@ -353,7 +361,8 @@ export class Cropper {
           width = displayRect.width * sizeRatio
           height = width / aspectRatio
         }
-      } else {
+      }
+      else {
         // Portrait orientation
         width = minImageDimension * sizeRatio
         height = width / aspectRatio
@@ -377,7 +386,7 @@ export class Cropper {
         left,
         top,
         width,
-        height
+        height,
       })
     }
   }
@@ -386,7 +395,8 @@ export class Cropper {
    * Initialize interaction manager
    */
   private initInteractionManager(): void {
-    if (!this.wrapper) return
+    if (!this.wrapper)
+      return
 
     this.interactionManager = new InteractionManager(
       this.wrapper,
@@ -394,15 +404,15 @@ export class Cropper {
         onStart: this.handleInteractionStart.bind(this),
         onMove: this.handleInteractionMove.bind(this),
         onEnd: this.handleInteractionEnd.bind(this),
-        onZoom: this.handleZoom.bind(this)
+        onZoom: this.handleZoom.bind(this),
       },
       {
         movable: this.options.movable,
         zoomable: this.options.zoomable,
         zoomOnTouch: this.options.zoomOnTouch,
         zoomOnWheel: this.options.zoomOnWheel,
-        wheelZoomRatio: this.options.wheelZoomRatio
-      }
+        wheelZoomRatio: this.options.wheelZoomRatio,
+      },
     )
   }
 
@@ -410,7 +420,8 @@ export class Cropper {
    * Initialize toolbar
    */
   private initToolbar(): void {
-    if (!this.container || !this.options.toolbar) return
+    if (!this.container || !this.options.toolbar)
+      return
 
     // Destroy existing toolbar if any
     if (this.toolbar) {
@@ -430,7 +441,8 @@ export class Cropper {
       // Insert toolbar container after the cropper wrapper
       if (this.wrapper && this.wrapper.nextSibling) {
         this.container.insertBefore(toolbarContainer, this.wrapper.nextSibling)
-      } else {
+      }
+      else {
         this.container.appendChild(toolbarContainer)
       }
     }
@@ -456,7 +468,7 @@ export class Cropper {
     if (this.container) {
       dispatch(this.container, 'cropstart', {
         action,
-        originalEvent: event
+        originalEvent: event,
       })
     }
 
@@ -473,9 +485,10 @@ export class Cropper {
     point: Point,
     deltaX: number,
     deltaY: number,
-    event: MouseEvent | TouchEvent
+    event: MouseEvent | TouchEvent,
   ): void {
-    if (!this.cropBox) return
+    if (!this.cropBox)
+      return
 
     // Handle different actions
     switch (action) {
@@ -526,7 +539,7 @@ export class Cropper {
     if (this.container) {
       dispatch(this.container, 'cropend', {
         action,
-        originalEvent: event
+        originalEvent: event,
       })
     }
 
@@ -539,7 +552,8 @@ export class Cropper {
    * Handle resize
    */
   private handleResize(action: Action, deltaX: number, deltaY: number): void {
-    if (!this.cropBox) return
+    if (!this.cropBox)
+      return
 
     const data = this.cropBox.getData()
     const newData = { ...data }
@@ -588,13 +602,16 @@ export class Cropper {
    * Apply view mode constraints
    */
   private applyViewModeConstraints(): void {
-    if (!this.cropBox || !this.imageProcessor) return
+    if (!this.cropBox || !this.imageProcessor)
+      return
 
     const viewMode = this.options.viewMode || 0
-    if (viewMode === 0) return // No restrictions
+    if (viewMode === 0)
+      return // No restrictions
 
     const imageRect = this.imageProcessor.getDisplayRect()
-    if (!imageRect) return
+    if (!imageRect)
+      return
 
     const cropBoxData = this.cropBox.getData()
 
@@ -625,10 +642,12 @@ export class Cropper {
    * Handle zoom
    */
   private handleZoom(delta: number, point: Point, event: WheelEvent | TouchEvent): void {
-    if (!this.options.zoomable || !this.imageProcessor) return
+    if (!this.options.zoomable || !this.imageProcessor)
+      return
 
     const imageData = this.imageProcessor.getImageData()
-    if (!imageData) return
+    if (!imageData)
+      return
 
     // Calculate new scale based on delta
     const ratio = 1 + delta
@@ -656,10 +675,17 @@ export class Cropper {
   getData(rounded = false): CropData {
     if (!this.cropBox || !this.imageProcessor) {
       return {
-        x: 0, y: 0, width: 0, height: 0,
-        rotate: 0, scaleX: 1, scaleY: 1,
-        skewX: 0, skewY: 0,
-        translateX: 0, translateY: 0
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        rotate: 0,
+        scaleX: 1,
+        scaleY: 1,
+        skewX: 0,
+        skewY: 0,
+        translateX: 0,
+        translateY: 0,
       }
     }
 
@@ -669,10 +695,17 @@ export class Cropper {
 
     if (!imageData || !displayRect) {
       return {
-        x: 0, y: 0, width: 0, height: 0,
-        rotate: 0, scaleX: 1, scaleY: 1,
-        skewX: 0, skewY: 0,
-        translateX: 0, translateY: 0
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        rotate: 0,
+        scaleX: 1,
+        scaleY: 1,
+        skewX: 0,
+        skewY: 0,
+        translateX: 0,
+        translateY: 0,
       }
     }
 
@@ -703,7 +736,7 @@ export class Cropper {
       skewX: imageData.skewX,
       skewY: imageData.skewY,
       translateX: imageData.translateX,
-      translateY: imageData.translateY
+      translateY: imageData.translateY,
     }
 
     if (rounded) {
@@ -720,7 +753,8 @@ export class Cropper {
    * Get image data
    */
   getImageData(): ImageData | null {
-    if (!this.imageProcessor) return null
+    if (!this.imageProcessor)
+      return null
     return this.imageProcessor.getImageData()
   }
 
@@ -728,7 +762,8 @@ export class Cropper {
    * Set crop box data
    */
   setData(data: Partial<CropBoxData>): void {
-    if (!this.ready || !this.cropBox) return
+    if (!this.ready || !this.cropBox)
+      return
     this.cropBox.setData(data)
   }
 
@@ -736,10 +771,11 @@ export class Cropper {
    * Get container data
    */
   getContainerData(): ContainerData | null {
-    if (!this.container) return null
+    if (!this.container)
+      return null
     return {
       width: this.container.clientWidth,
-      height: this.container.clientHeight
+      height: this.container.clientHeight,
     }
   }
 
@@ -747,17 +783,19 @@ export class Cropper {
    * Get canvas data
    */
   getCanvasData(): CanvasData | null {
-    if (!this.imageProcessor) return null
+    if (!this.imageProcessor)
+      return null
     const rect = this.imageProcessor.getDisplayRect()
     const imageData = this.imageProcessor.getImageData()
-    if (!rect || !imageData) return null
+    if (!rect || !imageData)
+      return null
     return {
       left: rect.left,
       top: rect.top,
       width: rect.width,
       height: rect.height,
       naturalWidth: imageData.naturalWidth,
-      naturalHeight: imageData.naturalHeight
+      naturalHeight: imageData.naturalHeight,
     }
   }
 
@@ -765,7 +803,8 @@ export class Cropper {
    * Set canvas data
    */
   setCanvasData(data: Partial<CanvasData>): void {
-    if (!this.ready || !this.imageProcessor) return
+    if (!this.ready || !this.imageProcessor)
+      return
     // Canvas data is managed by imageProcessor through transforms
     // This would require implementing a method to set the display rect
     // For now, this is a placeholder
@@ -775,7 +814,8 @@ export class Cropper {
    * Get crop box data
    */
   getCropBoxData(): CropBoxData | null {
-    if (!this.cropBox) return null
+    if (!this.cropBox)
+      return null
     return this.cropBox.getData()
   }
 
@@ -783,7 +823,8 @@ export class Cropper {
    * Set crop box data
    */
   setCropBoxData(data: Partial<CropBoxData>): void {
-    if (!this.ready || !this.cropBox) return
+    if (!this.ready || !this.cropBox)
+      return
     this.cropBox.setData(data)
   }
 
@@ -791,7 +832,8 @@ export class Cropper {
    * Set aspect ratio
    */
   setAspectRatio(aspectRatio: number): void {
-    if (!this.ready || !this.cropBox) return
+    if (!this.ready || !this.cropBox)
+      return
     this.options.aspectRatio = aspectRatio
     this.cropBox.setAspectRatio(aspectRatio)
   }
@@ -819,8 +861,9 @@ export class Cropper {
   /**
    * Get cropped canvas
    */
-  getCroppedCanvas(options: GetCroppedCanvasOptions & { applyShape?: boolean; autoFormat?: boolean } = {}): HTMLCanvasElement | null {
-    if (!this.ready || !this.imageProcessor || !this.cropBox) return null
+  getCroppedCanvas(options: GetCroppedCanvasOptions & { applyShape?: boolean, autoFormat?: boolean } = {}): HTMLCanvasElement | null {
+    if (!this.ready || !this.imageProcessor || !this.cropBox)
+      return null
 
     const cropBoxData = this.cropBox.getData()
 
@@ -843,20 +886,21 @@ export class Cropper {
   /**
    * Get the appropriate export format based on crop box style
    */
-  getExportFormat(): { type: string; extension: string; quality: number } {
+  getExportFormat(): { type: string, extension: string, quality: number } {
     // For circle and rounded styles, use PNG to preserve transparency
     // For other styles, use JPG for better compression
     if (this.options.cropBoxStyle === 'circle' || this.options.cropBoxStyle === 'rounded') {
       return {
         type: 'image/png',
         extension: 'png',
-        quality: 1
+        quality: 1,
       }
-    } else {
+    }
+    else {
       return {
         type: 'image/jpeg',
         extension: 'jpg',
-        quality: 0.95
+        quality: 0.95,
       }
     }
   }
@@ -865,7 +909,8 @@ export class Cropper {
    * Rotate image
    */
   rotate(degrees: number): void {
-    if (!this.ready || !this.imageProcessor || !this.options.rotatable) return
+    if (!this.ready || !this.imageProcessor || !this.options.rotatable)
+      return
     this.imageProcessor.rotate(degrees)
   }
 
@@ -873,7 +918,8 @@ export class Cropper {
    * Scale image
    */
   scale(scaleX: number, scaleY?: number): void {
-    if (!this.ready || !this.imageProcessor || !this.options.scalable) return
+    if (!this.ready || !this.imageProcessor || !this.options.scalable)
+      return
     this.imageProcessor.scale(scaleX, scaleY)
   }
 
@@ -888,7 +934,8 @@ export class Cropper {
    * Flip vertical
    */
   scaleY(scaleY: number): void {
-    if (!this.ready || !this.imageProcessor) return
+    if (!this.ready || !this.imageProcessor)
+      return
     const imageData = this.imageProcessor.getImageData()
     if (imageData) {
       this.scale(imageData.scaleX, scaleY)
@@ -899,7 +946,8 @@ export class Cropper {
    * Skew image
    */
   skew(skewX: number, skewY?: number): void {
-    if (!this.ready || !this.imageProcessor || !this.options.skewable) return
+    if (!this.ready || !this.imageProcessor || !this.options.skewable)
+      return
     this.imageProcessor.skew(skewX, skewY)
   }
 
@@ -907,7 +955,8 @@ export class Cropper {
    * Skew horizontal
    */
   skewX(skewX: number): void {
-    if (!this.ready || !this.imageProcessor || !this.options.skewable) return
+    if (!this.ready || !this.imageProcessor || !this.options.skewable)
+      return
     this.imageProcessor.skewX(skewX)
   }
 
@@ -915,7 +964,8 @@ export class Cropper {
    * Skew vertical
    */
   skewY(skewY: number): void {
-    if (!this.ready || !this.imageProcessor || !this.options.skewable) return
+    if (!this.ready || !this.imageProcessor || !this.options.skewable)
+      return
     this.imageProcessor.skewY(skewY)
   }
 
@@ -923,7 +973,8 @@ export class Cropper {
    * Translate image
    */
   translate(x: number, y: number): void {
-    if (!this.ready || !this.imageProcessor || !this.options.translatable) return
+    if (!this.ready || !this.imageProcessor || !this.options.translatable)
+      return
     this.imageProcessor.translate(x, y)
   }
 
@@ -931,7 +982,8 @@ export class Cropper {
    * Move image
    */
   move(deltaX: number, deltaY: number): void {
-    if (!this.ready || !this.imageProcessor || !this.options.translatable) return
+    if (!this.ready || !this.imageProcessor || !this.options.translatable)
+      return
     this.imageProcessor.move(deltaX, deltaY)
   }
 
@@ -939,7 +991,8 @@ export class Cropper {
    * Add background to the container
    */
   private addBackground(): void {
-    if (!this.wrapper) return
+    if (!this.wrapper)
+      return
 
     // Check if background already exists
     const existingBg = this.wrapper.querySelector('.cropper-bg')
@@ -954,7 +1007,8 @@ export class Cropper {
    * Reset
    */
   reset(): void {
-    if (!this.ready) return
+    if (!this.ready)
+      return
 
     if (this.imageProcessor) {
       this.imageProcessor.reset()
@@ -973,7 +1027,8 @@ export class Cropper {
    * Clear
    */
   clear(): void {
-    if (!this.ready || !this.cropBox) return
+    if (!this.ready || !this.cropBox)
+      return
     this.cropBox.hide()
   }
 
@@ -981,7 +1036,8 @@ export class Cropper {
    * Set crop box style
    */
   setCropBoxStyle(style: 'default' | 'rounded' | 'circle' | 'minimal' | 'dotted' | 'solid' | 'gradient'): void {
-    if (!this.cropBox) return
+    if (!this.cropBox)
+      return
     this.cropBox.setStyle(style)
     this.options.cropBoxStyle = style
   }
@@ -1010,10 +1066,12 @@ export class Cropper {
    * Show placeholder
    */
   private showPlaceholder(): void {
-    if (!this.wrapper || this.placeholderElement) return
+    if (!this.wrapper || this.placeholderElement)
+      return
 
     const placeholder = this.options.placeholder
-    if (!placeholder) return
+    if (!placeholder)
+      return
 
     // Create placeholder element
     this.placeholderElement = createElement('div', 'cropper-placeholder')
@@ -1026,7 +1084,8 @@ export class Cropper {
       const iconElement = createElement('div', 'cropper-placeholder-icon')
       iconElement.innerHTML = placeholder.icon
       this.placeholderElement.appendChild(iconElement)
-    } else {
+    }
+    else {
       // Default SVG icon
       const iconElement = createElement('div', 'cropper-placeholder-icon')
       iconElement.innerHTML = `
@@ -1143,7 +1202,8 @@ export class Cropper {
       // Check if it's an image file
       if (files[0].type.startsWith('image/')) {
         this.loadFile(files[0])
-      } else {
+      }
+      else {
         this.handleUploadError('Please drop an image file')
       }
     }
@@ -1201,7 +1261,8 @@ export class Cropper {
    * Initialize history manager
    */
   private initHistoryManager(): void {
-    if (!this.options.history) return
+    if (!this.options.history)
+      return
 
     const historyOptions = typeof this.options.history === 'object' ? this.options.history : {}
     this.historyManager = new HistoryManager(this, historyOptions)
@@ -1234,7 +1295,8 @@ export class Cropper {
    * Initialize preset manager
    */
   private initPresetManager(): void {
-    if (!this.options.presets) return
+    if (!this.options.presets)
+      return
 
     const presetOptions = typeof this.options.presets === 'object' ? this.options.presets : {}
     this.presetManager = new PresetManager(this, presetOptions)
@@ -1349,16 +1411,18 @@ export class Cropper {
           x: Math.max(0, face.x - padding),
           y: Math.max(0, face.y - padding),
           width: face.width + padding * 2,
-          height: face.height + padding * 2
+          height: face.height + padding * 2,
         }
       }
-    } else if (type === 'auto') {
+    }
+    else if (type === 'auto') {
       // Get composition suggestions
       const suggestions = await this.getCompositionSuggestions()
       if (suggestions && suggestions.length > 0) {
         cropData = suggestions[0].cropBox
       }
-    } else {
+    }
+    else {
       // Get specific composition type
       const suggestions = await this.getCompositionSuggestions()
       const suggestion = suggestions.find((s: any) => s.type === type)
@@ -1382,7 +1446,8 @@ export class Cropper {
    * Initialize touch gestures
    */
   private initTouchGestures(): void {
-    if (!this.wrapper) return
+    if (!this.wrapper)
+      return
 
     this.touchGestureManager = new TouchGestureManager(this.wrapper, this.options.touchOptions)
 
@@ -1424,7 +1489,8 @@ export class Cropper {
       const currentZoom = this.zoom
       if (currentZoom > 1.5) {
         this.scale(1)
-      } else {
+      }
+      else {
         this.scale(2)
       }
     })
@@ -1433,7 +1499,8 @@ export class Cropper {
       // Swipe to navigate presets or undo/redo
       if (direction === 'left' && this.historyManager) {
         this.historyManager.undo()
-      } else if (direction === 'right' && this.historyManager) {
+      }
+      else if (direction === 'right' && this.historyManager) {
         this.historyManager.redo()
       }
     })
@@ -1443,7 +1510,8 @@ export class Cropper {
    * Initialize mobile UI
    */
   private initMobileUI(): void {
-    if (!this.wrapper) return
+    if (!this.wrapper)
+      return
 
     this.mobileUI = new MobileUI(this.wrapper, this.options.mobileOptions)
 
@@ -1476,10 +1544,14 @@ export class Cropper {
 
           // Update aspect ratio button
           let label = 'Free'
-          if (Math.abs(aspectRatio - 1) < 0.01) label = '1:1'
-          else if (Math.abs(aspectRatio - 4 / 3) < 0.01) label = '4:3'
-          else if (Math.abs(aspectRatio - 16 / 9) < 0.01) label = '16:9'
-          else if (Math.abs(aspectRatio - 2 / 3) < 0.01) label = '2:3'
+          if (Math.abs(aspectRatio - 1) < 0.01)
+            label = '1:1'
+          else if (Math.abs(aspectRatio - 4 / 3) < 0.01)
+            label = '4:3'
+          else if (Math.abs(aspectRatio - 16 / 9) < 0.01)
+            label = '16:9'
+          else if (Math.abs(aspectRatio - 2 / 3) < 0.01)
+            label = '2:3'
 
           this.mobileUI.updateControl('aspect', { label })
         }
@@ -1491,10 +1563,12 @@ export class Cropper {
    * Initialize selection and mask system
    */
   private initSelectionAndMask(): void {
-    if (!this.wrapper || !this.imageProcessor) return
+    if (!this.wrapper || !this.imageProcessor)
+      return
 
     const canvas = this.imageProcessor.getCanvas()
-    if (!canvas) return
+    if (!canvas)
+      return
 
     const { width, height } = canvas
 
@@ -1520,7 +1594,7 @@ export class Cropper {
         this.wrapper,
         width,
         height,
-        this.options.maskOptions
+        this.options.maskOptions,
       )
 
       // Set the selection instance
@@ -1533,7 +1607,7 @@ export class Cropper {
     if (this.options.selectionOptions?.showToolbar && (this.selection || this.maskManager)) {
       this.selectionToolbar = new SelectionToolbar(this.wrapper, {
         position: 'bottom',
-        theme: this.options.theme || 'light'
+        theme: this.options.theme || 'light',
       })
 
       // Connect toolbar to selection and mask manager
@@ -1555,12 +1629,14 @@ export class Cropper {
    * Setup selection event handlers
    */
   private setupSelectionHandlers(): void {
-    if (!this.wrapper || !this.selection) return
+    if (!this.wrapper || !this.selection)
+      return
 
     let isSelecting = false
 
     const handleMouseDown = (event: MouseEvent) => {
-      if (!this.selection || this.dragMode !== 'none') return
+      if (!this.selection || this.dragMode !== 'none')
+        return
 
       const rect = this.wrapper!.getBoundingClientRect()
       const x = event.clientX - rect.left
@@ -1571,7 +1647,8 @@ export class Cropper {
     }
 
     const handleMouseMove = (event: MouseEvent) => {
-      if (!this.selection || !isSelecting) return
+      if (!this.selection || !isSelecting)
+        return
 
       const rect = this.wrapper!.getBoundingClientRect()
       const x = event.clientX - rect.left
@@ -1581,7 +1658,8 @@ export class Cropper {
     }
 
     const handleMouseUp = () => {
-      if (!this.selection || !isSelecting) return
+      if (!this.selection || !isSelecting)
+        return
 
       isSelecting = false
       this.selection.endSelection()
@@ -1595,7 +1673,8 @@ export class Cropper {
 
     // Handle magic wand selection
     this.wrapper.addEventListener('click', (event: MouseEvent) => {
-      if (!this.selection || this.selection.getType?.() !== 'magic-wand') return
+      if (!this.selection || this.selection.getType?.() !== 'magic-wand')
+        return
 
       const rect = this.wrapper!.getBoundingClientRect()
       const x = event.clientX - rect.left
@@ -1603,10 +1682,12 @@ export class Cropper {
 
       // Get image data
       const canvas = this.imageProcessor?.getCanvas()
-      if (!canvas) return
+      if (!canvas)
+        return
 
       const ctx = canvas.getContext('2d')
-      if (!ctx) return
+      if (!ctx)
+        return
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
       this.selection.magicWandSelect(x, y, imageData)
@@ -1725,11 +1806,13 @@ export class Cropper {
 
     // Get cropped canvas
     const canvas = this.getCroppedCanvas()
-    if (!canvas) return null
+    if (!canvas)
+      return null
 
     // Apply mask
     const ctx = canvas.getContext('2d')
-    if (!ctx) return canvas
+    if (!ctx)
+      return canvas
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     const maskedData = this.maskManager.applyMaskToImage(imageData)
@@ -1743,7 +1826,8 @@ export class Cropper {
    * Destroy
    */
   destroy(): void {
-    if (!this.container) return
+    if (!this.container)
+      return
 
     if (this.historyManager) {
       this.historyManager.destroy()

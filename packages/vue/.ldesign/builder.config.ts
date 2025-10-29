@@ -4,12 +4,7 @@ export default defineConfig({
   input: 'src/index.ts',
 
   output: {
-    format: ['esm', 'cjs', 'umd'],
-    name: 'LDesignCropperVue',
-    globals: {
-      vue: 'Vue',
-      '@ldesign/cropper-core': 'LDesignCropperCore'
-    },
+    format: ['esm', 'cjs'],
     esm: {
       dir: 'es',
       preserveStructure: true,
@@ -17,9 +12,6 @@ export default defineConfig({
     cjs: {
       dir: 'lib',
       preserveStructure: true,
-    },
-    umd: {
-      dir: 'dist',
     },
   },
 
@@ -34,4 +26,5 @@ export default defineConfig({
     /^@ldesign\//,
   ],
 })
+
 

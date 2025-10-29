@@ -20,7 +20,7 @@ export function on<K extends keyof HTMLElementEventMap>(
   element: Element | Window | Document,
   type: K,
   listener: (event: HTMLElementEventMap[K]) => void,
-  options?: EventOptions
+  options?: EventOptions,
 ): void {
   element.addEventListener(type, listener as EventListener, options)
 }
@@ -32,7 +32,7 @@ export function off<K extends keyof HTMLElementEventMap>(
   element: Element | Window | Document,
   type: K,
   listener: (event: HTMLElementEventMap[K]) => void,
-  options?: EventOptions
+  options?: EventOptions,
 ): void {
   element.removeEventListener(type, listener as EventListener, options)
 }
@@ -43,12 +43,12 @@ export function off<K extends keyof HTMLElementEventMap>(
 export function dispatch(
   element: Element,
   type: string,
-  detail?: any
+  detail?: any,
 ): boolean {
   const event = new CustomEvent(type, {
     bubbles: true,
     cancelable: true,
-    detail
+    detail,
   })
   return element.dispatchEvent(event)
 }
@@ -58,7 +58,7 @@ export function dispatch(
  */
 export function getPointer(
   event: MouseEvent | TouchEvent,
-  endTouch = false
+  endTouch = false,
 ): Point {
   const touches = (event as TouchEvent).touches
   const changedTouches = (event as TouchEvent).changedTouches
@@ -67,14 +67,14 @@ export function getPointer(
     const touch = endTouch ? changedTouches[0] : touches[0]
     return {
       x: touch.pageX,
-      y: touch.pageY
+      y: touch.pageY,
     }
   }
 
   const mouseEvent = event as MouseEvent
   return {
     x: mouseEvent.pageX,
-    y: mouseEvent.pageY
+    y: mouseEvent.pageY,
   }
 }
 
@@ -92,7 +92,7 @@ export function getCenter(event: TouchEvent): Point {
 
   return {
     x: (touch1.pageX + touch2.pageX) / 2,
-    y: (touch1.pageY + touch2.pageY) / 2
+    y: (touch1.pageY + touch2.pageY) / 2,
   }
 }
 
@@ -135,7 +135,7 @@ export function stopPropagation(event: Event): void {
  */
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: number | undefined
   let lastExecTime = 0
@@ -146,7 +146,8 @@ export function throttle<T extends (...args: any[]) => any>(
     if (currentTime - lastExecTime > delay) {
       func.apply(this, args)
       lastExecTime = currentTime
-    } else {
+    }
+    else {
       if (timeoutId !== undefined) {
         clearTimeout(timeoutId)
       }
@@ -163,7 +164,7 @@ export function throttle<T extends (...args: any[]) => any>(
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: number | undefined
 

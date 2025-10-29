@@ -1,8 +1,17 @@
 {
   "name": "@ldesign/cropper-core",
+  "type": "module",
   "version": "2.0.0",
   "description": "Core functionality for @ldesign/cropper - A powerful image cropper library",
-  "type": "module",
+  "author": "ldesign",
+  "license": "MIT",
+  "keywords": [
+    "cropper",
+    "image-cropper",
+    "image-editor",
+    "core",
+    "typescript"
+  ],
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
@@ -14,38 +23,103 @@
       "import": "./es/index.js",
       "require": "./lib/index.cjs"
     },
-    "./filters": {
-      "types": "./es/filters/index.d.ts",
-      "import": "./es/filters/index.js",
-      "require": "./lib/filters/index.cjs"
+    "./adapters": {
+      "types": "./es/adapters/index.d.ts",
+      "import": "./es/adapters/index.js",
+      "require": "./lib/adapters/index.cjs"
+    },
+    "./adapters/*": {
+      "types": "./es/adapters/*.d.ts",
+      "import": "./es/adapters/*.js",
+      "require": "./lib/adapters/*.cjs"
+    },
+    "./config/*": {
+      "types": "./es/config/*.d.ts",
+      "import": "./es/config/*.js",
+      "require": "./lib/config/*.cjs"
+    },
+    "./core": {
+      "types": "./es/core/index.d.ts",
+      "import": "./es/core/index.js",
+      "require": "./lib/core/index.cjs"
+    },
+    "./core/*": {
+      "types": "./es/core/*.d.ts",
+      "import": "./es/core/*.js",
+      "require": "./lib/core/*.cjs"
     },
     "./drawing": {
       "types": "./es/drawing/index.d.ts",
       "import": "./es/drawing/index.js",
       "require": "./lib/drawing/index.cjs"
     },
+    "./drawing/*": {
+      "types": "./es/drawing/*.d.ts",
+      "import": "./es/drawing/*.js",
+      "require": "./lib/drawing/*.cjs"
+    },
+    "./filters": {
+      "types": "./es/filters/index.d.ts",
+      "import": "./es/filters/index.js",
+      "require": "./lib/filters/index.cjs"
+    },
+    "./filters/*": {
+      "types": "./es/filters/*.d.ts",
+      "import": "./es/filters/*.js",
+      "require": "./lib/filters/*.cjs"
+    },
+    "./types": {
+      "types": "./es/types/index.d.ts",
+      "import": "./es/types/index.js",
+      "require": "./lib/types/index.cjs"
+    },
+    "./types/*": {
+      "types": "./es/types/*.d.ts",
+      "import": "./es/types/*.js",
+      "require": "./lib/types/*.cjs"
+    },
+    "./ui": {
+      "types": "./es/ui/index.d.ts",
+      "import": "./es/ui/index.js",
+      "require": "./lib/ui/index.cjs"
+    },
+    "./ui/*": {
+      "types": "./es/ui/*.d.ts",
+      "import": "./es/ui/*.js",
+      "require": "./lib/ui/*.cjs"
+    },
+    "./utils": {
+      "types": "./es/utils/index.d.ts",
+      "import": "./es/utils/index.js",
+      "require": "./lib/utils/index.cjs"
+    },
+    "./utils/*": {
+      "types": "./es/utils/*.d.ts",
+      "import": "./es/utils/*.js",
+      "require": "./lib/utils/*.cjs"
+    },
     "./workers": {
       "types": "./es/workers/index.d.ts",
       "import": "./es/workers/index.js",
       "require": "./lib/workers/index.cjs"
     },
-    "./constants": {
-      "types": "./es/config/constants.d.ts",
-      "import": "./es/config/constants.js",
-      "require": "./lib/config/constants.cjs"
-    },
-    "./es/*": "./es/*",
-    "./lib/*": "./lib/*",
-    "./dist/*": "./dist/*"
+    "./workers/*": {
+      "types": "./es/workers/*.d.ts",
+      "import": "./es/workers/*.js",
+      "require": "./lib/workers/*.cjs"
+    }
   },
   "main": "./lib/index.cjs",
   "module": "./es/index.js",
+  "unpkg": "./dist/index.min.js",
+  "jsdelivr": "./dist/index.min.js",
   "types": "./es/index.d.ts",
   "files": [
+    "LICENSE",
+    "README.md",
     "es",
     "lib",
-    "dist",
-    "README.md"
+    "package.json"
   ],
   "scripts": {
     "dev": "ldesign-builder --watch",
@@ -57,19 +131,10 @@
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.10.0",
+    "rimraf": "^5.0.0",
     "typescript": "^5.3.0",
-    "vitest": "^1.0.0",
-    "rimraf": "^5.0.0"
+    "vitest": "^1.0.0"
   },
-  "keywords": [
-    "cropper",
-    "image-cropper",
-    "image-editor",
-    "core",
-    "typescript"
-  ],
-  "author": "ldesign",
-  "license": "MIT",
   "publishConfig": {
     "access": "public"
   }

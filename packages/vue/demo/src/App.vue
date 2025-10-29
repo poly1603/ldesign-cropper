@@ -1,80 +1,90 @@
-<template>
-  <div class="app">
-    <h1>🖼️ Cropper Vue 3 Demo</h1>
-    
-    <div class="controls">
-      <button @click="rotate">↻ Rotate</button>
-      <button @click="flipH">↔ Flip H</button>
-      <button @click="flipV">↕ Flip V</button>
-      <button @click="reset">Reset</button>
-      <button @click="getCropped">Get Cropped Image</button>
-    </div>
-    
-    <Cropper
-      ref="cropperRef"
-      src="https://picsum.photos/1200/800"
-      :aspect-ratio="16/9"
-      :view-mode="1"
-      drag-mode="crop"
-      :auto-crop="true"
-      @ready="onReady"
-      @crop="onCrop"
-      class="cropper-wrapper"
-    />
-    
-    <div v-if="croppedImage" class="result">
-      <h3>Cropped Result:</h3>
-      <img :src="croppedImage" alt="Cropped" style="max-width: 400px; border: 2px solid #ccc;" />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Cropper } from '@ldesign/cropper-vue'
+import { ref } from 'vue'
 // import '@ldesign/cropper-vue/es/style.css'
 
 const cropperRef = ref()
 const croppedImage = ref('')
 
-const onReady = () => {
+function onReady() {
   console.log('✅ Cropper ready!')
 }
 
-const onCrop = (event: CustomEvent) => {
+function onCrop(event: CustomEvent) {
   console.log('📐 Crop data:', event.detail)
 }
 
-const rotate = () => {
+function rotate() {
   cropperRef.value?.rotate(90)
 }
 
-const flipH = () => {
+function flipH() {
   const data = cropperRef.value?.getData()
   if (data) {
     cropperRef.value?.scale(-(data.scaleX || 1), undefined)
   }
 }
 
-const flipV = () => {
+function flipV() {
   const data = cropperRef.value?.getData()
   if (data) {
     cropperRef.value?.scale(undefined, -(data.scaleY || 1))
   }
 }
 
-const reset = () => {
+function reset() {
   cropperRef.value?.reset()
   croppedImage.value = ''
 }
 
-const getCropped = () => {
+function getCropped() {
   const canvas = cropperRef.value?.getCroppedCanvas()
   if (canvas) {
     croppedImage.value = canvas.toDataURL()
   }
 }
 </script>
+
+<template>
+  <div class="app">
+    <h1>🖼️ Cropper Vue 3 Demo</h1>
+
+    <div class="controls">
+      <button @click="rotate">
+        ↻ Rotate
+      </button>
+      <button @click="flipH">
+        ↔ Flip H
+      </button>
+      <button @click="flipV">
+        ↕ Flip V
+      </button>
+      <button @click="reset">
+        Reset
+      </button>
+      <button @click="getCropped">
+        Get Cropped Image
+      </button>
+    </div>
+
+    <Cropper
+      ref="cropperRef"
+      src="https://picsum.photos/1200/800"
+      :aspect-ratio="16 / 9"
+      :view-mode="1"
+      drag-mode="crop"
+      :auto-crop="true"
+      class="cropper-wrapper"
+      @ready="onReady"
+      @crop="onCrop"
+    />
+
+    <div v-if="croppedImage" class="result">
+      <h3>Cropped Result:</h3>
+      <img :src="croppedImage" alt="Cropped" style="max-width: 400px; border: 2px solid #ccc;">
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .app {
@@ -126,4 +136,3 @@ button:hover {
   border-color: #646cff;
 }
 </style>
-

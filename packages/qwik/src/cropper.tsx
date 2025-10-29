@@ -1,5 +1,7 @@
-import { component$, useSignal, useVisibleTask$, type QRL, type PropFunction } from '@builder.io/qwik'
-import { Cropper as CropperCore, type CropperOptions } from '@ldesign/cropper-core'
+import type { PropFunction } from '@builder.io/qwik'
+import type { CropperOptions } from '@ldesign/cropper-core'
+import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik'
+import { Cropper as CropperCore } from '@ldesign/cropper-core'
 
 export interface CropperProps {
   src?: string
@@ -43,12 +45,12 @@ export const Cropper = component$<CropperProps>((props) => {
           aspectRatio: props.aspectRatio,
           viewMode: props.viewMode,
           dragMode: props.dragMode,
-          ready: (e) => props.onReady$?.(e),
-          cropstart: (e) => props.onCropstart$?.(e),
-          cropmove: (e) => props.onCropmove$?.(e),
-          cropend: (e) => props.onCropend$?.(e),
-          crop: (e) => props.onCrop$?.(e),
-          zoom: (e) => props.onZoom$?.(e)
+          ready: e => props.onReady$?.(e),
+          cropstart: e => props.onCropstart$?.(e),
+          cropmove: e => props.onCropmove$?.(e),
+          cropend: e => props.onCropend$?.(e),
+          crop: e => props.onCrop$?.(e),
+          zoom: e => props.onZoom$?.(e),
         }
 
         cropperRef.value = new CropperCore(containerRef.value, options)
@@ -68,7 +70,7 @@ export const Cropper = component$<CropperProps>((props) => {
       style={{
         width: '100%',
         height: '100%',
-        minHeight: '400px'
+        minHeight: '400px',
       }}
     />
   )
@@ -92,6 +94,6 @@ export function useCropper() {
   return {
     cropper,
     initCropper,
-    destroyCropper
+    destroyCropper,
   }
 }

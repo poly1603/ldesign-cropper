@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
-import { Cropper as CropperCore, type CropperOptions } from '@ldesign/cropper-core'
-import type { CropBoxData, CropData } from '@ldesign/cropper-core'
+import type { CropBoxData, CropData, Cropper as CropperCore, type CropperOptions } from '@ldesign/cropper-core'
+
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import '@ldesign/cropper-core/style.css'
 
 export interface CropperProps extends CropperOptions {
@@ -50,34 +50,41 @@ export const Cropper = forwardRef<CropperRef, CropperProps>((props, ref) => {
 
   // 初始化 Cropper
   useEffect(() => {
-    if (!containerRef.current) return
+    if (!containerRef.current)
+      return
 
     const options: CropperOptions = {
       ...cropperOptions,
       ready: (e) => {
         onReady?.(e)
-        if (cropperOptions.ready) cropperOptions.ready(e)
+        if (cropperOptions.ready)
+          cropperOptions.ready(e)
       },
       cropstart: (e) => {
         onCropStart?.(e)
-        if (cropperOptions.cropstart) cropperOptions.cropstart(e)
+        if (cropperOptions.cropstart)
+          cropperOptions.cropstart(e)
       },
       cropmove: (e) => {
         onCropMove?.(e)
-        if (cropperOptions.cropmove) cropperOptions.cropmove(e)
+        if (cropperOptions.cropmove)
+          cropperOptions.cropmove(e)
       },
       cropend: (e) => {
         onCropEnd?.(e)
-        if (cropperOptions.cropend) cropperOptions.cropend(e)
+        if (cropperOptions.cropend)
+          cropperOptions.cropend(e)
       },
       crop: (e) => {
         onCrop?.(e)
-        if (cropperOptions.crop) cropperOptions.crop(e)
+        if (cropperOptions.crop)
+          cropperOptions.crop(e)
       },
       zoom: (e) => {
         onZoom?.(e)
-        if (cropperOptions.zoom) cropperOptions.zoom(e)
-      }
+        if (cropperOptions.zoom)
+          cropperOptions.zoom(e)
+      },
     }
 
     cropperRef.current = new CropperCore(containerRef.current, options)
@@ -118,7 +125,7 @@ export const Cropper = forwardRef<CropperRef, CropperProps>((props, ref) => {
     destroy: () => {
       cropperRef.current?.destroy()
       cropperRef.current = null
-    }
+    },
   }))
 
   return (
@@ -133,5 +140,3 @@ export const Cropper = forwardRef<CropperRef, CropperProps>((props, ref) => {
 Cropper.displayName = 'Cropper'
 
 export default Cropper
-
-

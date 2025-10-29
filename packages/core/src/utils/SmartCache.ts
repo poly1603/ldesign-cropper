@@ -3,8 +3,6 @@
  * Multi-level caching with intelligent preloading
  */
 
-import { MEMORY } from '../config/constants'
-
 export interface CacheOptions {
   maxMemorySize?: number
   maxLocalStorageSize?: number
@@ -60,7 +58,8 @@ class LRUCache<T = any> {
 
   get(key: string): T | null {
     const entry = this.cache.get(key)
-    if (!entry) return null
+    if (!entry)
+      return null
 
     // Check TTL
     if (entry.ttl && Date.now() - entry.created > entry.ttl) {
@@ -88,7 +87,8 @@ class LRUCache<T = any> {
     // Evict if necessary
     while (this.currentSize + size > this.maxSize && this.cache.size > 0) {
       const firstKey = this.cache.keys().next().value
-      if (firstKey) this.delete(firstKey)
+      if (firstKey)
+        this.delete(firstKey)
     }
 
     const entry: CacheEntry<T> = {
@@ -98,7 +98,7 @@ class LRUCache<T = any> {
       lastAccessed: Date.now(),
       accessCount: 1,
       created: Date.now(),
-      ttl
+      ttl,
     }
 
     this.cache.set(key, entry)
@@ -107,7 +107,8 @@ class LRUCache<T = any> {
 
   delete(key: string): boolean {
     const entry = this.cache.get(key)
-    if (!entry) return false
+    if (!entry)
+      return false
 
     this.cache.delete(key)
     this.currentSize -= entry.size
@@ -137,7 +138,7 @@ class LRUCache<T = any> {
     for (const [key, entry] of this.cache) {
       stats.set(key, {
         accessCount: entry.accessCount,
-        lastAccessed: entry.lastAccessed
+        lastAccessed: entry.lastAccessed,
       })
     }
 
@@ -164,7 +165,7 @@ export class SmartCache {
     indexedDB: { used: 0, max: 0, entries: 0 },
     hits: 0,
     misses: 0,
-    evictions: 0
+    evictions: 0,
   }
 
   // Preloading
@@ -178,7 +179,7 @@ export class SmartCache {
       maxIndexedDBSize: options.maxIndexedDBSize || 100 * 1024 * 1024, // 100MB
       ttl: options.ttl || 3600000, // 1 hour
       useCompression: options.useCompression || false,
-      preloadStrategy: options.preloadStrategy || 'adjacent'
+      preloadStrategy: options.preloadStrategy || 'adjacent',
     }
 
     this.memoryCache = new LRUCache(this.options.maxMemorySize)
@@ -194,7 +195,8 @@ export class SmartCache {
    * Initialize IndexedDB
    */
   private async initIndexedDB(): Promise<void> {
-    if (!('indexedDB' in window)) return
+    if (!('indexedDB' in window))
+      return
 
     try {
       const request = indexedDB.open(this.dbName, this.dbVersion)
@@ -212,7 +214,8 @@ export class SmartCache {
           store.createIndex('size', 'size')
         }
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to initialize IndexedDB:', error)
     }
   }
@@ -301,7 +304,8 @@ export class SmartCache {
   private async getFromLocalStorage<T>(key: string): Promise<T | null> {
     try {
       const item = localStorage.getItem(this.localStoragePrefix + key)
-      if (!item) return null
+      if (!item)
+        return null
 
       const entry = JSON.parse(item)
 
@@ -312,7 +316,8 @@ export class SmartCache {
       }
 
       return entry.data
-    } catch (error) {
+    }
+    catch (error) {
       return null
     }
   }
@@ -325,11 +330,12 @@ export class SmartCache {
       const entry = {
         data,
         created: Date.now(),
-        ttl
+        ttl,
       }
 
       localStorage.setItem(this.localStoragePrefix + key, JSON.stringify(entry))
-    } catch (error) {
+    }
+    catch (error) {
       // Storage quota exceeded, cleanup old entries
       this.cleanupLocalStorage()
     }
@@ -369,7 +375,8 @@ export class SmartCache {
             const entry = JSON.parse(item)
             entries.push({ key, created: entry.created || 0 })
           }
-        } catch (error) {
+        }
+        catch (error) {
           localStorage.removeItem(key)
         }
       }
@@ -388,7 +395,8 @@ export class SmartCache {
    * Get from IndexedDB
    */
   private async getFromIndexedDB<T>(key: string): Promise<T | null> {
-    if (!this.db) return null
+    if (!this.db)
+      return null
 
     return new Promise((resolve) => {
       const transaction = this.db!.transaction(['cache'], 'readonly')
@@ -420,7 +428,8 @@ export class SmartCache {
    * Set in IndexedDB
    */
   private async setInIndexedDB<T>(key: string, data: T, size: number, ttl: number): Promise<void> {
-    if (!this.db) return
+    if (!this.db)
+      return
 
     return new Promise((resolve) => {
       const transaction = this.db!.transaction(['cache'], 'readwrite')
@@ -432,7 +441,7 @@ export class SmartCache {
         size,
         created: Date.now(),
         lastAccessed: Date.now(),
-        ttl
+        ttl,
       }
 
       const request = store.put(entry)
@@ -445,7 +454,8 @@ export class SmartCache {
    * Delete from IndexedDB
    */
   private async deleteFromIndexedDB(key: string): Promise<void> {
-    if (!this.db) return
+    if (!this.db)
+      return
 
     return new Promise((resolve) => {
       const transaction = this.db!.transaction(['cache'], 'readwrite')
@@ -461,7 +471,8 @@ export class SmartCache {
    * Clear IndexedDB
    */
   private async clearIndexedDB(): Promise<void> {
-    if (!this.db) return
+    if (!this.db)
+      return
 
     return new Promise((resolve) => {
       const transaction = this.db!.transaction(['cache'], 'readwrite')
@@ -492,7 +503,8 @@ export class SmartCache {
     // For objects, use JSON stringify
     try {
       return JSON.stringify(data).length * 2
-    } catch (error) {
+    }
+    catch (error) {
       return 1024 // Default 1KB
     }
   }
@@ -517,19 +529,21 @@ export class SmartCache {
    * Trigger preloading
    */
   private triggerPreload(key: string): void {
-    if (this.options.preloadStrategy === 'none') return
+    if (this.options.preloadStrategy === 'none')
+      return
 
     if (this.options.preloadStrategy === 'adjacent') {
       // Preload adjacent items (e.g., next/prev in a sequence)
       const match = key.match(/(.+)_(\d+)$/)
       if (match) {
         const base = match[1]
-        const index = parseInt(match[2])
+        const index = Number.parseInt(match[2])
 
         this.preloadQueue.add(`${base}_${index + 1}`)
         this.preloadQueue.add(`${base}_${index - 1}`)
       }
-    } else if (this.options.preloadStrategy === 'predictive') {
+    }
+    else if (this.options.preloadStrategy === 'predictive') {
       // Use access patterns to predict next items
       const stats = this.memoryCache.getStats()
       const related = this.findRelatedKeys(key, stats)
@@ -547,20 +561,22 @@ export class SmartCache {
    */
   private findRelatedKeys(
     key: string,
-    stats: Map<string, { accessCount: number, lastAccessed: number }>
+    stats: Map<string, { accessCount: number, lastAccessed: number }>,
   ): string[] {
     const related: string[] = []
     const keyParts = key.split('_')
 
     for (const [otherKey, otherStats] of stats) {
-      if (otherKey === key) continue
+      if (otherKey === key)
+        continue
 
       // Find keys with similar patterns
       const otherParts = otherKey.split('_')
       let similarity = 0
 
       for (let i = 0; i < Math.min(keyParts.length, otherParts.length); i++) {
-        if (keyParts[i] === otherParts[i]) similarity++
+        if (keyParts[i] === otherParts[i])
+          similarity++
       }
 
       // If similar and frequently accessed together
@@ -576,7 +592,8 @@ export class SmartCache {
    * Process preload queue
    */
   private async processPreloadQueue(): Promise<void> {
-    if (this.preloadInProgress || this.preloadQueue.size === 0) return
+    if (this.preloadInProgress || this.preloadQueue.size === 0)
+      return
 
     this.preloadInProgress = true
 
@@ -667,6 +684,3 @@ export class SmartCache {
     await Promise.all(promises)
   }
 }
-
-
-

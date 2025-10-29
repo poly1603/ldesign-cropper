@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/cropper-angular v2.0.0 *
  * Built with rollup               *
- * Build time: 2024-10-29 10:23:42 *
+ * Build time: 2024-10-29 12:35:24 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************

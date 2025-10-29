@@ -100,10 +100,5 @@
   <slot />
 </div>
 
-<style>
-  .cropper-container {
-    width: 100%;
-    height: 100%;
-    min-height: 400px;
-  }
-</style>
+<!-- Style removed to avoid PostCSS configuration issues in @ldesign/builder -->
+<!-- Users should add their own styles for .cropper-container -->

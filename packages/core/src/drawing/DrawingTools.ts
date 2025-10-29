@@ -29,7 +29,7 @@ export abstract class DrawingTool {
       color: '#000000',
       lineWidth: 2,
       opacity: 1,
-      ...options
+      ...options,
     }
   }
 
@@ -39,7 +39,8 @@ export abstract class DrawingTool {
 
   protected getContext(): CanvasRenderingContext2D | null {
     const layer = this.engine.getActiveLayer()
-    if (!layer) return null
+    if (!layer)
+      return null
     return layer.canvas.getContext('2d')
   }
 
@@ -64,7 +65,8 @@ export class PenTool extends DrawingTool {
     this.lastPoint = point
 
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     ctx.strokeStyle = this.options.color!
     ctx.lineWidth = this.options.lineWidth!
@@ -77,10 +79,12 @@ export class PenTool extends DrawingTool {
   }
 
   onMove(point: Point): void {
-    if (!this.isDrawing || !this.lastPoint) return
+    if (!this.isDrawing || !this.lastPoint)
+      return
 
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     ctx.lineTo(point.x, point.y)
     ctx.stroke()
@@ -89,7 +93,8 @@ export class PenTool extends DrawingTool {
   }
 
   onEnd(): void {
-    if (!this.isDrawing) return
+    if (!this.isDrawing)
+      return
 
     const ctx = this.getContext()
     if (ctx) {
@@ -113,14 +118,17 @@ export class LineTool extends DrawingTool {
   }
 
   onMove(point: Point): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     // Clear and redraw (for preview)
     const layer = this.engine.getActiveLayer()
-    if (!layer) return
+    if (!layer)
+      return
 
     ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height)
 
@@ -137,10 +145,12 @@ export class LineTool extends DrawingTool {
   }
 
   onEnd(point: Point): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     ctx.strokeStyle = this.options.color!
     ctx.lineWidth = this.options.lineWidth!
@@ -168,13 +178,15 @@ export class RectangleTool extends DrawingTool {
   }
 
   onMove(point: Point): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     this.drawRectangle(this.startPoint, point, true)
   }
 
   onEnd(point: Point): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     this.drawRectangle(this.startPoint, point, false)
 
@@ -184,10 +196,12 @@ export class RectangleTool extends DrawingTool {
 
   private drawRectangle(start: Point, end: Point, isPreview: boolean): void {
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     const layer = this.engine.getActiveLayer()
-    if (!layer) return
+    if (!layer)
+      return
 
     if (isPreview) {
       ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height)
@@ -222,13 +236,15 @@ export class CircleTool extends DrawingTool {
   }
 
   onMove(point: Point): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     this.drawCircle(this.startPoint, point, true)
   }
 
   onEnd(point: Point): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     this.drawCircle(this.startPoint, point, false)
 
@@ -238,10 +254,12 @@ export class CircleTool extends DrawingTool {
 
   private drawCircle(start: Point, end: Point, isPreview: boolean): void {
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     const layer = this.engine.getActiveLayer()
-    if (!layer) return
+    if (!layer)
+      return
 
     if (isPreview) {
       ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height)
@@ -282,7 +300,8 @@ export class TextTool extends DrawingTool {
   }
 
   onEnd(point: Point): void {
-    if (!this.startPoint) return
+    if (!this.startPoint)
+      return
 
     // In real implementation, this would show a text input dialog
     const text = this.options.text || 'Text'
@@ -293,7 +312,8 @@ export class TextTool extends DrawingTool {
 
   private drawText(point: Point, text: string): void {
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     const fontSize = this.options.fontSize || 24
     const fontFamily = this.options.fontFamily || 'Arial, sans-serif'
@@ -327,7 +347,8 @@ export class EraserTool extends DrawingTool {
     this.lastPoint = point
 
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     ctx.globalCompositeOperation = 'destination-out'
     ctx.lineWidth = this.options.lineWidth || 20
@@ -339,10 +360,12 @@ export class EraserTool extends DrawingTool {
   }
 
   onMove(point: Point): void {
-    if (!this.isDrawing || !this.lastPoint) return
+    if (!this.isDrawing || !this.lastPoint)
+      return
 
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     ctx.lineTo(point.x, point.y)
     ctx.stroke()
@@ -351,7 +374,8 @@ export class EraserTool extends DrawingTool {
   }
 
   onEnd(): void {
-    if (!this.isDrawing) return
+    if (!this.isDrawing)
+      return
 
     const ctx = this.getContext()
     if (ctx) {
@@ -375,13 +399,15 @@ export class ArrowTool extends DrawingTool {
   }
 
   onMove(point: Point): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     this.drawArrow(this.startPoint, point, true)
   }
 
   onEnd(point: Point): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     this.drawArrow(this.startPoint, point, false)
 
@@ -391,10 +417,12 @@ export class ArrowTool extends DrawingTool {
 
   private drawArrow(start: Point, end: Point, isPreview: boolean): void {
     const ctx = this.getContext()
-    if (!ctx) return
+    if (!ctx)
+      return
 
     const layer = this.engine.getActiveLayer()
-    if (!layer) return
+    if (!layer)
+      return
 
     if (isPreview) {
       ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height)
@@ -419,11 +447,11 @@ export class ArrowTool extends DrawingTool {
     ctx.moveTo(end.x, end.y)
     ctx.lineTo(
       end.x - headLength * Math.cos(angle - Math.PI / 6),
-      end.y - headLength * Math.sin(angle - Math.PI / 6)
+      end.y - headLength * Math.sin(angle - Math.PI / 6),
     )
     ctx.lineTo(
       end.x - headLength * Math.cos(angle + Math.PI / 6),
-      end.y - headLength * Math.sin(angle + Math.PI / 6)
+      end.y - headLength * Math.sin(angle + Math.PI / 6),
     )
     ctx.closePath()
     ctx.fill()
@@ -444,14 +472,16 @@ export class BlurTool extends DrawingTool {
   }
 
   onMove(point: Point): void {
-    if (!this.isDrawing) return
+    if (!this.isDrawing)
+      return
 
     this.points.push(point)
     this.applyBlur()
   }
 
   onEnd(): void {
-    if (!this.isDrawing) return
+    if (!this.isDrawing)
+      return
 
     this.applyBlur()
     this.isDrawing = false
@@ -461,7 +491,8 @@ export class BlurTool extends DrawingTool {
 
   private applyBlur(): void {
     const ctx = this.getContext()
-    if (!ctx || this.points.length === 0) return
+    if (!ctx || this.points.length === 0)
+      return
 
     const radius = this.options.lineWidth || 20
 
@@ -470,7 +501,7 @@ export class BlurTool extends DrawingTool {
         point.x - radius,
         point.y - radius,
         radius * 2,
-        radius * 2
+        radius * 2,
       )
 
       // Apply simple blur
@@ -488,10 +519,10 @@ export class BlurTool extends DrawingTool {
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        let r = 0,
-          g = 0,
-          b = 0,
-          a = 0
+        let r = 0
+        let g = 0
+        let b = 0
+        let a = 0
         let count = 0
 
         for (let dy = -radius; dy <= radius; dy++) {
@@ -531,7 +562,7 @@ export class HighlightTool extends PenTool {
       color: '#ffff00',
       lineWidth: 10,
       opacity: 0.4,
-      ...options
+      ...options,
     })
   }
 }
@@ -549,7 +580,6 @@ export function getAllDrawingTools(engine: DrawingEngine): Record<string, Drawin
     eraser: new EraserTool(engine),
     arrow: new ArrowTool(engine),
     blur: new BlurTool(engine),
-    highlight: new HighlightTool(engine)
+    highlight: new HighlightTool(engine),
   }
 }
-

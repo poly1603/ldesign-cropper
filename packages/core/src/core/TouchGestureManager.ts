@@ -4,7 +4,7 @@
  */
 
 import { dispatch } from '../utils/events'
-import { clamp, distance, midpoint } from '../utils/math'
+import { distance, midpoint } from '../utils/math'
 import { throttle } from '../utils/performance'
 
 export interface TouchGestureOptions {
@@ -36,7 +36,7 @@ export interface GestureState {
   startAngle?: number
   startScale?: number
   lastScale?: number
-  velocity?: { x: number; y: number }
+  velocity?: { x: number, y: number }
 }
 
 const DEFAULTS: Required<TouchGestureOptions> = {
@@ -50,7 +50,7 @@ const DEFAULTS: Required<TouchGestureOptions> = {
   tapThreshold: 10,
   swipeThreshold: 50,
   doubleTapDelay: 300,
-  momentumFriction: 0.95
+  momentumFriction: 0.95,
 }
 
 export class TouchGestureManager {
@@ -59,7 +59,7 @@ export class TouchGestureManager {
   private touches: Map<number, TouchPoint> = new Map()
   private gestureState: GestureState = { type: 'none' }
   private lastTapTime = 0
-  private lastTapPosition: { x: number; y: number } | null = null
+  private lastTapPosition: { x: number, y: number } | null = null
   private momentumAnimationId: number | null = null
   private velocity = { x: 0, y: 0 }
   private lastMoveTime = 0
@@ -115,7 +115,7 @@ export class TouchGestureManager {
         y: touch.clientY,
         startX: touch.clientX,
         startY: touch.clientY,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       })
     }
 
@@ -137,7 +137,7 @@ export class TouchGestureManager {
     // Dispatch event
     dispatch(this.element, 'touchgesturestart', {
       touches: Array.from(this.touches.values()),
-      gestureType: this.gestureState.type
+      gestureType: this.gestureState.type,
     })
   }
 
@@ -186,7 +186,7 @@ export class TouchGestureManager {
 
         this.velocity = {
           x: (touch.x - rect.left - this.velocity.x * dt) / dt,
-          y: (touch.y - rect.top - this.velocity.y * dt) / dt
+          y: (touch.y - rect.top - this.velocity.y * dt) / dt,
         }
       }
 
@@ -196,7 +196,7 @@ export class TouchGestureManager {
     // Dispatch event
     dispatch(this.element, 'touchgesturemove', {
       touches: touchArray,
-      gestureType: this.gestureState.type
+      gestureType: this.gestureState.type,
     })
   }, 16) // ~60fps
 
@@ -223,15 +223,16 @@ export class TouchGestureManager {
     }
 
     // Start momentum animation if enabled
-    if (this.options.momentum && this.touches.size === 0 &&
-      (Math.abs(this.velocity.x) > 0.5 || Math.abs(this.velocity.y) > 0.5)) {
+    if (this.options.momentum && this.touches.size === 0
+      && (Math.abs(this.velocity.x) > 0.5 || Math.abs(this.velocity.y) > 0.5)) {
       this.startMomentum()
     }
 
     // Reset gesture state if no more touches
     if (this.touches.size === 0) {
       this.gestureState = { type: 'none' }
-    } else {
+    }
+    else {
       // Re-detect gesture type with remaining touches
       this.detectGestureType()
     }
@@ -239,7 +240,7 @@ export class TouchGestureManager {
     // Dispatch event
     dispatch(this.element, 'touchgestureend', {
       touches: Array.from(this.touches.values()),
-      gestureType: this.gestureState.type
+      gestureType: this.gestureState.type,
     })
   }
 
@@ -269,16 +270,19 @@ export class TouchGestureManager {
 
     if (touchCount === 1) {
       this.gestureState = { type: 'pan' }
-    } else if (touchCount === 2) {
+    }
+    else if (touchCount === 2) {
       const touches = Array.from(this.touches.values())
       const dist = distance(
-        touches[0].x, touches[0].y,
-        touches[1].x, touches[1].y
+        touches[0].x,
+        touches[0].y,
+        touches[1].x,
+        touches[1].y,
       )
 
       const angle = Math.atan2(
         touches[1].y - touches[0].y,
-        touches[1].x - touches[0].x
+        touches[1].x - touches[0].x,
       )
 
       this.gestureState = {
@@ -286,9 +290,10 @@ export class TouchGestureManager {
         startDistance: dist,
         startAngle: angle,
         startScale: 1,
-        lastScale: 1
+        lastScale: 1,
       }
-    } else {
+    }
+    else {
       this.gestureState = { type: 'none' }
     }
   }
@@ -297,7 +302,8 @@ export class TouchGestureManager {
    * Handle pan gesture
    */
   private handlePan(touches: TouchPoint[]): void {
-    if (touches.length !== 1) return
+    if (touches.length !== 1)
+      return
 
     const touch = touches[0]
     const deltaX = touch.x - touch.startX
@@ -312,18 +318,23 @@ export class TouchGestureManager {
    * Handle pinch gesture
    */
   private handlePinch(touches: TouchPoint[]): void {
-    if (touches.length !== 2 || !this.options.pinchZoom) return
+    if (touches.length !== 2 || !this.options.pinchZoom)
+      return
 
     const dist = distance(
-      touches[0].x, touches[0].y,
-      touches[1].x, touches[1].y
+      touches[0].x,
+      touches[0].y,
+      touches[1].x,
+      touches[1].y,
     )
 
     if (this.gestureState.startDistance) {
       const scale = dist / this.gestureState.startDistance
       const center = midpoint(
-        touches[0].x, touches[0].y,
-        touches[1].x, touches[1].y
+        touches[0].x,
+        touches[0].y,
+        touches[1].x,
+        touches[1].y,
       )
 
       if (this.onZoom) {
@@ -338,18 +349,21 @@ export class TouchGestureManager {
    * Handle rotation gesture
    */
   private handleRotation(touches: TouchPoint[]): void {
-    if (touches.length !== 2 || !this.options.rotationGestures) return
+    if (touches.length !== 2 || !this.options.rotationGestures)
+      return
 
     const angle = Math.atan2(
       touches[1].y - touches[0].y,
-      touches[1].x - touches[0].x
+      touches[1].x - touches[0].x,
     )
 
     if (this.gestureState.startAngle !== undefined) {
       const rotation = angle - this.gestureState.startAngle
       const center = midpoint(
-        touches[0].x, touches[0].y,
-        touches[1].x, touches[1].y
+        touches[0].x,
+        touches[0].y,
+        touches[1].x,
+        touches[1].y,
       )
 
       if (this.onRotate) {
@@ -366,13 +380,14 @@ export class TouchGestureManager {
     const timeSinceLastTap = now - this.lastTapTime
 
     // Check for double tap
-    if (this.options.doubleTapZoom &&
-      timeSinceLastTap < this.options.doubleTapDelay &&
-      this.lastTapPosition) {
-
+    if (this.options.doubleTapZoom
+      && timeSinceLastTap < this.options.doubleTapDelay
+      && this.lastTapPosition) {
       const dist = distance(
-        touch.x, touch.y,
-        this.lastTapPosition.x, this.lastTapPosition.y
+        touch.x,
+        touch.y,
+        this.lastTapPosition.x,
+        this.lastTapPosition.y,
       )
 
       if (dist < this.options.tapThreshold) {
@@ -395,8 +410,10 @@ export class TouchGestureManager {
     setTimeout(() => {
       if (this.lastTapTime === now) {
         const movement = distance(
-          touch.x, touch.y,
-          touch.startX, touch.startY
+          touch.x,
+          touch.y,
+          touch.startX,
+          touch.startY,
         )
 
         if (movement < this.options.tapThreshold && this.onTap) {
@@ -410,26 +427,30 @@ export class TouchGestureManager {
    * Check for swipe gesture
    */
   private checkForSwipe(touch: TouchPoint): void {
-    if (!this.options.swipeGestures) return
+    if (!this.options.swipeGestures)
+      return
 
     const deltaX = touch.x - touch.startX
     const deltaY = touch.y - touch.startY
     const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
 
-    if (dist < this.options.swipeThreshold) return
+    if (dist < this.options.swipeThreshold)
+      return
 
     const duration = Date.now() - touch.timestamp
     const velocity = dist / duration
 
     // Require minimum velocity
-    if (velocity < 0.3) return
+    if (velocity < 0.3)
+      return
 
     // Determine direction
     let direction: 'left' | 'right' | 'up' | 'down'
 
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
       direction = deltaX > 0 ? 'right' : 'left'
-    } else {
+    }
+    else {
       direction = deltaY > 0 ? 'down' : 'up'
     }
 
@@ -514,7 +535,8 @@ export class TouchGestureManager {
 
     if (enabled) {
       this.init()
-    } else {
+    }
+    else {
       this.destroy()
     }
   }
@@ -569,5 +591,3 @@ export class TouchGestureManager {
     this.gestureState = { type: 'none' }
   }
 }
-
-

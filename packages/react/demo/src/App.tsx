@@ -1,5 +1,6 @@
+import type { CropperRef } from '@ldesign/cropper-react'
+import { Cropper } from '@ldesign/cropper-react'
 import { useRef, useState } from 'react'
-import { Cropper, type CropperRef } from '@ldesign/cropper-react'
 // import '@ldesign/cropper-react/es/style.css'
 import './App.css'
 
@@ -81,4 +82,3 @@ function App() {
 }
 
 export default App
-

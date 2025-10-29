@@ -2,17 +2,17 @@
  * Worker types and interfaces
  */
 
-export type WorkerMessageType =
-  | 'applyFilter'
-  | 'applyFilterBatch'
-  | 'processImage'
-  | 'resizeImage'
-  | 'rotateImage'
-  | 'cropImage'
-  | 'generateThumbnail'
-  | 'analyzeImage'
-  | 'detectFaces'
-  | 'suggestComposition'
+export type WorkerMessageType
+  = | 'applyFilter'
+    | 'applyFilterBatch'
+    | 'processImage'
+    | 'resizeImage'
+    | 'rotateImage'
+    | 'cropImage'
+    | 'generateThumbnail'
+    | 'analyzeImage'
+    | 'detectFaces'
+    | 'suggestComposition'
 
 export interface WorkerMessage<T = any> {
   id: string
@@ -103,8 +103,3 @@ export interface CompositionSuggestion {
   score: number
   description: string
 }
-
-
-
-
-

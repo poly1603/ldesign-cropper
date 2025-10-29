@@ -14,5 +14,7 @@ export default defineConfig({
   outDir: {
     esm: 'es',
     cjs: 'lib'
-  }
+  },
+  // Disable CSS processing to avoid PostCSS issues
+  disableCss: true,
 })

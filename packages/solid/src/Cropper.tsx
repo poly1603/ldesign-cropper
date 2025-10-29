@@ -1,5 +1,7 @@
-import { createEffect, createSignal, onCleanup, onMount, type Component, type JSX } from 'solid-js'
-import { Cropper as CropperCore, type CropperOptions } from '@ldesign/cropper-core'
+import type { CropperOptions } from '@ldesign/cropper-core'
+import type { Component, JSX } from 'solid-js'
+import { Cropper as CropperCore } from '@ldesign/cropper-core'
+import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 
 export interface CropperProps {
   src?: string
@@ -38,7 +40,7 @@ export const Cropper: Component<CropperProps> = (props) => {
         cropmove: props.onCropmove,
         cropend: props.onCropend,
         crop: props.onCrop,
-        zoom: props.onZoom
+        zoom: props.onZoom,
       }
 
       cropper = new CropperCore(containerRef, options)
@@ -66,10 +68,10 @@ export const Cropper: Component<CropperProps> = (props) => {
       ref={containerRef}
       class={props.class}
       style={{
-        width: '100%',
-        height: '100%',
+        'width': '100%',
+        'height': '100%',
         'min-height': '400px',
-        ...props.style
+        ...props.style,
       }}
     />
   )
@@ -97,6 +99,6 @@ export function useCropper() {
   return {
     cropper,
     initCropper,
-    destroyCropper
+    destroyCropper,
   }
 }

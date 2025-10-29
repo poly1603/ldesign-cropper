@@ -2,9 +2,9 @@
  * React Hook for Cropper
  */
 
-import { useRef, useEffect, useState, useCallback } from 'react'
-import { Cropper } from '../../core/Cropper'
 import type { CropperOptions, GetCroppedCanvasOptions } from '../../types'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Cropper } from '../../core/Cropper'
 
 export interface UseCropperOptions extends Omit<CropperOptions, 'src'> {
   src?: string
@@ -22,7 +22,8 @@ export function useCropper(options: UseCropperOptions = {}) {
   const [canvasData, setCanvasData] = useState<any>({})
 
   const initCropper = useCallback(() => {
-    if (!containerRef.current || cropperRef.current) return
+    if (!containerRef.current || cropperRef.current)
+      return
 
     const { src, onReady, onCrop, onZoom, ...cropperOptions } = options
 
@@ -39,7 +40,7 @@ export function useCropper(options: UseCropperOptions = {}) {
       },
       zoom: (e) => {
         onZoom?.(e)
-      }
+      },
     })
   }, [options])
 
@@ -157,13 +158,13 @@ export function useCropper(options: UseCropperOptions = {}) {
     // Refs
     containerRef,
     cropperInstance: cropperRef.current,
-    
+
     // State
     isReady,
     cropData,
     imageData,
     canvasData,
-    
+
     // Methods
     replace,
     getCroppedCanvas,
@@ -181,8 +182,8 @@ export function useCropper(options: UseCropperOptions = {}) {
     enable,
     disable,
     setCropBoxStyle,
-    
+
     // Lifecycle
-    destroy: destroyCropper
+    destroy: destroyCropper,
   }
 }

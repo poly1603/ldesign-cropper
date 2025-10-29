@@ -3,5 +3,5 @@
  * Qwik wrapper for @ldesign/cropper
  */
 
-export { Cropper, useCropper, type CropperProps } from './cropper'
+export { Cropper, type CropperProps, useCropper } from './cropper'
 export * from '@ldesign/cropper-core'

@@ -3,8 +3,8 @@
  */
 
 import type { CropBoxData, Rectangle } from '../types'
+import { addClass, createElement, removeClass, setStyle } from '../utils/dom'
 import { clamp } from '../utils/math'
-import { createElement, setStyle, addClass, removeClass } from '../utils/dom'
 
 export interface CropBoxOptions {
   aspectRatio?: number
@@ -49,7 +49,7 @@ export class CropBox {
 
   constructor(
     container: HTMLElement,
-    options: CropBoxOptions = {}
+    options: CropBoxOptions = {},
   ) {
     this.container = container
     this.aspectRatio = options.aspectRatio
@@ -58,7 +58,7 @@ export class CropBox {
     this.maxWidth = options.maxWidth
     this.maxHeight = options.maxHeight
     this.modal = options.modal ?? true
-    this.modalOpacity = options.modalOpacity ?? 0.3  // Lighter default opacity
+    this.modalOpacity = options.modalOpacity ?? 0.3 // Lighter default opacity
     this.guides = options.guides ?? true
     this.center = options.center ?? true
     this.highlight = options.highlight ?? true
@@ -71,7 +71,7 @@ export class CropBox {
       left: 0,
       top: 0,
       width: 0,
-      height: 0
+      height: 0,
     }
   }
 
@@ -151,7 +151,7 @@ export class CropBox {
       this.modalElement = createElement('div', 'cropper-modal')
       // Apply modal opacity
       setStyle(this.modalElement, {
-        backgroundColor: `rgba(0, 0, 0, ${this.modalOpacity})`
+        backgroundColor: `rgba(0, 0, 0, ${this.modalOpacity})`,
       })
       this.container.appendChild(this.modalElement)
     }
@@ -171,7 +171,8 @@ export class CropBox {
       if (this.aspectRatio) {
         if (data.width !== undefined) {
           newData.height = newData.width / this.aspectRatio
-        } else if (data.height !== undefined) {
+        }
+        else if (data.height !== undefined) {
           newData.width = newData.height * this.aspectRatio
         }
       }
@@ -180,12 +181,12 @@ export class CropBox {
       newData.width = clamp(
         newData.width,
         this.minWidth,
-        this.maxWidth || Infinity
+        this.maxWidth || Infinity,
       )
       newData.height = clamp(
         newData.height,
         this.minHeight,
-        this.maxHeight || Infinity
+        this.maxHeight || Infinity,
       )
 
       // Apply position constraints (keep within container)
@@ -231,7 +232,8 @@ export class CropBox {
             newWidth = maxWidth
             newHeight = newWidth / aspectRatio
           }
-        } else {
+        }
+        else {
           // Current box is taller than new ratio, adjust height
           newHeight = this.data.width / aspectRatio
           if (newHeight > maxHeight) {
@@ -248,7 +250,7 @@ export class CropBox {
           left,
           top,
           width: newWidth,
-          height: newHeight
+          height: newHeight,
         })
       }
     }
@@ -264,7 +266,7 @@ export class CropBox {
       transform: `translate3d(${this.data.left}px, ${this.data.top}px, 0)`,
       width: `${this.data.width}px`,
       height: `${this.data.height}px`,
-      willChange: 'transform, width, height'
+      willChange: 'transform, width, height',
     })
   }
 
@@ -274,7 +276,7 @@ export class CropBox {
   move(deltaX: number, deltaY: number): void {
     this.setData({
       left: this.data.left + deltaX,
-      top: this.data.top + deltaY
+      top: this.data.top + deltaY,
     })
   }
 
@@ -325,10 +327,10 @@ export class CropBox {
    */
   contains(x: number, y: number): boolean {
     return (
-      x >= this.data.left &&
-      x <= this.data.left + this.data.width &&
-      y >= this.data.top &&
-      y <= this.data.top + this.data.height
+      x >= this.data.left
+      && x <= this.data.left + this.data.width
+      && y >= this.data.top
+      && y <= this.data.top + this.data.height
     )
   }
 
@@ -340,7 +342,7 @@ export class CropBox {
       left: this.data.left,
       top: this.data.top,
       width: this.data.width,
-      height: this.data.height
+      height: this.data.height,
     }
   }
 

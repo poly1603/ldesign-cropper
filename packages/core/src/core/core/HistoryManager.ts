@@ -4,8 +4,8 @@
  */
 
 import type { Cropper } from './Cropper'
-import { LRUCache } from '../utils/cache'
 import { PERFORMANCE } from '../config/constants'
+import { LRUCache } from '../utils/cache'
 
 export interface HistoryState {
   data: any
@@ -38,7 +38,7 @@ export class HistoryManager {
       maxSize: options.maxSize || PERFORMANCE.MAX_HISTORY_SIZE,
       autoSave: options.autoSave ?? true,
       saveInterval: options.saveInterval || PERFORMANCE.HISTORY_SAVE_INTERVAL_MS,
-      ...options
+      ...options,
     }
 
     // Initialize LRU cache for history states
@@ -63,7 +63,7 @@ export class HistoryManager {
     // Listen to cropper events that should trigger auto-save
     const events = ['cropend', 'zoom.cropper']
 
-    events.forEach(event => {
+    events.forEach((event) => {
       this.cropper.element.addEventListener(event, () => {
         this.scheduleAutoSave()
       })
@@ -85,7 +85,8 @@ export class HistoryManager {
         this.saveState()
         this.autoSaveTimer = null
       }, this.options.saveInterval)
-    } else {
+    }
+    else {
       this.saveState()
     }
   }
@@ -98,7 +99,7 @@ export class HistoryManager {
         containerData: this.cropper.getContainerData(),
         canvasData: this.cropper.getCanvasData(),
         cropBoxData: this.cropper.getCropBoxData(),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
 
       // Remove any states after current index
@@ -116,8 +117,8 @@ export class HistoryManager {
 
       this.lastSaveTime = Date.now()
       this.emit('change', { canUndo: this.canUndo(), canRedo: this.canRedo() })
-
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to save history state:', error)
     }
   }
@@ -145,7 +146,8 @@ export class HistoryManager {
   }
 
   private restoreState(state: HistoryState): void {
-    if (!state) return
+    if (!state)
+      return
 
     try {
       // Temporarily disable auto-save
@@ -161,7 +163,8 @@ export class HistoryManager {
       this.options.autoSave = autoSave
 
       this.emit('restore', state)
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to restore history state:', error)
     }
   }
@@ -221,7 +224,8 @@ export class HistoryManager {
   public off(event: string, callback?: Function): void {
     if (!callback) {
       this.listeners.delete(event)
-    } else {
+    }
+    else {
       const callbacks = this.listeners.get(event)
       if (callbacks) {
         const index = callbacks.indexOf(callback)
@@ -248,7 +252,7 @@ export class HistoryManager {
   public exportHistory(): string {
     return JSON.stringify({
       history: this.history,
-      currentIndex: this.currentIndex
+      currentIndex: this.currentIndex,
     })
   }
 
@@ -266,7 +270,8 @@ export class HistoryManager {
         this.emit('change', { canUndo: this.canUndo(), canRedo: this.canRedo() })
         return true
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to import history:', error)
     }
     return false

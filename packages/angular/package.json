@@ -1,8 +1,17 @@
 {
   "name": "@ldesign/cropper-angular",
+  "type": "module",
   "version": "2.0.0",
   "description": "Angular wrapper for @ldesign/cropper",
-  "type": "module",
+  "author": "ldesign",
+  "license": "MIT",
+  "keywords": [
+    "cropper",
+    "image-cropper",
+    "angular",
+    "component",
+    "directive"
+  ],
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
@@ -13,19 +22,19 @@
       "types": "./es/index.d.ts",
       "import": "./es/index.js",
       "require": "./lib/index.cjs"
-    },
-    "./es/*": "./es/*",
-    "./lib/*": "./lib/*",
-    "./dist/*": "./dist/*"
+    }
   },
   "main": "./lib/index.cjs",
   "module": "./es/index.js",
+  "unpkg": "./dist/index.min.js",
+  "jsdelivr": "./dist/index.min.js",
   "types": "./es/index.d.ts",
   "files": [
+    "LICENSE",
+    "README.md",
     "es",
     "lib",
-    "dist",
-    "README.md"
+    "package.json"
   ],
   "scripts": {
     "dev": "ldesign-builder --watch",
@@ -35,6 +44,11 @@
     "lint:fix": "eslint src --fix",
     "typecheck": "tsc --noEmit",
     "test": "vitest"
+  },
+  "peerDependencies": {
+    "@angular/common": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "rxjs": "^7.0.0"
   },
   "dependencies": {
     "@ldesign/cropper-core": "workspace:*",
@@ -53,20 +67,6 @@
     "vitest": "^1.0.0",
     "zone.js": "^0.14.0"
   },
-  "peerDependencies": {
-    "@angular/common": "^17.0.0",
-    "@angular/core": "^17.0.0",
-    "rxjs": "^7.0.0"
-  },
-  "keywords": [
-    "cropper",
-    "image-cropper",
-    "angular",
-    "component",
-    "directive"
-  ],
-  "author": "ldesign",
-  "license": "MIT",
   "publishConfig": {
     "access": "public"
   }

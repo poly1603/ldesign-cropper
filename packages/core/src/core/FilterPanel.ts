@@ -3,13 +3,14 @@
  * UI component for filter selection and control
  */
 
+import type { Filter } from '../filters/FilterEngine'
+import type { FilterPreset } from '../filters/presets'
 import type { Cropper } from './Cropper'
-import { FilterEngine, Filter } from '../filters/FilterEngine'
+import { FILTERS } from '../config/constants'
 import { getAllBuiltInFilters } from '../filters/builtins'
-import { getAllPresets, applyPreset, FilterPreset } from '../filters/presets'
+import { FilterEngine } from '../filters/FilterEngine'
+import { applyPreset, getAllPresets } from '../filters/presets'
 import { createElement, setStyle } from '../utils/dom'
-import { dispatch } from '../utils/events'
-import { FILTERS, CSS_CLASSES } from '../config/constants'
 
 export interface FilterPanelOptions {
   visible?: boolean
@@ -31,7 +32,7 @@ export class FilterPanel {
   constructor(
     cropper: Cropper,
     container: HTMLElement,
-    options: FilterPanelOptions = {}
+    options: FilterPanelOptions = {},
   ) {
     this.cropper = cropper
     this.container = container
@@ -41,7 +42,7 @@ export class FilterPanel {
       showPresets: true,
       showCustomFilters: true,
       enableComparison: true,
-      ...options
+      ...options,
     }
 
     this.filterEngine = new FilterEngine()
@@ -144,7 +145,8 @@ export class FilterPanel {
    */
   private showPresetsTab(): void {
     const content = this.element?.querySelector('#filter-panel-content')
-    if (!content) return
+    if (!content)
+      return
 
     content.innerHTML = ''
 
@@ -174,7 +176,8 @@ export class FilterPanel {
    */
   private showCustomTab(): void {
     const content = this.element?.querySelector('#filter-panel-content')
-    if (!content) return
+    if (!content)
+      return
 
     content.innerHTML = ''
 
@@ -246,8 +249,8 @@ export class FilterPanel {
 
     slider.addEventListener('input', (e) => {
       const target = e.target as HTMLInputElement
-      value.textContent = parseFloat(target.value).toFixed(1)
-      this.updateFilterPreview(filter.name, parseFloat(target.value))
+      value.textContent = Number.parseFloat(target.value).toFixed(1)
+      this.updateFilterPreview(filter.name, Number.parseFloat(target.value))
     })
 
     control.appendChild(label)
@@ -263,7 +266,7 @@ export class FilterPanel {
   private formatFilterName(name: string): string {
     return name
       .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, (str) => str.toUpperCase())
+      .replace(/^./, str => str.toUpperCase())
       .trim()
   }
 
@@ -275,7 +278,8 @@ export class FilterPanel {
     tabs?.forEach((tab) => {
       if ((tab as HTMLElement).dataset.tab === tabName) {
         tab.classList.add('active')
-      } else {
+      }
+      else {
         tab.classList.remove('active')
       }
     })
@@ -286,10 +290,12 @@ export class FilterPanel {
    */
   private applyPreset(preset: FilterPreset): void {
     const canvas = this.cropper.getCroppedCanvas()
-    if (!canvas) return
+    if (!canvas)
+      return
 
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx)
+      return
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     this.filterEngine.setOriginalImageData(imageData)
@@ -310,10 +316,12 @@ export class FilterPanel {
     // Real-time preview implementation
     // This would update the cropper display in real-time
     const canvas = this.cropper.getCroppedCanvas()
-    if (!canvas) return
+    if (!canvas)
+      return
 
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx)
+      return
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     this.filterEngine.setOriginalImageData(imageData)
@@ -333,10 +341,12 @@ export class FilterPanel {
    */
   private applyCurrentFilters(): void {
     const canvas = this.cropper.getCroppedCanvas()
-    if (!canvas) return
+    if (!canvas)
+      return
 
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx)
+      return
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     this.filterEngine.setOriginalImageData(imageData)
@@ -346,7 +356,7 @@ export class FilterPanel {
     sliders?.forEach((slider) => {
       const input = slider as HTMLInputElement
       const filterName = input.dataset.filter
-      const intensity = parseFloat(input.value)
+      const intensity = Number.parseFloat(input.value)
 
       if (filterName && intensity !== 1) {
         this.filterEngine.addFilterLayer(filterName, { intensity })
@@ -390,11 +400,11 @@ export class FilterPanel {
   private dispatchFilterEvent(
     type: string,
     filterName: string,
-    canvas: HTMLCanvasElement
+    canvas: HTMLCanvasElement,
   ): void {
     const event = new CustomEvent('filter:applied', {
       detail: { type, filterName, canvas },
-      bubbles: true
+      bubbles: true,
     })
     this.container.dispatchEvent(event)
   }
@@ -405,7 +415,8 @@ export class FilterPanel {
   show(): void {
     if (!this.element) {
       this.render()
-    } else {
+    }
+    else {
       setStyle(this.element, { display: '' })
     }
   }
@@ -425,7 +436,8 @@ export class FilterPanel {
   toggle(): void {
     if (this.element && this.element.style.display === 'none') {
       this.show()
-    } else {
+    }
+    else {
       this.hide()
     }
   }
@@ -449,4 +461,3 @@ export class FilterPanel {
     this.filterEngine.destroy()
   }
 }
-

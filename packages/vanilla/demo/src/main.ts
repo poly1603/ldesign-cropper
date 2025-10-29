@@ -35,7 +35,7 @@ const cropper = new Cropper('#cropper-container', {
   },
   crop: (event: CustomEvent) => {
     console.log('📐 Crop data:', event.detail)
-  }
+  },
 })
 
 // Setup controls
@@ -69,4 +69,3 @@ document.getElementById('crop-btn')?.addEventListener('click', () => {
 })
 
 console.log('🚀 Cropper instance:', cropper)
-

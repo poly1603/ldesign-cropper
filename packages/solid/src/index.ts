@@ -3,5 +3,5 @@
  * Solid.js wrapper for @ldesign/cropper
  */
 
-export { Cropper, useCropper, type CropperProps } from './Cropper'
+export { Cropper, type CropperProps, useCropper } from './Cropper'
 export * from '@ldesign/cropper-core'

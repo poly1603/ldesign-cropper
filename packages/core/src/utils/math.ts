@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Math utilities
  */
 
@@ -61,6 +61,16 @@ export function distance(x1: number, y1: number, x2: number, y2: number): number
 }
 
 /**
+ * Get the midpoint between two points
+ */
+export function midpoint(p1: Point, p2: Point): Point {
+  return {
+    x: (p1.x + p2.x) / 2,
+    y: (p1.y + p2.y) / 2,
+  }
+}
+
+/**
  * Get the angle between two points
  */
 export function getAngle(p1: Point, p2: Point): number {
@@ -87,7 +97,7 @@ export function toDegrees(radians: number): number {
 export function rotatePoint(
   point: Point,
   center: Point,
-  angle: number
+  angle: number,
 ): Point {
   const radians = toRadians(angle)
   const cos = Math.cos(radians)
@@ -98,7 +108,7 @@ export function rotatePoint(
 
   return {
     x: center.x + dx * cos - dy * sin,
-    y: center.y + dx * sin + dy * cos
+    y: center.y + dx * sin + dy * cos,
   }
 }
 
@@ -109,14 +119,14 @@ export const getAspectRatio = memoize(
   (width: number, height: number): number => {
     return width / height
   },
-  (w, h) => `${w}:${h}`
+  (w, h) => `${w}:${h}`,
 )
 
 /**
  * Round a number to a specific number of decimal places
  */
 export function round(num: number, decimals = 0): number {
-  const factor = Math.pow(10, decimals)
+  const factor = 10 ** decimals
   return Math.round(num * factor) / factor
 }
 
@@ -141,7 +151,7 @@ export function getScaleToFit(
   sourceWidth: number,
   sourceHeight: number,
   targetWidth: number,
-  targetHeight: number
+  targetHeight: number,
 ): number {
   return Math.min(targetWidth / sourceWidth, targetHeight / sourceHeight)
 }
@@ -153,7 +163,7 @@ export function getScaleToCover(
   sourceWidth: number,
   sourceHeight: number,
   targetWidth: number,
-  targetHeight: number
+  targetHeight: number,
 ): number {
   return Math.max(targetWidth / sourceWidth, targetHeight / sourceHeight)
 }

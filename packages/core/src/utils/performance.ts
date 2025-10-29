@@ -10,7 +10,7 @@
  */
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let lastCall = 0
   let timeoutId: number | null = null
@@ -26,7 +26,8 @@ export function throttle<T extends (...args: any[]) => any>(
 
     if (timeSinceLastCall >= delay) {
       execute()
-    } else {
+    }
+    else {
       if (timeoutId) {
         clearTimeout(timeoutId)
       }
@@ -43,7 +44,7 @@ export function throttle<T extends (...args: any[]) => any>(
  */
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: number | null = null
 
@@ -61,14 +62,14 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Request animation frame wrapper with fallback
  */
-export const raf = (callback: FrameRequestCallback): number => {
+export function raf(callback: FrameRequestCallback): number {
   return window.requestAnimationFrame(callback)
 }
 
 /**
  * Cancel animation frame wrapper
  */
-export const cancelRaf = (id: number): void => {
+export function cancelRaf(id: number): void {
   window.cancelAnimationFrame(id)
 }
 
@@ -80,7 +81,7 @@ export const cancelRaf = (id: number): void => {
  */
 export function memoize<T extends (...args: any[]) => any>(
   fn: T,
-  keyGenerator?: (...args: Parameters<T>) => string
+  keyGenerator?: (...args: Parameters<T>) => string,
 ): T {
   const cache = new Map<string, ReturnType<T>>()
 
@@ -118,7 +119,8 @@ export class DOMBatcher {
   }
 
   private schedule(): void {
-    if (this.scheduled) return
+    if (this.scheduled)
+      return
 
     this.scheduled = true
     raf(() => {
@@ -169,12 +171,14 @@ export class PerformanceMonitor {
   }
 
   mark(name: string): void {
-    if (!this.enabled) return
+    if (!this.enabled)
+      return
     performance.mark(name)
   }
 
   measure(name: string, startMark: string, endMark?: string): number {
-    if (!this.enabled) return 0
+    if (!this.enabled)
+      return 0
 
     try {
       const measure = performance.measure(name, startMark, endMark)
@@ -193,28 +197,30 @@ export class PerformanceMonitor {
       }
 
       return duration
-    } catch (e) {
+    }
+    catch (e) {
       return 0
     }
   }
 
   getAverage(name: string): number {
     const values = this.metrics.get(name)
-    if (!values || values.length === 0) return 0
+    if (!values || values.length === 0)
+      return 0
 
     const sum = values.reduce((a, b) => a + b, 0)
     return sum / values.length
   }
 
-  getMetrics(): Record<string, { avg: number; count: number; total: number }> {
-    const result: Record<string, { avg: number; count: number; total: number }> = {}
+  getMetrics(): Record<string, { avg: number, count: number, total: number }> {
+    const result: Record<string, { avg: number, count: number, total: number }> = {}
 
     this.metrics.forEach((values, name) => {
       const total = values.reduce((a, b) => a + b, 0)
       result[name] = {
         avg: total / values.length,
         count: values.length,
-        total
+        total,
       }
     })
 
@@ -242,20 +248,21 @@ export class MemoryMonitor {
       return {
         usedJSHeapSize: memory.usedJSHeapSize,
         totalJSHeapSize: memory.totalJSHeapSize,
-        jsHeapSizeLimit: memory.jsHeapSizeLimit
+        jsHeapSizeLimit: memory.jsHeapSizeLimit,
       }
     }
     return null
   }
 
   formatBytes(bytes: number): string {
-    if (bytes === 0) return '0 Bytes'
+    if (bytes === 0)
+      return '0 Bytes'
 
     const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+    return `${Math.round(bytes / k ** i * 100) / 100} ${sizes[i]}`
   }
 
   checkMemoryPressure(): {
@@ -272,7 +279,8 @@ export class MemoryMonitor {
     let pressure: 'low' | 'medium' | 'high' = 'low'
     if (usagePercent > 80) {
       pressure = 'high'
-    } else if (usagePercent > 50) {
+    }
+    else if (usagePercent > 50) {
       pressure = 'medium'
     }
 
@@ -346,7 +354,8 @@ export class CanvasPool {
   }
 
   release(canvas: HTMLCanvasElement): void {
-    if (!this.inUse.has(canvas)) return
+    if (!this.inUse.has(canvas))
+      return
 
     this.inUse.delete(canvas)
 
@@ -367,10 +376,10 @@ export class CanvasPool {
     this.inUse.clear()
   }
 
-  getStats(): { poolSize: number; inUse: number } {
+  getStats(): { poolSize: number, inUse: number } {
     return {
       poolSize: this.pool.length,
-      inUse: this.inUse.size
+      inUse: this.inUse.size,
     }
   }
 }
@@ -379,4 +388,3 @@ export class CanvasPool {
 export const performanceMonitor = new PerformanceMonitor(false)
 export const memoryMonitor = new MemoryMonitor()
 export const canvasPool = new CanvasPool()
-

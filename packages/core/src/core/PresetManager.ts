@@ -36,7 +36,7 @@ export class PresetManager {
     this.options = {
       includeDefaults: true,
       customPresets: [],
-      ...options
+      ...options,
     }
 
     this.initialize()
@@ -48,7 +48,7 @@ export class PresetManager {
     }
 
     if (this.options.customPresets.length > 0) {
-      this.options.customPresets.forEach(preset => {
+      this.options.customPresets.forEach((preset) => {
         this.addPreset(preset)
       })
     }
@@ -61,50 +61,50 @@ export class PresetManager {
         id: 'free',
         name: 'Free',
         category: 'aspect',
-        description: 'No fixed aspect ratio'
+        description: 'No fixed aspect ratio',
       },
       {
         id: 'square',
         name: 'Square (1:1)',
         category: 'aspect',
         aspectRatio: 1,
-        description: 'Perfect square'
+        description: 'Perfect square',
       },
       {
         id: 'landscape-4-3',
         name: 'Landscape (4:3)',
         category: 'aspect',
         aspectRatio: 4 / 3,
-        description: 'Classic landscape'
+        description: 'Classic landscape',
       },
       {
         id: 'landscape-16-9',
         name: 'Landscape (16:9)',
         category: 'aspect',
         aspectRatio: 16 / 9,
-        description: 'Widescreen'
+        description: 'Widescreen',
       },
       {
         id: 'landscape-21-9',
         name: 'Landscape (21:9)',
         category: 'aspect',
         aspectRatio: 21 / 9,
-        description: 'Ultra-wide'
+        description: 'Ultra-wide',
       },
       {
         id: 'portrait-3-4',
         name: 'Portrait (3:4)',
         category: 'aspect',
         aspectRatio: 3 / 4,
-        description: 'Classic portrait'
+        description: 'Classic portrait',
       },
       {
         id: 'portrait-9-16',
         name: 'Portrait (9:16)',
         category: 'aspect',
         aspectRatio: 9 / 16,
-        description: 'Phone portrait'
-      }
+        description: 'Phone portrait',
+      },
     ]
 
     // Social Media Presets
@@ -116,7 +116,7 @@ export class PresetManager {
         width: 1200,
         height: 630,
         aspectRatio: 1200 / 630,
-        description: 'Optimal for Facebook feed'
+        description: 'Optimal for Facebook feed',
       },
       {
         id: 'facebook-cover',
@@ -125,7 +125,7 @@ export class PresetManager {
         width: 1640,
         height: 859,
         aspectRatio: 1640 / 859,
-        description: 'Facebook cover photo'
+        description: 'Facebook cover photo',
       },
       {
         id: 'instagram-post',
@@ -134,7 +134,7 @@ export class PresetManager {
         width: 1080,
         height: 1080,
         aspectRatio: 1,
-        description: 'Square Instagram post'
+        description: 'Square Instagram post',
       },
       {
         id: 'instagram-story',
@@ -143,7 +143,7 @@ export class PresetManager {
         width: 1080,
         height: 1920,
         aspectRatio: 9 / 16,
-        description: 'Instagram/Facebook story'
+        description: 'Instagram/Facebook story',
       },
       {
         id: 'twitter-post',
@@ -152,7 +152,7 @@ export class PresetManager {
         width: 1200,
         height: 675,
         aspectRatio: 16 / 9,
-        description: 'Twitter in-stream photo'
+        description: 'Twitter in-stream photo',
       },
       {
         id: 'twitter-header',
@@ -161,7 +161,7 @@ export class PresetManager {
         width: 1500,
         height: 500,
         aspectRatio: 3,
-        description: 'Twitter header image'
+        description: 'Twitter header image',
       },
       {
         id: 'youtube-thumbnail',
@@ -170,7 +170,7 @@ export class PresetManager {
         width: 1280,
         height: 720,
         aspectRatio: 16 / 9,
-        description: 'YouTube video thumbnail'
+        description: 'YouTube video thumbnail',
       },
       {
         id: 'youtube-banner',
@@ -179,7 +179,7 @@ export class PresetManager {
         width: 2560,
         height: 1440,
         aspectRatio: 16 / 9,
-        description: 'YouTube channel banner'
+        description: 'YouTube channel banner',
       },
       {
         id: 'linkedin-post',
@@ -188,7 +188,7 @@ export class PresetManager {
         width: 1200,
         height: 1200,
         aspectRatio: 1,
-        description: 'LinkedIn feed post'
+        description: 'LinkedIn feed post',
       },
       {
         id: 'linkedin-cover',
@@ -197,8 +197,8 @@ export class PresetManager {
         width: 1584,
         height: 396,
         aspectRatio: 4,
-        description: 'LinkedIn background photo'
-      }
+        description: 'LinkedIn background photo',
+      },
     ]
 
     // Document Presets
@@ -210,7 +210,7 @@ export class PresetManager {
         width: 210,
         height: 297,
         aspectRatio: 210 / 297,
-        description: 'A4 paper portrait'
+        description: 'A4 paper portrait',
       },
       {
         id: 'a4-landscape',
@@ -219,7 +219,7 @@ export class PresetManager {
         width: 297,
         height: 210,
         aspectRatio: 297 / 210,
-        description: 'A4 paper landscape'
+        description: 'A4 paper landscape',
       },
       {
         id: 'letter-portrait',
@@ -228,7 +228,7 @@ export class PresetManager {
         width: 216,
         height: 279,
         aspectRatio: 216 / 279,
-        description: 'US Letter portrait'
+        description: 'US Letter portrait',
       },
       {
         id: 'letter-landscape',
@@ -237,8 +237,8 @@ export class PresetManager {
         width: 279,
         height: 216,
         aspectRatio: 279 / 216,
-        description: 'US Letter landscape'
-      }
+        description: 'US Letter landscape',
+      },
     ]
 
     // Common Size Presets
@@ -250,7 +250,7 @@ export class PresetManager {
         width: 35,
         height: 45,
         aspectRatio: 35 / 45,
-        description: '35x45mm passport photo'
+        description: '35x45mm passport photo',
       },
       {
         id: 'thumbnail-small',
@@ -259,7 +259,7 @@ export class PresetManager {
         width: 150,
         height: 150,
         aspectRatio: 1,
-        description: '150x150px thumbnail'
+        description: '150x150px thumbnail',
       },
       {
         id: 'thumbnail-medium',
@@ -268,7 +268,7 @@ export class PresetManager {
         width: 300,
         height: 300,
         aspectRatio: 1,
-        description: '300x300px thumbnail'
+        description: '300x300px thumbnail',
       },
       {
         id: 'hd-720p',
@@ -277,7 +277,7 @@ export class PresetManager {
         width: 1280,
         height: 720,
         aspectRatio: 16 / 9,
-        description: '1280x720 HD'
+        description: '1280x720 HD',
       },
       {
         id: 'fhd-1080p',
@@ -286,7 +286,7 @@ export class PresetManager {
         width: 1920,
         height: 1080,
         aspectRatio: 16 / 9,
-        description: '1920x1080 Full HD'
+        description: '1920x1080 Full HD',
       },
       {
         id: '4k-uhd',
@@ -295,13 +295,13 @@ export class PresetManager {
         width: 3840,
         height: 2160,
         aspectRatio: 16 / 9,
-        description: '3840x2160 4K'
-      }
+        description: '3840x2160 4K',
+      },
     ]
 
     // Add all presets
     const allPresets = aspectPresets.concat(socialPresets, documentPresets, sizePresets)
-    allPresets.forEach(preset => {
+    allPresets.forEach((preset) => {
       this.addPreset(preset)
     })
   }
@@ -336,56 +336,60 @@ export class PresetManager {
     try {
       const containerData = this.cropper.getContainerData()
       const imageData = this.cropper.getImageData()
-      
+
       if (!containerData || !imageData) {
         console.error('Container or image data not available')
         return false
       }
-      
+
       // Calculate the target aspect ratio
-      const targetAspectRatio = preset.aspectRatio || (preset.width && preset.height ? preset.width / preset.height : NaN)
-      
+      const targetAspectRatio = preset.aspectRatio || (preset.width && preset.height ? preset.width / preset.height : Number.NaN)
+
       // First, clear any existing aspect ratio to avoid conflicts
-      this.cropper.setAspectRatio(NaN)
-      
+      this.cropper.setAspectRatio(Number.NaN)
+
       // Calculate optimal crop box dimensions
       let cropWidth, cropHeight, cropLeft, cropTop
-      
+
       if (!isNaN(targetAspectRatio)) {
         // We have a specific aspect ratio to maintain
         const containerAspect = containerData.width / containerData.height
         const maxWidth = Math.min(containerData.width * 0.85, imageData.width * 0.85)
         const maxHeight = Math.min(containerData.height * 0.85, imageData.height * 0.85)
-        
+
         if (targetAspectRatio > 1) {
           // Landscape (width > height)
           if (targetAspectRatio > containerAspect) {
             // Preset is wider than container aspect
             cropWidth = maxWidth
             cropHeight = cropWidth / targetAspectRatio
-          } else {
+          }
+          else {
             // Preset is taller than container aspect
             cropHeight = maxHeight
             cropWidth = cropHeight * targetAspectRatio
           }
-        } else if (targetAspectRatio < 1) {
+        }
+        else if (targetAspectRatio < 1) {
           // Portrait (height > width)
           if (1 / targetAspectRatio > containerData.height / containerData.width) {
             // Preset is taller than container
             cropHeight = maxHeight
             cropWidth = cropHeight * targetAspectRatio
-          } else {
+          }
+          else {
             // Preset is wider than container
             cropWidth = maxWidth
             cropHeight = cropWidth / targetAspectRatio
           }
-        } else {
+        }
+        else {
           // Square (1:1)
           const size = Math.min(maxWidth, maxHeight)
           cropWidth = size
           cropHeight = size
         }
-        
+
         // Final size check
         if (cropWidth > maxWidth) {
           cropWidth = maxWidth
@@ -395,64 +399,65 @@ export class PresetManager {
           cropHeight = maxHeight
           cropWidth = cropHeight * targetAspectRatio
         }
-        
+
         // Ensure minimum size
         const minSize = 50
         if (cropWidth < minSize || cropHeight < minSize) {
           if (targetAspectRatio > 1) {
             cropWidth = Math.max(minSize * targetAspectRatio, minSize)
             cropHeight = cropWidth / targetAspectRatio
-          } else {
+          }
+          else {
             cropHeight = Math.max(minSize / targetAspectRatio, minSize)
             cropWidth = cropHeight * targetAspectRatio
           }
         }
-      } else {
+      }
+      else {
         // No aspect ratio, use current crop box size or default
         const currentCrop = this.cropper.getCropBoxData()
         cropWidth = currentCrop?.width || containerData.width * 0.5
         cropHeight = currentCrop?.height || containerData.height * 0.5
       }
-      
+
       // Center the crop box
       cropLeft = (containerData.width - cropWidth) / 2
       cropTop = (containerData.height - cropHeight) / 2
-      
+
       // Ensure crop box is within bounds
       cropLeft = Math.max(0, Math.min(cropLeft, containerData.width - cropWidth))
       cropTop = Math.max(0, Math.min(cropTop, containerData.height - cropHeight))
-      
+
       // Apply the crop box settings
       this.cropper.setCropBoxData({
         left: cropLeft,
         top: cropTop,
         width: cropWidth,
-        height: cropHeight
+        height: cropHeight,
       })
-      
+
       // Now set the aspect ratio to lock it
       if (!isNaN(targetAspectRatio)) {
         this.cropper.setAspectRatio(targetAspectRatio)
       }
-      
+
       console.log('Applied preset:', preset.name, {
         targetAspectRatio,
-        cropBox: { 
-          left: Math.round(cropLeft), 
-          top: Math.round(cropTop), 
-          width: Math.round(cropWidth), 
-          height: Math.round(cropHeight) 
+        cropBox: {
+          left: Math.round(cropLeft),
+          top: Math.round(cropTop),
+          width: Math.round(cropWidth),
+          height: Math.round(cropHeight),
         },
         container: containerData,
-        actualRatio: (cropWidth / cropHeight).toFixed(3)
+        actualRatio: (cropWidth / cropHeight).toFixed(3),
       })
-      
 
       // Apply min/max constraints
       if (preset.minWidth || preset.minHeight) {
         this.cropper.setOptions({
           minCropBoxWidth: preset.minWidth || 0,
-          minCropBoxHeight: preset.minHeight || 0
+          minCropBoxHeight: preset.minHeight || 0,
         })
       }
 
@@ -462,28 +467,29 @@ export class PresetManager {
       }
 
       this.activePreset = presetId
-      
+
       // Dispatch preset applied event
       const event = new CustomEvent('preset:applied', {
         detail: { preset },
-        bubbles: true
+        bubbles: true,
       })
       this.cropper.element.dispatchEvent(event)
-      
+
       return true
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to apply preset:', error)
       return false
     }
   }
 
   public clearPreset(): void {
-    this.cropper.setAspectRatio(NaN)
+    this.cropper.setAspectRatio(Number.NaN)
     this.activePreset = null
-    
+
     // Dispatch preset cleared event
     const event = new CustomEvent('preset:cleared', {
-      bubbles: true
+      bubbles: true,
     })
     this.cropper.element.dispatchEvent(event)
   }
@@ -509,7 +515,7 @@ export class PresetManager {
     try {
       const presets = JSON.parse(json)
       if (Array.isArray(presets)) {
-        presets.forEach(preset => {
+        presets.forEach((preset) => {
           if (preset.id && preset.name) {
             preset.category = 'custom'
             this.addPreset(preset)
@@ -517,7 +523,8 @@ export class PresetManager {
         })
         return true
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to import presets:', error)
     }
     return false
@@ -533,14 +540,14 @@ export class PresetManager {
       id,
       name: options.name,
       category: 'custom',
-      description: options.description
+      description: options.description,
     }
 
     // If saveCurrentCrop is true, capture current crop settings
     if (options.saveCurrentCrop) {
       const data = this.cropper.getData()
       const cropBoxData = this.cropper.getCropBoxData()
-      
+
       if (data && cropBoxData) {
         preset.aspectRatio = cropBoxData.width / cropBoxData.height
         preset.width = Math.round(data.width)

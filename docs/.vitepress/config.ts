@@ -13,7 +13,7 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'API', link: '/api/cropper' },
       { text: 'Examples', link: '/examples/' },
-      { text: 'GitHub', link: 'https://github.com/ldesign/cropper' }
+      { text: 'GitHub', link: 'https://github.com/ldesign/cropper' },
     ],
 
     sidebar: {
@@ -23,8 +23,8 @@ export default defineConfig({
           items: [
             { text: 'Getting Started', link: '/guide/getting-started' },
             { text: 'Installation', link: '/guide/installation' },
-            { text: 'Basic Usage', link: '/guide/basic-usage' }
-          ]
+            { text: 'Basic Usage', link: '/guide/basic-usage' },
+          ],
         },
         {
           text: 'Framework Integration',
@@ -32,8 +32,8 @@ export default defineConfig({
             { text: 'Vanilla JavaScript', link: '/guide/vanilla-js' },
             { text: 'Vue 3', link: '/guide/vue' },
             { text: 'React', link: '/guide/react' },
-            { text: 'Angular', link: '/guide/angular' }
-          ]
+            { text: 'Angular', link: '/guide/angular' },
+          ],
         },
         {
           text: 'Advanced',
@@ -41,9 +41,9 @@ export default defineConfig({
             { text: 'Configuration', link: '/guide/configuration' },
             { text: 'Methods', link: '/guide/methods' },
             { text: 'Events', link: '/guide/events' },
-            { text: 'Plugins', link: '/guide/plugins' }
-          ]
-        }
+            { text: 'Plugins', link: '/guide/plugins' },
+          ],
+        },
       ],
       '/api/': [
         {
@@ -53,9 +53,9 @@ export default defineConfig({
             { text: 'Options', link: '/api/options' },
             { text: 'Methods', link: '/api/methods' },
             { text: 'Events', link: '/api/events' },
-            { text: 'Types', link: '/api/types' }
-          ]
-        }
+            { text: 'Types', link: '/api/types' },
+          ],
+        },
       ],
       '/examples/': [
         {
@@ -63,23 +63,23 @@ export default defineConfig({
           items: [
             { text: 'Basic Examples', link: '/examples/' },
             { text: 'Advanced Examples', link: '/examples/advanced' },
-            { text: 'Mobile Examples', link: '/examples/mobile' }
-          ]
-        }
-      ]
+            { text: 'Mobile Examples', link: '/examples/mobile' },
+          ],
+        },
+      ],
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/ldesign/cropper' }
+      { icon: 'github', link: 'https://github.com/ldesign/cropper' },
     ],
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2025-present ldesign'
+      copyright: 'Copyright © 2025-present ldesign',
     },
 
     search: {
-      provider: 'local'
-    }
-  }
+      provider: 'local',
+    },
+  },
 })

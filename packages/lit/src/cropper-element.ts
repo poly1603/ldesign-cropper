@@ -1,7 +1,7 @@
-import { LitElement, html, css } from 'lit'
+import type { CropBoxData, CropData, Cropper, type CropperOptions } from '@ldesign/cropper-core'
+
+import { css, html, LitElement } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
-import { Cropper, type CropperOptions } from '@ldesign/cropper-core'
-import type { CropBoxData, CropData } from '@ldesign/cropper-core'
 
 @customElement('l-cropper')
 export class CropperElement extends LitElement {
@@ -19,7 +19,7 @@ export class CropperElement extends LitElement {
   `
 
   @property({ type: String }) src = ''
-  @property({ type: Number }) aspectRatio = NaN
+  @property({ type: Number }) aspectRatio = Number.NaN
   @property({ type: Number }) viewMode = 0
   @property({ type: String }) dragMode: 'crop' | 'move' | 'none' = 'crop'
   @property({ type: Boolean }) responsive = true
@@ -57,7 +57,8 @@ export class CropperElement extends LitElement {
   }
 
   private async initCropper() {
-    if (!this.container) return
+    if (!this.container)
+      return
 
     const options: CropperOptions = {
       src: this.src,
@@ -100,7 +101,7 @@ export class CropperElement extends LitElement {
       },
       zoom: (e) => {
         this.dispatchEvent(new CustomEvent('cropper-zoom', { detail: e }))
-      }
+      },
     }
 
     this.cropper = new Cropper(this.container, options)
@@ -186,5 +187,3 @@ declare global {
     'l-cropper': CropperElement
   }
 }
-
-

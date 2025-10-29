@@ -2,11 +2,11 @@
  * InteractionManager - Handles user interactions (mouse, touch, gestures)
  */
 
-import type { Point, Action } from '../types'
-import { on, off, getPointer, getCenter, getTouchDistance, preventDefault } from '../utils/events'
-import { supportsTouchEvents, getEventListenerOptions } from '../utils/compatibility'
+import type { Action, Point } from '../types'
+import { getEventListenerOptions, supportsTouchEvents } from '../utils/compatibility'
 import { getData } from '../utils/dom'
-import { throttle, debounce } from '../utils/performance'
+import { getCenter, getPointer, getTouchDistance, off, on, preventDefault } from '../utils/events'
+import { debounce, throttle } from '../utils/performance'
 
 export interface InteractionCallbacks {
   onStart?: (action: Action, point: Point, event: MouseEvent | TouchEvent) => void
@@ -45,7 +45,7 @@ export class InteractionManager {
       zoomOnTouch?: boolean
       zoomOnWheel?: boolean
       wheelZoomRatio?: number
-    } = {}
+    } = {},
   ) {
     this.element = element
     this.callbacks = callbacks
@@ -134,7 +134,8 @@ export class InteractionManager {
         this.initialTouchDistance = getTouchDistance(touchEvent)
         return
       }
-    } else {
+    }
+    else {
       this.startPoint = getPointer(event)
     }
 
@@ -152,7 +153,8 @@ export class InteractionManager {
    * Handle interaction move
    */
   private handleMove(event: MouseEvent | TouchEvent): void {
-    if (!this.isActive) return
+    if (!this.isActive)
+      return
 
     preventDefault(event)
 
@@ -166,7 +168,8 @@ export class InteractionManager {
       }
 
       this.currentPoint = getPointer(touchEvent)
-    } else {
+    }
+    else {
       this.currentPoint = getPointer(event)
     }
 
@@ -191,7 +194,8 @@ export class InteractionManager {
    * Handle interaction end
    */
   private handleEnd(event: MouseEvent | TouchEvent): void {
-    if (!this.isActive) return
+    if (!this.isActive)
+      return
 
     const endPoint = getPointer(event, true)
 
@@ -209,7 +213,8 @@ export class InteractionManager {
    * Handle wheel zoom
    */
   private handleWheel(event: WheelEvent): void {
-    if (!this.zoomable) return
+    if (!this.zoomable)
+      return
 
     preventDefault(event)
 
@@ -229,7 +234,8 @@ export class InteractionManager {
    * Handle pinch zoom
    */
   private handlePinchZoom(event: TouchEvent): void {
-    if (!this.zoomable) return
+    if (!this.zoomable)
+      return
 
     const currentDistance = getTouchDistance(event)
     const delta = (currentDistance - this.initialTouchDistance) * 0.01
@@ -263,19 +269,31 @@ export class InteractionManager {
         return 'move'
       }
 
-      if (element.classList.contains('point-n')) return 'n'
-      if (element.classList.contains('point-e')) return 'e'
-      if (element.classList.contains('point-s')) return 's'
-      if (element.classList.contains('point-w')) return 'w'
-      if (element.classList.contains('point-ne')) return 'ne'
-      if (element.classList.contains('point-nw')) return 'nw'
-      if (element.classList.contains('point-se')) return 'se'
-      if (element.classList.contains('point-sw')) return 'sw'
+      if (element.classList.contains('point-n'))
+        return 'n'
+      if (element.classList.contains('point-e'))
+        return 'e'
+      if (element.classList.contains('point-s'))
+        return 's'
+      if (element.classList.contains('point-w'))
+        return 'w'
+      if (element.classList.contains('point-ne'))
+        return 'ne'
+      if (element.classList.contains('point-nw'))
+        return 'nw'
+      if (element.classList.contains('point-se'))
+        return 'se'
+      if (element.classList.contains('point-sw'))
+        return 'sw'
 
-      if (element.classList.contains('line-n')) return 'n'
-      if (element.classList.contains('line-e')) return 'e'
-      if (element.classList.contains('line-s')) return 's'
-      if (element.classList.contains('line-w')) return 'w'
+      if (element.classList.contains('line-n'))
+        return 'n'
+      if (element.classList.contains('line-e'))
+        return 'e'
+      if (element.classList.contains('line-s'))
+        return 's'
+      if (element.classList.contains('line-w'))
+        return 'w'
 
       // Move to parent
       element = element.parentElement

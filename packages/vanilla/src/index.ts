@@ -8,5 +8,3 @@ export * from '@ldesign/cropper-core'
 
 // Import and re-export default
 export { Cropper as default } from '@ldesign/cropper-core'
-
-

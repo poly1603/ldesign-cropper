@@ -4,13 +4,13 @@
  * Only renders visible portions to optimize performance
  */
 
-import { raf, cancelRaf } from '../utils/performance'
-import { clamp } from '../utils/math'
 import { IMAGE, MEMORY } from '../config/constants'
+import { clamp } from '../utils/math'
+import { cancelRaf, raf } from '../utils/performance'
 
 export interface VirtualCanvasOptions {
   tileSize?: number
-  bufferSize?: number  // Extra tiles to render outside viewport
+  bufferSize?: number // Extra tiles to render outside viewport
   maxMemory?: number
   smoothScrolling?: boolean
   adaptiveQuality?: boolean
@@ -50,7 +50,7 @@ export class VirtualCanvas {
     y: 0,
     width: 0,
     height: 0,
-    scale: 1
+    scale: 1,
   }
 
   // Tile management
@@ -80,7 +80,7 @@ export class VirtualCanvas {
       smoothScrolling: true,
       adaptiveQuality: true,
       debug: false,
-      ...options
+      ...options,
     }
 
     this.tileSize = this.options.tileSize!
@@ -99,7 +99,7 @@ export class VirtualCanvas {
 
     const ctx = this.canvas.getContext('2d', {
       alpha: false,
-      desynchronized: true
+      desynchronized: true,
     })
 
     if (!ctx) {
@@ -130,7 +130,8 @@ export class VirtualCanvas {
       })
 
       this.image = img
-    } else {
+    }
+    else {
       this.image = src
     }
 
@@ -149,12 +150,13 @@ export class VirtualCanvas {
    */
   setViewport(x: number, y: number, scale: number): void {
     const changed = (
-      this.viewport.x !== x ||
-      this.viewport.y !== y ||
-      this.viewport.scale !== scale
+      this.viewport.x !== x
+      || this.viewport.y !== y
+      || this.viewport.scale !== scale
     )
 
-    if (!changed) return
+    if (!changed)
+      return
 
     this.viewport.x = x
     this.viewport.y = y
@@ -208,7 +210,8 @@ export class VirtualCanvas {
    * Schedule render
    */
   private scheduleRender(): void {
-    if (this.rafId !== null) return
+    if (this.rafId !== null)
+      return
 
     this.rafId = raf(() => {
       this.rafId = null
@@ -220,7 +223,8 @@ export class VirtualCanvas {
    * Render visible tiles
    */
   private render(): void {
-    if (!this.image) return
+    if (!this.image)
+      return
 
     const startTime = performance.now()
 
@@ -234,7 +238,8 @@ export class VirtualCanvas {
 
       if (Math.abs(delta) < 0.01) {
         this.currentQuality = this.targetQuality
-      } else {
+      }
+      else {
         this.scheduleRender()
       }
     }
@@ -265,7 +270,8 @@ export class VirtualCanvas {
    * Calculate visible tiles
    */
   private calculateVisibleTiles(): Set<string> {
-    if (!this.image) return new Set()
+    if (!this.image)
+      return new Set()
 
     const scale = this.viewport.scale
     const tileSize = this.tileSize
@@ -319,7 +325,8 @@ export class VirtualCanvas {
    * Render single tile
    */
   private renderTile(tileKey: string): void {
-    if (!this.image) return
+    if (!this.image)
+      return
 
     let tile = this.tiles.get(tileKey)
 
@@ -337,7 +344,8 @@ export class VirtualCanvas {
     }
 
     // Skip if no canvas
-    if (!tile.canvas) return
+    if (!tile.canvas)
+      return
 
     // Calculate render position
     const scale = this.viewport.scale
@@ -358,8 +366,14 @@ export class VirtualCanvas {
     // Draw tile
     this.ctx.drawImage(
       tile.canvas,
-      0, 0, tile.canvas.width, tile.canvas.height,
-      x, y, width, height
+      0,
+      0,
+      tile.canvas.width,
+      tile.canvas.height,
+      x,
+      y,
+      width,
+      height,
     )
   }
 
@@ -367,7 +381,8 @@ export class VirtualCanvas {
    * Create tile
    */
   private createTile(col: number, row: number): Tile {
-    if (!this.image) throw new Error('No image loaded')
+    if (!this.image)
+      throw new Error('No image loaded')
 
     const x = col * this.tileSize
     const y = row * this.tileSize
@@ -383,7 +398,7 @@ export class VirtualCanvas {
       ctx: null,
       loaded: false,
       lastUsed: Date.now(),
-      quality: 1
+      quality: 1,
     }
   }
 
@@ -391,7 +406,8 @@ export class VirtualCanvas {
    * Load tile
    */
   private async loadTile(tile: Tile): Promise<void> {
-    if (!this.image || tile.loaded) return
+    if (!this.image || tile.loaded)
+      return
 
     // Create canvas
     tile.canvas = document.createElement('canvas')
@@ -400,7 +416,7 @@ export class VirtualCanvas {
 
     const ctx = tile.canvas.getContext('2d', {
       alpha: false,
-      desynchronized: true
+      desynchronized: true,
     })
 
     if (!ctx) {
@@ -413,8 +429,14 @@ export class VirtualCanvas {
     // Draw image portion
     ctx.drawImage(
       this.image,
-      tile.x, tile.y, tile.width, tile.height,
-      0, 0, tile.width, tile.height
+      tile.x,
+      tile.y,
+      tile.width,
+      tile.height,
+      0,
+      0,
+      tile.width,
+      tile.height,
     )
 
     tile.loaded = true
@@ -431,7 +453,8 @@ export class VirtualCanvas {
    * Manage memory
    */
   private manageMemory(): void {
-    if (this.memoryUsage <= this.maxMemory) return
+    if (this.memoryUsage <= this.maxMemory)
+      return
 
     // Sort tiles by last used time
     const sortedTiles = Array.from(this.tiles.entries())
@@ -440,7 +463,8 @@ export class VirtualCanvas {
 
     // Remove oldest tiles until under memory limit
     for (const [key, tile] of sortedTiles) {
-      if (this.memoryUsage <= this.maxMemory * 0.8) break
+      if (this.memoryUsage <= this.maxMemory * 0.8)
+        break
 
       this.unloadTile(key, tile)
     }
@@ -450,7 +474,8 @@ export class VirtualCanvas {
    * Unload tile
    */
   private unloadTile(key: string, tile: Tile): void {
-    if (!tile.loaded || !tile.canvas) return
+    if (!tile.loaded || !tile.canvas)
+      return
 
     // Clear canvas
     if (tile.ctx) {
@@ -469,7 +494,7 @@ export class VirtualCanvas {
     const [col, row] = key.split(',').map(Number)
     const distance = Math.max(
       Math.abs(col - this.viewport.x / this.tileSize),
-      Math.abs(row - this.viewport.y / this.tileSize)
+      Math.abs(row - this.viewport.y / this.tileSize),
     )
 
     if (distance > this.bufferSize * 3) {
@@ -499,7 +524,7 @@ export class VirtualCanvas {
       `Memory: ${(this.memoryUsage / 1024 / 1024).toFixed(1)}MB`,
       `Render: ${this.lastRenderTime.toFixed(1)}ms`,
       `Quality: ${this.currentQuality.toFixed(2)}`,
-      `Scale: ${this.viewport.scale.toFixed(2)}`
+      `Scale: ${this.viewport.scale.toFixed(2)}`,
     ]
 
     this.ctx.save()
@@ -523,7 +548,8 @@ export class VirtualCanvas {
 
       for (const tileKey of this.visibleTiles) {
         const tile = this.tiles.get(tileKey)
-        if (!tile) continue
+        if (!tile)
+          continue
 
         const x = tile.x * this.viewport.scale - this.viewport.x
         const y = tile.y * this.viewport.scale - this.viewport.y
@@ -541,7 +567,8 @@ export class VirtualCanvas {
    * Pan viewport
    */
   pan(deltaX: number, deltaY: number): void {
-    if (!this.image) return
+    if (!this.image)
+      return
 
     const maxX = Math.max(0, this.image.width * this.viewport.scale - this.viewport.width)
     const maxY = Math.max(0, this.image.height * this.viewport.scale - this.viewport.height)
@@ -549,7 +576,7 @@ export class VirtualCanvas {
     this.setViewport(
       clamp(this.viewport.x + deltaX, 0, maxX),
       clamp(this.viewport.y + deltaY, 0, maxY),
-      this.viewport.scale
+      this.viewport.scale,
     )
   }
 
@@ -557,13 +584,16 @@ export class VirtualCanvas {
    * Zoom viewport
    */
   zoom(scale: number, centerX?: number, centerY?: number): void {
-    if (!this.image) return
+    if (!this.image)
+      return
 
     const newScale = clamp(scale, 0.1, 10)
 
     // Default to viewport center
-    if (centerX === undefined) centerX = this.viewport.width / 2
-    if (centerY === undefined) centerY = this.viewport.height / 2
+    if (centerX === undefined)
+      centerX = this.viewport.width / 2
+    if (centerY === undefined)
+      centerY = this.viewport.height / 2
 
     // Calculate new position to keep center point fixed
     const dx = centerX / this.viewport.scale - centerX / newScale
@@ -575,7 +605,7 @@ export class VirtualCanvas {
     this.setViewport(
       clamp(this.viewport.x - dx * this.viewport.scale, 0, maxX),
       clamp(this.viewport.y - dy * this.viewport.scale, 0, maxY),
-      newScale
+      newScale,
     )
   }
 
@@ -583,7 +613,8 @@ export class VirtualCanvas {
    * Fit image to viewport
    */
   fit(): void {
-    if (!this.image) return
+    if (!this.image)
+      return
 
     const scaleX = this.viewport.width / this.image.width
     const scaleY = this.viewport.height / this.image.height
@@ -595,7 +626,7 @@ export class VirtualCanvas {
     this.setViewport(
       Math.max(0, -x),
       Math.max(0, -y),
-      scale
+      scale,
     )
   }
 
@@ -606,7 +637,7 @@ export class VirtualCanvas {
     return {
       used: this.memoryUsage,
       max: this.maxMemory,
-      percentage: (this.memoryUsage / this.maxMemory) * 100
+      percentage: (this.memoryUsage / this.maxMemory) * 100,
     }
   }
 
@@ -625,7 +656,3 @@ export class VirtualCanvas {
     }
   }
 }
-
-
-
-

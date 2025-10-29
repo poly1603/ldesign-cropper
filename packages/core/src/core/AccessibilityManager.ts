@@ -3,8 +3,6 @@
  * Manages ARIA labels, announcements, and keyboard navigation
  */
 
-import { dispatch } from '../utils/events'
-
 export interface AccessibilityOptions {
   enabled?: boolean
   language?: string
@@ -92,7 +90,7 @@ const DEFAULT_STRINGS: AccessibilityStrings = {
   actionCompleted: '{action} completed',
   actionCancelled: '{action} cancelled',
   imageLoaded: 'Image loaded successfully',
-  cropCompleted: 'Image cropped successfully'
+  cropCompleted: 'Image cropped successfully',
 }
 
 const CHINESE_STRINGS: AccessibilityStrings = {
@@ -131,7 +129,7 @@ const CHINESE_STRINGS: AccessibilityStrings = {
   actionCompleted: '{action}已完成',
   actionCancelled: '{action}已取消',
   imageLoaded: '图片加载成功',
-  cropCompleted: '图片裁剪成功'
+  cropCompleted: '图片裁剪成功',
 }
 
 export class AccessibilityManager {
@@ -153,7 +151,7 @@ export class AccessibilityManager {
       keyboardHelp: options.keyboardHelp ?? true,
       highContrast: options.highContrast ?? false,
       reducedMotion: options.reducedMotion ?? false,
-      focusIndicator: options.focusIndicator ?? true
+      focusIndicator: options.focusIndicator ?? true,
     }
 
     // Select language strings
@@ -244,8 +242,8 @@ export class AccessibilityManager {
   updateFocusableElements(): void {
     this.focusableElements = Array.from(
       this.container.querySelectorAll(
-        'button:not([disabled]), [role="button"]:not([aria-disabled="true"]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
+        'button:not([disabled]), [role="button"]:not([aria-disabled="true"]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
     ) as HTMLElement[]
   }
 
@@ -275,7 +273,8 @@ export class AccessibilityManager {
    * Handle tab navigation
    */
   private handleTabNavigation(event: KeyboardEvent): void {
-    if (this.focusableElements.length === 0) return
+    if (this.focusableElements.length === 0)
+      return
 
     const currentElement = document.activeElement as HTMLElement
     const currentIndex = this.focusableElements.indexOf(currentElement)
@@ -293,7 +292,8 @@ export class AccessibilityManager {
         ? this.focusableElements.length - 1
         : currentIndex - 1
       this.focusableElements[nextIndex].focus()
-    } else {
+    }
+    else {
       // Move forwards
       const nextIndex = (currentIndex + 1) % this.focusableElements.length
       this.focusableElements[nextIndex].focus()
@@ -416,7 +416,8 @@ export class AccessibilityManager {
   private toggleHelpDialog(): void {
     if (this.helpDialog) {
       this.closeHelpDialog()
-    } else {
+    }
+    else {
       this.openHelpDialog()
     }
   }
@@ -438,7 +439,7 @@ export class AccessibilityManager {
       { key: 'Escape', action: this.strings.resetAction },
       { key: 'Ctrl+Z', action: 'Undo' },
       { key: 'Ctrl+Y', action: 'Redo' },
-      { key: 'Tab', action: 'Navigate controls' }
+      { key: 'Tab', action: 'Navigate controls' },
     ]
 
     const content = `
@@ -508,7 +509,8 @@ export class AccessibilityManager {
    * Announce message to screen reader
    */
   announce(message: string, priority: 'polite' | 'assertive' = 'polite'): void {
-    if (!this.liveRegion || !this.options.announceActions) return
+    if (!this.liveRegion || !this.options.announceActions)
+      return
 
     // Set priority
     this.liveRegion.setAttribute('aria-live', priority)
@@ -536,7 +538,8 @@ export class AccessibilityManager {
    * Announce value change
    */
   announceValue(type: string, value: any): void {
-    if (!this.options.announceValues) return
+    if (!this.options.announceValues)
+      return
 
     let message = ''
 
@@ -627,7 +630,8 @@ export class AccessibilityManager {
 
     if (enabled) {
       this.init()
-    } else {
+    }
+    else {
       this.destroy()
     }
   }
@@ -664,10 +668,7 @@ export class AccessibilityManager {
     this.container.classList.remove(
       'cropper-high-contrast',
       'cropper-reduced-motion',
-      'cropper-dark-mode'
+      'cropper-dark-mode',
     )
   }
 }
-
-
-

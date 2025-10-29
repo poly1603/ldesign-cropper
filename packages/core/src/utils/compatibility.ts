@@ -7,9 +7,9 @@
  */
 export function supportsTouchEvents(): boolean {
   return (
-    'ontouchstart' in window ||
-    navigator.maxTouchPoints > 0 ||
-    ((window as any).DocumentTouch && document instanceof (window as any).DocumentTouch)
+    'ontouchstart' in window
+    || navigator.maxTouchPoints > 0
+    || ((window as any).DocumentTouch && document instanceof (window as any).DocumentTouch)
   )
 }
 
@@ -25,7 +25,7 @@ export function supportsPointerEvents(): boolean {
  */
 export function isMobile(): boolean {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
+    navigator.userAgent,
   )
 }
 
@@ -61,12 +61,13 @@ export function supportsPassiveEvents(): boolean {
       get() {
         passive = true
         return true
-      }
+      },
     })
 
     window.addEventListener('test', null as any, options)
     window.removeEventListener('test', null as any, options)
-  } catch (e) {
+  }
+  catch (e) {
     // Passive events not supported
   }
 
@@ -77,7 +78,7 @@ export function supportsPassiveEvents(): boolean {
  * Get optimal event listener options
  */
 export function getEventListenerOptions(
-  passive = true
+  passive = true,
 ): boolean | AddEventListenerOptions {
   if (supportsPassiveEvents()) {
     return { passive, capture: false }
@@ -122,7 +123,8 @@ export function raf(callback: FrameRequestCallback): number {
 export function caf(id: number): void {
   if (supportsRequestAnimationFrame()) {
     cancelAnimationFrame(id)
-  } else {
+  }
+  else {
     clearTimeout(id)
   }
 }
@@ -143,7 +145,8 @@ export function supportsWebGL(): boolean {
     return !!(
       canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
     )
-  } catch (e) {
+  }
+  catch (e) {
     return false
   }
 }

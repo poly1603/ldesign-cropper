@@ -2,21 +2,27 @@
  * Angular Adapter
  */
 
+import type {
+  ElementRef,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core'
+import type { CropData, CropperOptions, GetCroppedCanvasOptions } from '../../types'
 import {
   Component,
+  EventEmitter,
   Input,
   Output,
-  EventEmitter,
-  ElementRef,
-  OnInit,
-  OnDestroy,
-  OnChanges,
-  SimpleChanges,
-  ViewChild
+  ViewChild,
 } from '@angular/core'
+// Angular Module
+import { NgModule } from '@angular/core'
+
 import { Cropper } from '../../core/Cropper'
-import type { CropperOptions, GetCroppedCanvasOptions, CropData } from '../../types'
-import '../../styles/cropper.css'
+// TODO: Re-enable CSS import after fixing PostCSS configuration
+// import '../../styles/cropper.css'
 
 @Component({
   selector: 'ldesign-cropper',
@@ -35,8 +41,8 @@ import '../../styles/cropper.css'
         width: 100%;
         height: 100%;
       }
-    `
-  ]
+    `,
+  ],
 })
 class AngularCropperComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('container', { static: true }) containerRef!: ElementRef<HTMLDivElement>
@@ -82,13 +88,14 @@ class AngularCropperComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['src'] && !changes['src'].firstChange && this.cropper) {
-      this.cropper.replace(changes['src'].currentValue)
+    if (changes.src && !changes.src.firstChange && this.cropper) {
+      this.cropper.replace(changes.src.currentValue)
     }
   }
 
   private initCropper(): void {
-    if (!this.containerRef.nativeElement || !this.src) return
+    if (!this.containerRef.nativeElement || !this.src)
+      return
 
     const options: CropperOptions = {
       src: this.src,
@@ -116,11 +123,11 @@ class AngularCropperComponent implements OnInit, OnDestroy, OnChanges {
           this.ready.emit(this.cropper)
         }
       },
-      cropstart: (e) => this.cropStart.emit(e),
-      cropmove: (e) => this.cropMove.emit(e),
-      cropend: (e) => this.cropEnd.emit(e),
-      crop: (e) => this.crop.emit(e),
-      zoom: (e) => this.zoom.emit(e)
+      cropstart: e => this.cropStart.emit(e),
+      cropmove: e => this.cropMove.emit(e),
+      cropend: e => this.cropEnd.emit(e),
+      crop: e => this.crop.emit(e),
+      zoom: e => this.zoom.emit(e),
     }
 
     this.cropper = new Cropper(this.containerRef.nativeElement, options)
@@ -148,7 +155,7 @@ class AngularCropperComponent implements OnInit, OnDestroy, OnChanges {
         skewX: 0,
         skewY: 0,
         translateX: 0,
-        translateY: 0
+        translateY: 0,
       }
     )
   }
@@ -197,13 +204,10 @@ class AngularCropperComponent implements OnInit, OnDestroy, OnChanges {
 // Export the component
 export { AngularCropperComponent }
 
-// Angular Module
-import { NgModule } from '@angular/core'
-
 @NgModule({
   declarations: [AngularCropperComponent],
   imports: [],
-  exports: [AngularCropperComponent]
+  exports: [AngularCropperComponent],
 })
 class AngularCropperModule {}
 

@@ -24,8 +24,8 @@ export const valenciaPreset: FilterPreset = {
     { name: 'exposure', options: { exposure: 8 } },
     { name: 'contrast', options: { contrast: 8 } },
     { name: 'saturation', options: { saturation: -10 } },
-    { name: 'temperature', options: { temperature: 15 } }
-  ]
+    { name: 'temperature', options: { temperature: 15 } },
+  ],
 }
 
 /**
@@ -38,8 +38,8 @@ export const nashvillePreset: FilterPreset = {
     { name: 'temperature', options: { temperature: 30 } },
     { name: 'contrast', options: { contrast: -10 } },
     { name: 'saturation', options: { saturation: -20 } },
-    { name: 'sepia', options: { intensity: 0.2 } }
-  ]
+    { name: 'sepia', options: { intensity: 0.2 } },
+  ],
 }
 
 /**
@@ -51,8 +51,8 @@ export const lomoPreset: FilterPreset = {
   filters: [
     { name: 'contrast', options: { contrast: 50 } },
     { name: 'saturation', options: { saturation: 30 } },
-    { name: 'vignette', options: { strength: 0.7 } }
-  ]
+    { name: 'vignette', options: { strength: 0.7 } },
+  ],
 }
 
 /**
@@ -65,8 +65,8 @@ export const toasterPreset: FilterPreset = {
     { name: 'contrast', options: { contrast: 50 } },
     { name: 'brightness', options: { brightness: 10 } },
     { name: 'vignette', options: { strength: 0.6 } },
-    { name: 'temperature', options: { temperature: 20 } }
-  ]
+    { name: 'temperature', options: { temperature: 20 } },
+  ],
 }
 
 /**
@@ -78,8 +78,8 @@ export const waldenPreset: FilterPreset = {
   filters: [
     { name: 'exposure', options: { exposure: 10 } },
     { name: 'hue', options: { hue: 20 } },
-    { name: 'saturation', options: { saturation: 60 } }
-  ]
+    { name: 'saturation', options: { saturation: 60 } },
+  ],
 }
 
 /**
@@ -92,8 +92,8 @@ export const earlybirdPreset: FilterPreset = {
     { name: 'sepia', options: { intensity: 0.2 } },
     { name: 'contrast', options: { contrast: -10 } },
     { name: 'temperature', options: { temperature: 30 } },
-    { name: 'vignette', options: { strength: 0.5 } }
-  ]
+    { name: 'vignette', options: { strength: 0.5 } },
+  ],
 }
 
 /**
@@ -106,8 +106,8 @@ export const mayfairPreset: FilterPreset = {
     { name: 'contrast', options: { contrast: 10 } },
     { name: 'saturation', options: { saturation: 10 } },
     { name: 'vignette', options: { strength: 0.3 } },
-    { name: 'temperature', options: { temperature: 10 } }
-  ]
+    { name: 'temperature', options: { temperature: 10 } },
+  ],
 }
 
 /**
@@ -120,8 +120,8 @@ export const amaroPreset: FilterPreset = {
     { name: 'brightness', options: { brightness: 10 } },
     { name: 'saturation', options: { saturation: 20 } },
     { name: 'temperature', options: { temperature: -10 } },
-    { name: 'vignette', options: { strength: 0.2 } }
-  ]
+    { name: 'vignette', options: { strength: 0.2 } },
+  ],
 }
 
 /**
@@ -133,8 +133,8 @@ export const ginghamPreset: FilterPreset = {
   filters: [
     { name: 'brightness', options: { brightness: 5 } },
     { name: 'saturation', options: { saturation: -30 } },
-    { name: 'hue', options: { hue: -10 } }
-  ]
+    { name: 'hue', options: { hue: -10 } },
+  ],
 }
 
 /**
@@ -146,8 +146,8 @@ export const clarendonPreset: FilterPreset = {
   filters: [
     { name: 'brightness', options: { brightness: 10 } },
     { name: 'contrast', options: { contrast: 20 } },
-    { name: 'saturation', options: { saturation: 35 } }
-  ]
+    { name: 'saturation', options: { saturation: 35 } },
+  ],
 }
 
 /**
@@ -158,8 +158,8 @@ export const blackAndWhitePreset: FilterPreset = {
   description: 'Classic monochrome',
   filters: [
     { name: 'grayscale', options: { intensity: 1 } },
-    { name: 'contrast', options: { contrast: 10 } }
-  ]
+    { name: 'contrast', options: { contrast: 10 } },
+  ],
 }
 
 /**
@@ -173,8 +173,8 @@ export const vintagePreset: FilterPreset = {
     { name: 'contrast', options: { contrast: -15 } },
     { name: 'brightness', options: { brightness: -5 } },
     { name: 'vignette', options: { strength: 0.4 } },
-    { name: 'noise', options: { amount: 5 } }
-  ]
+    { name: 'noise', options: { amount: 5 } },
+  ],
 }
 
 /**
@@ -187,8 +187,8 @@ export const dramaticPreset: FilterPreset = {
     { name: 'contrast', options: { contrast: 40 } },
     { name: 'saturation', options: { saturation: 25 } },
     { name: 'brightness', options: { brightness: -10 } },
-    { name: 'vignette', options: { strength: 0.6 } }
-  ]
+    { name: 'vignette', options: { strength: 0.6 } },
+  ],
 }
 
 /**
@@ -200,8 +200,8 @@ export const coolPreset: FilterPreset = {
   filters: [
     { name: 'temperature', options: { temperature: -40 } },
     { name: 'saturation', options: { saturation: 10 } },
-    { name: 'brightness', options: { brightness: 5 } }
-  ]
+    { name: 'brightness', options: { brightness: 5 } },
+  ],
 }
 
 /**
@@ -213,8 +213,8 @@ export const warmPreset: FilterPreset = {
   filters: [
     { name: 'temperature', options: { temperature: 40 } },
     { name: 'saturation', options: { saturation: 10 } },
-    { name: 'brightness', options: { brightness: 5 } }
-  ]
+    { name: 'brightness', options: { brightness: 5 } },
+  ],
 }
 
 /**
@@ -226,8 +226,8 @@ export const fadedPreset: FilterPreset = {
   filters: [
     { name: 'contrast', options: { contrast: -25 } },
     { name: 'saturation', options: { saturation: -15 } },
-    { name: 'brightness', options: { brightness: 10 } }
-  ]
+    { name: 'brightness', options: { brightness: 10 } },
+  ],
 }
 
 /**
@@ -238,8 +238,8 @@ export const vividPreset: FilterPreset = {
   description: 'Vibrant, saturated colors',
   filters: [
     { name: 'saturation', options: { saturation: 50 } },
-    { name: 'contrast', options: { contrast: 15 } }
-  ]
+    { name: 'contrast', options: { contrast: 15 } },
+  ],
 }
 
 /**
@@ -263,7 +263,7 @@ export function getAllPresets(): FilterPreset[] {
     coolPreset,
     warmPreset,
     fadedPreset,
-    vividPreset
+    vividPreset,
   ]
 }
 
@@ -272,18 +272,18 @@ export function getAllPresets(): FilterPreset[] {
  */
 export function applyPreset(
   filterEngine: FilterEngine,
-  preset: FilterPreset
+  preset: FilterPreset,
 ): boolean {
   filterEngine.clearFilters()
 
   for (const filterConfig of preset.filters) {
     const success = filterEngine.addFilterLayer(
       filterConfig.name,
-      filterConfig.options
+      filterConfig.options,
     )
     if (!success) {
       console.warn(
-        `Failed to apply filter "${filterConfig.name}" from preset "${preset.name}"`
+        `Failed to apply filter "${filterConfig.name}" from preset "${preset.name}"`,
       )
       return false
     }
@@ -297,7 +297,6 @@ export function applyPreset(
  */
 export function getPresetByName(name: string): FilterPreset | undefined {
   return getAllPresets().find(
-    (p) => p.name.toLowerCase() === name.toLowerCase()
+    p => p.name.toLowerCase() === name.toLowerCase(),
   )
 }
-

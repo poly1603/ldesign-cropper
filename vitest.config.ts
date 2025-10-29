@@ -1,8 +1,14 @@
-import { defineConfig } from 'vitest/config'
+import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [vue()],
+  resolve: {
+    alias: {
+      '../src': resolve(__dirname, 'packages/core/src'),
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
@@ -17,8 +23,8 @@ export default defineConfig({
         'docs/',
         '**/*.d.ts',
         '**/*.config.*',
-        '**/mockData'
-      ]
-    }
-  }
+        '**/mockData',
+      ],
+    },
+  },
 })

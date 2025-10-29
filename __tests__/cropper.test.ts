@@ -2,10 +2,10 @@
  * Basic Cropper tests
  */
 
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { Cropper } from '../src/core/Cropper'
 
-describe('Cropper', () => {
+describe('cropper', () => {
   let container: HTMLDivElement
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('Cropper', () => {
 
   it('should create a cropper instance', () => {
     const cropper = new Cropper(container, {
-      src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+      src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
     })
 
     expect(cropper).toBeDefined()
@@ -29,7 +29,7 @@ describe('Cropper', () => {
     const options = {
       src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
       aspectRatio: 16 / 9,
-      viewMode: 1 as const
+      viewMode: 1 as const,
     }
 
     const cropper = new Cropper(container, options)
@@ -38,7 +38,7 @@ describe('Cropper', () => {
 
   it('should handle element selector', () => {
     const cropper = new Cropper('#test-container', {
-      src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+      src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
     })
 
     expect(cropper).toBeDefined()

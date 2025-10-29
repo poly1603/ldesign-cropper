@@ -1,5 +1,5 @@
 import { type Component, type JSX } from 'solid-js';
-import { type CropperOptions } from '@ldesign/cropper-core';
+import { Cropper as CropperCore, type CropperOptions } from '@ldesign/cropper-core';
 export interface CropperProps {
     src?: string;
     aspectRatio?: number;
@@ -17,7 +17,7 @@ export interface CropperProps {
 }
 export declare const Cropper: Component<CropperProps>;
 export declare function useCropper(): {
-    cropper: import("solid-js").Accessor<any>;
-    initCropper: (element: HTMLElement, options: CropperOptions) => any;
+    cropper: import("solid-js").Accessor<CropperCore | undefined>;
+    initCropper: (element: HTMLElement, options: CropperOptions) => CropperCore;
     destroyCropper: () => void;
 };

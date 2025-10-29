@@ -3,7 +3,7 @@
  * Handles large images by breaking them into tiles for efficient rendering
  */
 
-import { MEMORY, IMAGE } from '../config/constants'
+import { IMAGE, MEMORY } from '../config/constants'
 import { canvasPool } from '../utils/performance'
 
 export interface TileInfo {
@@ -31,7 +31,7 @@ export class ImageTileManager {
 
   constructor(
     image: HTMLImageElement,
-    options: ImageTileManagerOptions = {}
+    options: ImageTileManagerOptions = {},
   ) {
     this.image = image
     this.tileSize = options.tileSize || IMAGE.PROGRESSIVE_CHUNK_SIZE
@@ -55,11 +55,11 @@ export class ImageTileManager {
         const y = row * this.tileSize
         const width = Math.min(
           this.tileSize,
-          this.image.naturalWidth - x
+          this.image.naturalWidth - x,
         )
         const height = Math.min(
           this.tileSize,
-          this.image.naturalHeight - y
+          this.image.naturalHeight - y,
         )
 
         const key = this.getTileKey(col, row)
@@ -69,7 +69,7 @@ export class ImageTileManager {
           width,
           height,
           canvas: null,
-          loaded: false
+          loaded: false,
         })
       }
     }
@@ -89,8 +89,10 @@ export class ImageTileManager {
     const key = this.getTileKey(col, row)
     const tile = this.tiles.get(key)
 
-    if (!tile) return null
-    if (tile.loaded) return tile
+    if (!tile)
+      return null
+    if (tile.loaded)
+      return tile
 
     try {
       // Create canvas for this tile
@@ -112,14 +114,15 @@ export class ImageTileManager {
         0,
         0,
         tile.width,
-        tile.height
+        tile.height,
       )
 
       tile.canvas = canvas
       tile.loaded = true
 
       return tile
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to load tile:', error)
       return null
     }
@@ -132,24 +135,24 @@ export class ImageTileManager {
     viewportX: number,
     viewportY: number,
     viewportWidth: number,
-    viewportHeight: number
+    viewportHeight: number,
   ): Promise<void> {
     // Calculate which tiles are in viewport
     const startCol = Math.max(
       0,
-      Math.floor(viewportX / this.tileSize) - this.preloadDistance
+      Math.floor(viewportX / this.tileSize) - this.preloadDistance,
     )
     const endCol = Math.min(
       Math.ceil(this.image.naturalWidth / this.tileSize),
-      Math.ceil((viewportX + viewportWidth) / this.tileSize) + this.preloadDistance
+      Math.ceil((viewportX + viewportWidth) / this.tileSize) + this.preloadDistance,
     )
     const startRow = Math.max(
       0,
-      Math.floor(viewportY / this.tileSize) - this.preloadDistance
+      Math.floor(viewportY / this.tileSize) - this.preloadDistance,
     )
     const endRow = Math.min(
       Math.ceil(this.image.naturalHeight / this.tileSize),
-      Math.ceil((viewportY + viewportHeight) / this.tileSize) + this.preloadDistance
+      Math.ceil((viewportY + viewportHeight) / this.tileSize) + this.preloadDistance,
     )
 
     // Load tiles
@@ -173,17 +176,17 @@ export class ImageTileManager {
     startCol: number,
     endCol: number,
     startRow: number,
-    endRow: number
+    endRow: number,
   ): void {
     this.tiles.forEach((tile, key) => {
       const [col, row] = key.split(',').map(Number)
 
       // Check if tile is outside the preload area
       if (
-        col < startCol ||
-        col >= endCol ||
-        row < startRow ||
-        row >= endRow
+        col < startCol
+        || col >= endCol
+        || row < startRow
+        || row >= endRow
       ) {
         if (tile.canvas && tile.loaded) {
           canvasPool.release(tile.canvas)
@@ -201,10 +204,11 @@ export class ImageTileManager {
     ctx: CanvasRenderingContext2D,
     offsetX: number,
     offsetY: number,
-    scale: number
+    scale: number,
   ): void {
     this.tiles.forEach((tile) => {
-      if (!tile.loaded || !tile.canvas) return
+      if (!tile.loaded || !tile.canvas)
+        return
 
       const x = (tile.x - offsetX) * scale
       const y = (tile.y - offsetY) * scale
@@ -235,7 +239,8 @@ export class ImageTileManager {
   getLoadedTilesCount(): number {
     let count = 0
     this.tiles.forEach((tile) => {
-      if (tile.loaded) count++
+      if (tile.loaded)
+        count++
     })
     return count
   }
@@ -282,16 +287,17 @@ export function shouldUseTiling(image: HTMLImageElement): boolean {
  */
 export function calculateOptimalTileSize(
   imageWidth: number,
-  imageHeight: number
+  imageHeight: number,
 ): number {
   const pixels = imageWidth * imageHeight
 
   if (pixels > MEMORY.VERY_LARGE_IMAGE_THRESHOLD) {
     return 256 // Smaller tiles for very large images
-  } else if (pixels > MEMORY.LARGE_IMAGE_THRESHOLD) {
+  }
+  else if (pixels > MEMORY.LARGE_IMAGE_THRESHOLD) {
     return 512 // Standard tile size
-  } else {
+  }
+  else {
     return 1024 // Larger tiles for moderate images
   }
 }
-

@@ -20,6 +20,14 @@ export default defineConfig({
   minify: false,
   clean: true,
 
+  // CSS processing configuration
+  css: {
+    inject: false,
+    extract: true,
+    minimize: false,
+    modules: false,
+  },
+
   external: [
     'vue',
     'react',

@@ -3,7 +3,7 @@
  * Enhanced export capabilities with quality presets and watermarking
  */
 
-import { QUALITY_PRESETS, IMAGE } from '../config/constants'
+import { IMAGE, QUALITY_PRESETS } from '../config/constants'
 
 export interface ExportOptions {
   format?: 'png' | 'jpeg' | 'webp'
@@ -39,7 +39,7 @@ export interface ExportMetadata {
  */
 export async function exportCanvas(
   canvas: HTMLCanvasElement,
-  options: ExportOptions = {}
+  options: ExportOptions = {},
 ): Promise<Blob> {
   const {
     format = 'png',
@@ -47,7 +47,7 @@ export async function exportCanvas(
     width,
     height,
     watermark,
-    progressive = false
+    progressive = false,
   } = options
 
   // Create output canvas
@@ -70,12 +70,13 @@ export async function exportCanvas(
       (blob) => {
         if (blob) {
           resolve(blob)
-        } else {
+        }
+        else {
           reject(new Error('Failed to convert canvas to blob'))
         }
       },
       mimeType,
-      quality
+      quality,
     )
   })
 
@@ -88,7 +89,7 @@ export async function exportCanvas(
 function resizeCanvas(
   canvas: HTMLCanvasElement,
   width?: number,
-  height?: number
+  height?: number,
 ): HTMLCanvasElement {
   const sourceWidth = canvas.width
   const sourceHeight = canvas.height
@@ -100,7 +101,8 @@ function resizeCanvas(
   // Maintain aspect ratio if only one dimension provided
   if (width && !height) {
     targetHeight = width / aspectRatio
-  } else if (height && !width) {
+  }
+  else if (height && !width) {
     targetWidth = height * aspectRatio
   }
 
@@ -109,7 +111,8 @@ function resizeCanvas(
   resized.height = targetHeight
 
   const ctx = resized.getContext('2d')
-  if (!ctx) throw new Error('Failed to get canvas context')
+  if (!ctx)
+    throw new Error('Failed to get canvas context')
 
   // Use high-quality image smoothing
   ctx.imageSmoothingEnabled = true
@@ -125,14 +128,15 @@ function resizeCanvas(
  */
 function applyWatermark(
   canvas: HTMLCanvasElement,
-  options: WatermarkOptions
+  options: WatermarkOptions,
 ): HTMLCanvasElement {
   const output = document.createElement('canvas')
   output.width = canvas.width
   output.height = canvas.height
 
   const ctx = output.getContext('2d')
-  if (!ctx) return canvas
+  if (!ctx)
+    return canvas
 
   // Draw original image
   ctx.drawImage(canvas, 0, 0)
@@ -142,7 +146,8 @@ function applyWatermark(
 
   if (options.text) {
     applyTextWatermark(ctx, canvas.width, canvas.height, options)
-  } else if (options.image) {
+  }
+  else if (options.image) {
     applyImageWatermark(ctx, canvas.width, canvas.height, options)
   }
 
@@ -158,7 +163,7 @@ function applyTextWatermark(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  options: WatermarkOptions
+  options: WatermarkOptions,
 ): void {
   const fontSize = options.fontSize || Math.max(width, height) * 0.03
   const fontFamily = options.fontFamily || 'Arial, sans-serif'
@@ -221,14 +226,15 @@ function applyImageWatermark(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  options: WatermarkOptions
+  options: WatermarkOptions,
 ): void {
-  if (!options.image) return
+  if (!options.image)
+    return
 
   const margin = options.margin || 20
   const watermarkWidth = Math.min(options.image.width, width * 0.3)
-  const watermarkHeight =
-    (watermarkWidth / options.image.width) * options.image.height
+  const watermarkHeight
+    = (watermarkWidth / options.image.width) * options.image.height
 
   let x = margin
   let y = margin
@@ -264,7 +270,7 @@ function applyImageWatermark(
 export async function exportWithPreset(
   canvas: HTMLCanvasElement,
   presetName: keyof typeof QUALITY_PRESETS,
-  options: Partial<ExportOptions> = {}
+  options: Partial<ExportOptions> = {},
 ): Promise<Blob> {
   const preset = QUALITY_PRESETS[presetName]
 
@@ -273,7 +279,7 @@ export async function exportWithPreset(
     quality: preset.quality,
     width: 'maxWidth' in preset ? preset.maxWidth : undefined,
     height: 'maxHeight' in preset ? preset.maxHeight : undefined,
-    ...options
+    ...options,
   })
 }
 
@@ -282,7 +288,7 @@ export async function exportWithPreset(
  */
 export function downloadBlob(
   blob: Blob,
-  filename: string
+  filename: string,
 ): void {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -300,7 +306,7 @@ export function downloadBlob(
 export async function exportAndDownload(
   canvas: HTMLCanvasElement,
   filename: string,
-  options: ExportOptions = {}
+  options: ExportOptions = {},
 ): Promise<void> {
   const blob = await exportCanvas(canvas, options)
   downloadBlob(blob, filename)
@@ -311,7 +317,7 @@ export async function exportAndDownload(
  */
 export function generateFilename(
   prefix: string = 'cropped',
-  format: string = 'png'
+  format: string = 'png',
 ): string {
   const timestamp = new Date()
     .toISOString()
@@ -328,7 +334,8 @@ export function detectOptimalFormat(canvas: HTMLCanvasElement): {
   reason: string
 } {
   const ctx = canvas.getContext('2d')
-  if (!ctx) return { format: 'png', reason: 'Default' }
+  if (!ctx)
+    return { format: 'png', reason: 'Default' }
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
   const data = imageData.data
@@ -389,7 +396,7 @@ export function canvasToImage(canvas: HTMLCanvasElement): HTMLImageElement {
  * Copy canvas to clipboard
  */
 export async function copyCanvasToClipboard(
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
 ): Promise<boolean> {
   if (!('clipboard' in navigator)) {
     return false
@@ -400,7 +407,8 @@ export async function copyCanvasToClipboard(
       canvas.toBlob((blob) => {
         if (blob) {
           resolve(blob)
-        } else {
+        }
+        else {
           reject(new Error('Failed to convert canvas to blob'))
         }
       })
@@ -409,7 +417,8 @@ export async function copyCanvasToClipboard(
     const item = new ClipboardItem({ 'image/png': blob })
     await navigator.clipboard.write([item])
     return true
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Failed to copy to clipboard:', error)
     return false
   }
@@ -422,7 +431,7 @@ export async function copyCanvasToClipboard(
  */
 export async function createProgressiveJPEG(
   canvas: HTMLCanvasElement,
-  quality: number = 0.92
+  quality: number = 0.92,
 ): Promise<Blob> {
   // Standard JPEG export
   // For true progressive JPEG, you'd need a library like jpeg-js
@@ -432,13 +441,13 @@ export async function createProgressiveJPEG(
       (blob) => {
         if (blob) {
           resolve(blob)
-        } else {
+        }
+        else {
           reject(new Error('Failed to create JPEG'))
         }
       },
       'image/jpeg',
-      quality
+      quality,
     )
   })
 }
-

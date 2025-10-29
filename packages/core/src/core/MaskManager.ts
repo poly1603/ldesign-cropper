@@ -51,7 +51,7 @@ export class MaskManager {
       opacity: options.opacity ?? 50,
       color: options.color || '#ff0000',
       showOverlay: options.showOverlay ?? true,
-      invertMask: options.invertMask ?? false
+      invertMask: options.invertMask ?? false,
     }
 
     // Create image canvas (for displaying the masked result)
@@ -62,7 +62,8 @@ export class MaskManager {
     this.imageCanvas.style.pointerEvents = 'none'
 
     const imageCtx = this.imageCanvas.getContext('2d', { alpha: true })
-    if (!imageCtx) throw new Error('Failed to get image context')
+    if (!imageCtx)
+      throw new Error('Failed to get image context')
     this.imageCtx = imageCtx
 
     // Create mask canvas
@@ -73,7 +74,8 @@ export class MaskManager {
     this.maskCanvas.style.pointerEvents = 'none'
 
     const maskCtx = this.maskCanvas.getContext('2d', { alpha: true })
-    if (!maskCtx) throw new Error('Failed to get mask context')
+    if (!maskCtx)
+      throw new Error('Failed to get mask context')
     this.maskCtx = maskCtx
 
     // Create overlay canvas (for showing mask visualization)
@@ -84,7 +86,8 @@ export class MaskManager {
     this.overlayCanvas.style.pointerEvents = 'none'
 
     const overlayCtx = this.overlayCanvas.getContext('2d', { alpha: true })
-    if (!overlayCtx) throw new Error('Failed to get overlay context')
+    if (!overlayCtx)
+      throw new Error('Failed to get overlay context')
     this.overlayCtx = overlayCtx
 
     // Add canvases to container
@@ -105,7 +108,8 @@ export class MaskManager {
     }
 
     const selectionMask = this.selection.getSelectionMask()
-    if (!selectionMask) return null
+    if (!selectionMask)
+      return null
 
     const maskId = `mask_${Date.now()}`
     const maskLayer = this.createMaskLayer(maskId, 'Selection Mask')
@@ -136,7 +140,8 @@ export class MaskManager {
     canvas.height = this.maskCanvas.height
 
     const ctx = canvas.getContext('2d', { alpha: true })
-    if (!ctx) throw new Error('Failed to get mask context')
+    if (!ctx)
+      throw new Error('Failed to get mask context')
 
     // Initialize with transparent black
     ctx.fillStyle = 'rgba(0, 0, 0, 0)'
@@ -149,7 +154,7 @@ export class MaskManager {
       ctx,
       visible: true,
       opacity: 100,
-      inverted: false
+      inverted: false,
     }
   }
 
@@ -175,7 +180,8 @@ export class MaskManager {
    */
   removeMask(id: string): boolean {
     const mask = this.masks.get(id)
-    if (!mask) return false
+    if (!mask)
+      return false
 
     this.masks.delete(id)
 
@@ -198,7 +204,8 @@ export class MaskManager {
    */
   setActiveMask(id: string): boolean {
     const mask = this.masks.get(id)
-    if (!mask) return false
+    if (!mask)
+      return false
 
     this.activeMask = mask
     this.updateMaskDisplay()
@@ -248,7 +255,8 @@ export class MaskManager {
    * Paint on mask
    */
   private paintOnMask = (x: number, y: number, isDrawing: boolean) => {
-    if (!this.activeMask || !isDrawing) return
+    if (!this.activeMask || !isDrawing)
+      return
 
     const ctx = this.activeMask.ctx
 
@@ -263,7 +271,8 @@ export class MaskManager {
       gradient.addColorStop(0, `rgba(255, 255, 255, ${this.brushOpacity / 100})`)
       gradient.addColorStop(hardness, `rgba(255, 255, 255, ${this.brushOpacity / 100})`)
       gradient.addColorStop(1, 'rgba(255, 255, 255, 0)')
-    } else {
+    }
+    else {
       gradient.addColorStop(0, `rgba(255, 255, 255, ${this.brushOpacity / 100})`)
       gradient.addColorStop(1, `rgba(255, 255, 255, ${this.brushOpacity / 100})`)
     }
@@ -282,7 +291,8 @@ export class MaskManager {
    * Handle mouse down
    */
   private handleMouseDown = (event: MouseEvent) => {
-    if (!this.isEditing || !this.activeMask) return
+    if (!this.isEditing || !this.activeMask)
+      return
 
     const rect = this.overlayCanvas.getBoundingClientRect()
     const x = event.clientX - rect.left
@@ -297,7 +307,8 @@ export class MaskManager {
    * Handle mouse move
    */
   private handleMouseMove = (event: MouseEvent) => {
-    if (!this.isEditing || !this.activeMask) return
+    if (!this.isEditing || !this.activeMask)
+      return
 
     const rect = this.overlayCanvas.getBoundingClientRect()
     const x = event.clientX - rect.left
@@ -315,7 +326,8 @@ export class MaskManager {
    * Handle mouse up
    */
   private handleMouseUp = (event: MouseEvent) => {
-    if (!this.isEditing) return
+    if (!this.isEditing)
+      return
 
     dispatch(this.container, 'mask:paint:end')
   }
@@ -377,18 +389,20 @@ export class MaskManager {
    * Apply mask to image
    */
   applyMaskToImage(imageData: ImageData): ImageData {
-    if (!this.activeMask) return imageData
+    if (!this.activeMask)
+      return imageData
 
     const maskData = this.activeMask.ctx.getImageData(
-      0, 0,
+      0,
+      0,
       this.activeMask.canvas.width,
-      this.activeMask.canvas.height
+      this.activeMask.canvas.height,
     )
 
     const result = new ImageData(
       new Uint8ClampedArray(imageData.data),
       imageData.width,
-      imageData.height
+      imageData.height,
     )
 
     const imgData = result.data
@@ -419,13 +433,15 @@ export class MaskManager {
     // Clear overlay
     this.overlayCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height)
 
-    if (!this.activeMask) return
+    if (!this.activeMask)
+      return
 
     // Composite all visible masks
     this.maskCtx.clearRect(0, 0, this.maskCanvas.width, this.maskCanvas.height)
 
-    this.masks.forEach(mask => {
-      if (!mask.visible) return
+    this.masks.forEach((mask) => {
+      if (!mask.visible)
+        return
 
       this.maskCtx.save()
       this.maskCtx.globalAlpha = mask.opacity / 100
@@ -454,23 +470,26 @@ export class MaskManager {
    * Draw mask overlay visualization
    */
   private drawMaskOverlay(): void {
-    if (!this.activeMask) return
+    if (!this.activeMask)
+      return
 
     const maskData = this.maskCtx.getImageData(
-      0, 0,
+      0,
+      0,
       this.maskCanvas.width,
-      this.maskCanvas.height
+      this.maskCanvas.height,
     )
 
     // Create colored overlay
     const overlayData = this.overlayCtx.createImageData(
       this.overlayCanvas.width,
-      this.overlayCanvas.height
+      this.overlayCanvas.height,
     )
 
     // Parse color
     const color = this.hexToRgb(this.options.color)
-    if (!color) return
+    if (!color)
+      return
 
     for (let i = 0; i < overlayData.data.length; i += 4) {
       const maskAlpha = maskData.data[i + 3] / 255
@@ -487,13 +506,15 @@ export class MaskManager {
   /**
    * Convert hex color to RGB
    */
-  private hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  private hexToRgb(hex: string): { r: number, g: number, b: number } | null {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null
+    return result
+      ? {
+          r: Number.parseInt(result[1], 16),
+          g: Number.parseInt(result[2], 16),
+          b: Number.parseInt(result[3], 16),
+        }
+      : null
   }
 
   /**
@@ -511,7 +532,8 @@ export class MaskManager {
    */
   invertMask(id?: string): void {
     const mask = id ? this.masks.get(id) : this.activeMask
-    if (!mask) return
+    if (!mask)
+      return
 
     mask.inverted = !mask.inverted
     this.updateMaskDisplay()
@@ -524,7 +546,8 @@ export class MaskManager {
    */
   blurMask(radius: number, id?: string): void {
     const mask = id ? this.masks.get(id) : this.activeMask
-    if (!mask) return
+    if (!mask)
+      return
 
     // Apply blur filter
     const tempCanvas = document.createElement('canvas')
@@ -553,7 +576,8 @@ export class MaskManager {
     contrast?: number
   }, id?: string): void {
     const mask = id ? this.masks.get(id) : this.activeMask
-    if (!mask) return
+    if (!mask)
+      return
 
     const { radius = 2, smooth = 1, feather = 0, contrast = 0 } = options
 
@@ -647,7 +671,8 @@ export class MaskManager {
    */
   clearMask(id?: string): void {
     const mask = id ? this.masks.get(id) : this.activeMask
-    if (!mask) return
+    if (!mask)
+      return
 
     mask.ctx.clearRect(0, 0, mask.canvas.width, mask.canvas.height)
     this.updateMaskDisplay()
@@ -660,7 +685,8 @@ export class MaskManager {
    */
   fillMask(id?: string): void {
     const mask = id ? this.masks.get(id) : this.activeMask
-    if (!mask) return
+    if (!mask)
+      return
 
     mask.ctx.fillStyle = 'white'
     mask.ctx.fillRect(0, 0, mask.canvas.width, mask.canvas.height)
@@ -702,7 +728,8 @@ export class MaskManager {
    */
   exportMask(id?: string): ImageData | null {
     const mask = id ? this.masks.get(id) : this.activeMask
-    if (!mask) return null
+    if (!mask)
+      return null
 
     return mask.ctx.getImageData(0, 0, mask.canvas.width, mask.canvas.height)
   }
@@ -732,7 +759,7 @@ export class MaskManager {
     this.overlayCanvas.height = height
 
     // Resize all masks
-    this.masks.forEach(mask => {
+    this.masks.forEach((mask) => {
       const tempCanvas = document.createElement('canvas')
       tempCanvas.width = mask.canvas.width
       tempCanvas.height = mask.canvas.height
@@ -744,8 +771,14 @@ export class MaskManager {
 
       mask.ctx.drawImage(
         tempCanvas,
-        0, 0, tempCanvas.width, tempCanvas.height,
-        0, 0, width, height
+        0,
+        0,
+        tempCanvas.width,
+        tempCanvas.height,
+        0,
+        0,
+        width,
+        height,
       )
     })
 
@@ -780,4 +813,3 @@ export class MaskManager {
     this.container.removeChild(this.overlayCanvas)
   }
 }
-

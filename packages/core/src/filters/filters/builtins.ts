@@ -23,7 +23,7 @@ export const brightnessFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -43,7 +43,7 @@ export const contrastFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -70,7 +70,7 @@ export const saturationFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -90,30 +90,30 @@ export const hueFilter: Filter = {
       const b = data[i + 2]
 
       data[i] = clamp(
-        r * (0.299 + 0.701 * cos + 0.168 * sin) +
-        g * (0.587 - 0.587 * cos + 0.330 * sin) +
-        b * (0.114 - 0.114 * cos - 0.497 * sin),
+        r * (0.299 + 0.701 * cos + 0.168 * sin)
+        + g * (0.587 - 0.587 * cos + 0.330 * sin)
+        + b * (0.114 - 0.114 * cos - 0.497 * sin),
         0,
-        255
+        255,
       )
       data[i + 1] = clamp(
-        r * (0.299 - 0.299 * cos - 0.328 * sin) +
-        g * (0.587 + 0.413 * cos + 0.035 * sin) +
-        b * (0.114 - 0.114 * cos + 0.292 * sin),
+        r * (0.299 - 0.299 * cos - 0.328 * sin)
+        + g * (0.587 + 0.413 * cos + 0.035 * sin)
+        + b * (0.114 - 0.114 * cos + 0.292 * sin),
         0,
-        255
+        255,
       )
       data[i + 2] = clamp(
-        r * (0.299 - 0.300 * cos + 1.250 * sin) +
-        g * (0.587 - 0.588 * cos - 1.050 * sin) +
-        b * (0.114 + 0.886 * cos - 0.203 * sin),
+        r * (0.299 - 0.300 * cos + 1.250 * sin)
+        + g * (0.587 - 0.588 * cos - 1.050 * sin)
+        + b * (0.114 + 0.886 * cos - 0.203 * sin),
         0,
-        255
+        255,
       )
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -126,15 +126,15 @@ export const grayscaleFilter: Filter = {
 
     const data = imageData.data
     for (let i = 0; i < data.length; i += 4) {
-      const gray =
-        0.2989 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+      const gray
+        = 0.2989 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
       data[i] = data[i] + (gray - data[i]) * intensity
       data[i + 1] = data[i + 1] + (gray - data[i + 1]) * intensity
       data[i + 2] = data[i + 2] + (gray - data[i + 2]) * intensity
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -152,25 +152,25 @@ export const sepiaFilter: Filter = {
       const b = data[i + 2]
 
       const newR = clamp(
-        r * (1 - 0.607 * intensity) +
-        g * 0.769 * intensity +
-        b * 0.189 * intensity,
+        r * (1 - 0.607 * intensity)
+        + g * 0.769 * intensity
+        + b * 0.189 * intensity,
         0,
-        255
+        255,
       )
       const newG = clamp(
-        r * 0.349 * intensity +
-        g * (1 - 0.314 * intensity) +
-        b * 0.168 * intensity,
+        r * 0.349 * intensity
+        + g * (1 - 0.314 * intensity)
+        + b * 0.168 * intensity,
         0,
-        255
+        255,
       )
       const newB = clamp(
-        r * 0.272 * intensity +
-        g * 0.534 * intensity +
-        b * (1 - 0.869 * intensity),
+        r * 0.272 * intensity
+        + g * 0.534 * intensity
+        + b * (1 - 0.869 * intensity),
         0,
-        255
+        255,
       )
 
       data[i] = r + (newR - r) * intensity
@@ -179,7 +179,7 @@ export const sepiaFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -198,7 +198,7 @@ export const invertFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -215,10 +215,10 @@ export const blurFilter: Filter = {
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        let r = 0,
-          g = 0,
-          b = 0,
-          a = 0
+        let r = 0
+        let g = 0
+        let b = 0
+        let a = 0
         let count = 0
 
         for (let dy = -radius; dy <= radius; dy++) {
@@ -247,7 +247,7 @@ export const blurFilter: Filter = {
 
     imageData.data.set(output)
     return imageData
-  }
+  },
 }
 
 /**
@@ -260,7 +260,7 @@ export const sharpenFilter: Filter = {
     const kernel = [0, -amount, 0, -amount, 1 + 4 * amount, -amount, 0, -amount, 0]
 
     return applyConvolutionFilter(imageData, kernel, 1)
-  }
+  },
 }
 
 /**
@@ -271,7 +271,7 @@ export const edgeDetectFilter: Filter = {
   apply: (imageData: ImageData, options: FilterOptions = {}): ImageData => {
     const kernel = [-1, -1, -1, -1, 8, -1, -1, -1, -1]
     return applyConvolutionFilter(imageData, kernel, 1)
-  }
+  },
 }
 
 /**
@@ -282,7 +282,7 @@ export const embossFilter: Filter = {
   apply: (imageData: ImageData, options: FilterOptions = {}): ImageData => {
     const kernel = [-2, -1, 0, -1, 1, 1, 0, 1, 2]
     return applyConvolutionFilter(imageData, kernel, 1)
-  }
+  },
 }
 
 /**
@@ -315,7 +315,7 @@ export const vignetteFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -332,7 +332,8 @@ export const temperatureFilter: Filter = {
         // Warm: increase red, decrease blue
         data[i] = clamp(data[i] + temp * 2, 0, 255)
         data[i + 2] = clamp(data[i + 2] - temp, 0, 255)
-      } else if (temp < 0) {
+      }
+      else if (temp < 0) {
         // Cool: decrease red, increase blue
         data[i] = clamp(data[i] + temp, 0, 255)
         data[i + 2] = clamp(data[i + 2] - temp * 2, 0, 255)
@@ -340,7 +341,7 @@ export const temperatureFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -350,7 +351,7 @@ export const exposureFilter: Filter = {
   name: 'exposure',
   apply: (imageData: ImageData, options: FilterOptions = {}): ImageData => {
     const exposure = options.exposure || 0 // -100 to 100
-    const factor = Math.pow(2, exposure / 100)
+    const factor = 2 ** (exposure / 100)
 
     const data = imageData.data
     for (let i = 0; i < data.length; i += 4) {
@@ -360,7 +361,7 @@ export const exposureFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -380,7 +381,7 @@ export const noiseFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -397,10 +398,10 @@ export const pixelateFilter: Filter = {
     for (let y = 0; y < height; y += blockSize) {
       for (let x = 0; x < width; x += blockSize) {
         // Calculate average color for this block
-        let r = 0,
-          g = 0,
-          b = 0,
-          a = 0
+        let r = 0
+        let g = 0
+        let b = 0
+        let a = 0
         let count = 0
 
         for (let dy = 0; dy < blockSize && y + dy < height; dy++) {
@@ -433,7 +434,7 @@ export const pixelateFilter: Filter = {
     }
 
     return imageData
-  }
+  },
 }
 
 /**
@@ -442,7 +443,7 @@ export const pixelateFilter: Filter = {
 function applyConvolutionFilter(
   imageData: ImageData,
   kernel: number[],
-  divisor: number = 1
+  divisor: number = 1,
 ): ImageData {
   const width = imageData.width
   const height = imageData.height
@@ -454,9 +455,9 @@ function applyConvolutionFilter(
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      let r = 0,
-        g = 0,
-        b = 0
+      let r = 0
+      let g = 0
+      let b = 0
 
       for (let ky = 0; ky < side; ky++) {
         for (let kx = 0; kx < side; kx++) {
@@ -504,7 +505,6 @@ export function getAllBuiltInFilters(): Filter[] {
     temperatureFilter,
     exposureFilter,
     noiseFilter,
-    pixelateFilter
+    pixelateFilter,
   ]
 }
-

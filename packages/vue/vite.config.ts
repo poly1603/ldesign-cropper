@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [vue()],
@@ -12,22 +12,21 @@ export default defineConfig({
       fileName: (format) => {
         const ext = format === 'es' ? 'js' : 'cjs'
         return `index.${ext}`
-      }
+      },
     },
     rollupOptions: {
       external: ['vue', '@ldesign/cropper-core'],
       output: {
         globals: {
-          vue: 'Vue',
-          '@ldesign/cropper-core': 'LDesignCropperCore'
+          'vue': 'Vue',
+          '@ldesign/cropper-core': 'LDesignCropperCore',
         },
-        exports: 'named'
-      }
+        exports: 'named',
+      },
     },
     emptyOutDir: true,
     minify: 'terser',
     sourcemap: true,
-    target: 'es2020'
-  }
+    target: 'es2020',
+  },
 })
-

@@ -4,33 +4,32 @@
  */
 
 import { dispatch } from '../utils/events'
-import { distance, clamp } from '../utils/math'
 
-export type SelectionType =
-  | 'rectangle'
-  | 'ellipse'
-  | 'lasso'
-  | 'magic-wand'
-  | 'polygon'
-  | 'brush'
+export type SelectionType
+  = | 'rectangle'
+    | 'ellipse'
+    | 'lasso'
+    | 'magic-wand'
+    | 'polygon'
+    | 'brush'
 
-export type SelectionMode =
-  | 'new'
-  | 'add'
-  | 'subtract'
-  | 'intersect'
+export type SelectionMode
+  = | 'new'
+    | 'add'
+    | 'subtract'
+    | 'intersect'
 
 export interface SelectionOptions {
   type?: SelectionType
   mode?: SelectionMode
   feather?: number
   antiAlias?: boolean
-  tolerance?: number  // For magic wand
-  brushSize?: number  // For brush selection
+  tolerance?: number // For magic wand
+  brushSize?: number // For brush selection
 }
 
 export interface SelectionPath {
-  points: Array<{ x: number; y: number }>
+  points: Array<{ x: number, y: number }>
   closed: boolean
 }
 
@@ -48,7 +47,7 @@ export class Selection {
   private isDrawing = false
 
   // Selection data
-  private startPoint: { x: number; y: number } | null = null
+  private startPoint: { x: number, y: number } | null = null
   private currentPath: SelectionPath = { points: [], closed: false }
   private selectionMask: ImageData | null = null
 
@@ -63,7 +62,7 @@ export class Selection {
       feather: options.feather || 0,
       antiAlias: options.antiAlias ?? true,
       tolerance: options.tolerance || 32,
-      brushSize: options.brushSize || 20
+      brushSize: options.brushSize || 20,
     }
 
     this.type = this.options.type
@@ -75,7 +74,8 @@ export class Selection {
     this.canvas.height = height
 
     const ctx = this.canvas.getContext('2d', { alpha: true })
-    if (!ctx) throw new Error('Failed to get canvas context')
+    if (!ctx)
+      throw new Error('Failed to get canvas context')
     this.ctx = ctx
 
     // Create mask canvas for selection mask
@@ -84,7 +84,8 @@ export class Selection {
     this.maskCanvas.height = height
 
     const maskCtx = this.maskCanvas.getContext('2d', { alpha: true })
-    if (!maskCtx) throw new Error('Failed to get mask context')
+    if (!maskCtx)
+      throw new Error('Failed to get mask context')
     this.maskCtx = maskCtx
 
     // Initialize selection mask
@@ -142,7 +143,8 @@ export class Selection {
    * Update selection while drawing
    */
   updateSelection(x: number, y: number): void {
-    if (!this.isDrawing || !this.startPoint) return
+    if (!this.isDrawing || !this.startPoint)
+      return
 
     // Clear temporary drawing
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
@@ -174,7 +176,8 @@ export class Selection {
    * End selection drawing
    */
   endSelection(): void {
-    if (!this.isDrawing) return
+    if (!this.isDrawing)
+      return
 
     this.isDrawing = false
     this.isActive = true
@@ -192,7 +195,7 @@ export class Selection {
 
     dispatch(this.canvas, 'selection:end', {
       type: this.type,
-      bounds: this.getSelectionBounds()
+      bounds: this.getSelectionBounds(),
     })
   }
 
@@ -245,7 +248,8 @@ export class Selection {
    * Draw path (lasso/polygon)
    */
   private drawPath(path: SelectionPath): void {
-    if (path.points.length < 2) return
+    if (path.points.length < 2)
+      return
 
     this.ctx.save()
     this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)'
@@ -273,8 +277,8 @@ export class Selection {
    */
   private drawBrushStroke(x: number, y: number): void {
     this.maskCtx.save()
-    this.maskCtx.globalCompositeOperation =
-      this.mode === 'subtract' ? 'destination-out' : 'source-over'
+    this.maskCtx.globalCompositeOperation
+      = this.mode === 'subtract' ? 'destination-out' : 'source-over'
 
     this.maskCtx.fillStyle = 'white'
     this.maskCtx.beginPath()
@@ -290,32 +294,32 @@ export class Selection {
   private drawHandles(x: number, y: number, width: number, height: number): void {
     const handleSize = 8
     const handles = [
-      { x: x, y: y }, // Top-left
-      { x: x + width / 2, y: y }, // Top-center
-      { x: x + width, y: y }, // Top-right
+      { x, y }, // Top-left
+      { x: x + width / 2, y }, // Top-center
+      { x: x + width, y }, // Top-right
       { x: x + width, y: y + height / 2 }, // Right-center
       { x: x + width, y: y + height }, // Bottom-right
       { x: x + width / 2, y: y + height }, // Bottom-center
-      { x: x, y: y + height }, // Bottom-left
-      { x: x, y: y + height / 2 } // Left-center
+      { x, y: y + height }, // Bottom-left
+      { x, y: y + height / 2 }, // Left-center
     ]
 
     this.ctx.fillStyle = 'white'
     this.ctx.strokeStyle = 'black'
     this.ctx.lineWidth = 1
 
-    handles.forEach(handle => {
+    handles.forEach((handle) => {
       this.ctx.fillRect(
         handle.x - handleSize / 2,
         handle.y - handleSize / 2,
         handleSize,
-        handleSize
+        handleSize,
       )
       this.ctx.strokeRect(
         handle.x - handleSize / 2,
         handle.y - handleSize / 2,
         handleSize,
-        handleSize
+        handleSize,
       )
     })
   }
@@ -324,7 +328,8 @@ export class Selection {
    * Apply selection to mask
    */
   private applySelectionToMask(): void {
-    if (!this.startPoint) return
+    if (!this.startPoint)
+      return
 
     this.maskCtx.save()
 
@@ -397,9 +402,10 @@ export class Selection {
 
     // Update selection mask
     this.selectionMask = this.maskCtx.getImageData(
-      0, 0,
+      0,
+      0,
       this.maskCanvas.width,
-      this.maskCanvas.height
+      this.maskCanvas.height,
     )
   }
 
@@ -427,7 +433,7 @@ export class Selection {
     x: number,
     y: number,
     imageData: ImageData,
-    tolerance: number = this.options.tolerance
+    tolerance: number = this.options.tolerance,
   ): void {
     const { width, height, data } = imageData
 
@@ -448,8 +454,10 @@ export class Selection {
       const [px, py] = queue.shift()!
       const idx = py * width + px
 
-      if (visited.has(idx)) continue
-      if (px < 0 || px >= width || py < 0 || py >= height) continue
+      if (visited.has(idx))
+        continue
+      if (px < 0 || px >= width || py < 0 || py >= height)
+        continue
 
       visited.add(idx)
 
@@ -461,10 +469,10 @@ export class Selection {
 
       // Check color similarity
       const diff = Math.sqrt(
-        Math.pow(r - targetR, 2) +
-        Math.pow(g - targetG, 2) +
-        Math.pow(b - targetB, 2) +
-        Math.pow(a - targetA, 2)
+        (r - targetR) ** 2
+        + (g - targetG) ** 2
+        + (b - targetB) ** 2
+        + (a - targetA) ** 2,
       )
 
       if (diff <= tolerance) {
@@ -523,9 +531,10 @@ export class Selection {
     this.maskCtx.fillRect(0, 0, this.maskCanvas.width, this.maskCanvas.height)
 
     this.selectionMask = this.maskCtx.getImageData(
-      0, 0,
+      0,
+      0,
       this.maskCanvas.width,
-      this.maskCanvas.height
+      this.maskCanvas.height,
     )
 
     this.isActive = true
@@ -538,7 +547,8 @@ export class Selection {
    * Invert selection
    */
   invertSelection(): void {
-    if (!this.selectionMask) return
+    if (!this.selectionMask)
+      return
 
     const data = this.selectionMask.data
 
@@ -557,7 +567,8 @@ export class Selection {
    * Expand selection
    */
   expandSelection(pixels: number): void {
-    if (!this.selectionMask) return
+    if (!this.selectionMask)
+      return
 
     const tempCanvas = document.createElement('canvas')
     tempCanvas.width = this.maskCanvas.width
@@ -573,9 +584,10 @@ export class Selection {
 
     // Threshold to binary
     const imageData = this.maskCtx.getImageData(
-      0, 0,
+      0,
+      0,
       this.maskCanvas.width,
-      this.maskCanvas.height
+      this.maskCanvas.height,
     )
 
     for (let i = 0; i < imageData.data.length; i += 4) {
@@ -597,7 +609,8 @@ export class Selection {
    * Contract selection
    */
   contractSelection(pixels: number): void {
-    if (!this.selectionMask) return
+    if (!this.selectionMask)
+      return
 
     // Invert, expand, invert again
     this.invertSelection()
@@ -610,8 +623,9 @@ export class Selection {
   /**
    * Get selection bounds
    */
-  getSelectionBounds(): { x: number; y: number; width: number; height: number } | null {
-    if (!this.selectionMask) return null
+  getSelectionBounds(): { x: number, y: number, width: number, height: number } | null {
+    if (!this.selectionMask)
+      return null
 
     const data = this.selectionMask.data
     const width = this.selectionMask.width
@@ -634,13 +648,14 @@ export class Selection {
       }
     }
 
-    if (minX > maxX || minY > maxY) return null
+    if (minX > maxX || minY > maxY)
+      return null
 
     return {
       x: minX,
       y: minY,
       width: maxX - minX + 1,
-      height: maxY - minY + 1
+      height: maxY - minY + 1,
     }
   }
 
@@ -648,7 +663,8 @@ export class Selection {
    * Check if point is in selection
    */
   isPointInSelection(x: number, y: number): boolean {
-    if (!this.selectionMask) return false
+    if (!this.selectionMask)
+      return false
 
     const idx = (Math.floor(y) * this.selectionMask.width + Math.floor(x)) * 4
     return this.selectionMask.data[idx + 3] > 128
@@ -665,12 +681,13 @@ export class Selection {
    * Apply selection as mask to image
    */
   applyMaskToImage(imageData: ImageData): ImageData {
-    if (!this.selectionMask) return imageData
+    if (!this.selectionMask)
+      return imageData
 
     const result = new ImageData(
       new Uint8ClampedArray(imageData.data),
       imageData.width,
-      imageData.height
+      imageData.height,
     )
 
     const maskData = this.selectionMask.data
@@ -688,7 +705,8 @@ export class Selection {
    * Start marching ants animation
    */
   private startMarchingAnts(): void {
-    if (this.marchingAntsAnimation) return
+    if (this.marchingAntsAnimation)
+      return
 
     const animate = () => {
       this.marchingAntsOffset = (this.marchingAntsOffset + 1) % 10
@@ -713,7 +731,8 @@ export class Selection {
    * Draw selection outline (marching ants)
    */
   private drawSelectionOutline(): void {
-    if (!this.selectionMask || !this.isActive) return
+    if (!this.selectionMask || !this.isActive)
+      return
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
@@ -726,7 +745,7 @@ export class Selection {
     this.ctx.setLineDash([4, 4])
     this.ctx.lineDashOffset = this.marchingAntsOffset
 
-    edges.forEach(edge => {
+    edges.forEach((edge) => {
       this.ctx.beginPath()
       this.ctx.moveTo(edge[0].x, edge[0].y)
 
@@ -744,38 +763,44 @@ export class Selection {
   /**
    * Find edges of mask
    */
-  private findMaskEdges(mask: ImageData): Array<Array<{ x: number; y: number }>> {
+  private findMaskEdges(mask: ImageData): Array<Array<{ x: number, y: number }>> {
     // Simplified edge detection - returns array of edge paths
-    const edges: Array<Array<{ x: number; y: number }>> = []
+    const edges: Array<Array<{ x: number, y: number }>> = []
     const width = mask.width
     const height = mask.height
     const data = mask.data
 
     // Simple edge detection: check if pixel is on boundary
     const isEdge = (x: number, y: number): boolean => {
-      if (x < 0 || x >= width || y < 0 || y >= height) return false
+      if (x < 0 || x >= width || y < 0 || y >= height)
+        return false
 
       const idx = (y * width + x) * 4
-      if (data[idx + 3] < 128) return false
+      if (data[idx + 3] < 128)
+        return false
 
       // Check neighbors
       const neighbors = [
-        [x - 1, y], [x + 1, y],
-        [x, y - 1], [x, y + 1]
+        [x - 1, y],
+        [x + 1, y],
+        [x, y - 1],
+        [x, y + 1],
       ]
 
       for (const [nx, ny] of neighbors) {
-        if (nx < 0 || nx >= width || ny < 0 || ny >= height) return true
+        if (nx < 0 || nx >= width || ny < 0 || ny >= height)
+          return true
 
         const nidx = (ny * width + nx) * 4
-        if (data[nidx + 3] < 128) return true
+        if (data[nidx + 3] < 128)
+          return true
       }
 
       return false
     }
 
     // Find edge points
-    const edgePoints: Array<{ x: number; y: number }> = []
+    const edgePoints: Array<{ x: number, y: number }> = []
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
@@ -865,8 +890,14 @@ export class Selection {
 
       this.maskCtx.drawImage(
         tempCanvas,
-        0, 0, currentMask.width, currentMask.height,
-        0, 0, width, height
+        0,
+        0,
+        currentMask.width,
+        currentMask.height,
+        0,
+        0,
+        width,
+        height,
       )
 
       this.selectionMask = this.maskCtx.getImageData(0, 0, width, height)
@@ -882,7 +913,7 @@ export class Selection {
       mode: this.mode,
       mask: this.selectionMask,
       bounds: this.getSelectionBounds(),
-      options: this.options
+      options: this.options,
     }
   }
 
@@ -910,4 +941,3 @@ export class Selection {
     this.stopMarchingAnts()
   }
 }
-

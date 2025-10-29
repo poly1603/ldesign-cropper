@@ -78,7 +78,7 @@ export function toDegrees(radians: number): number {
 export function rotatePoint(
   point: Point,
   center: Point,
-  angle: number
+  angle: number,
 ): Point {
   const radians = toRadians(angle)
   const cos = Math.cos(radians)
@@ -89,7 +89,7 @@ export function rotatePoint(
 
   return {
     x: center.x + dx * cos - dy * sin,
-    y: center.y + dx * sin + dy * cos
+    y: center.y + dx * sin + dy * cos,
   }
 }
 
@@ -100,14 +100,14 @@ export const getAspectRatio = memoize(
   (width: number, height: number): number => {
     return width / height
   },
-  (w, h) => `${w}:${h}`
+  (w, h) => `${w}:${h}`,
 )
 
 /**
  * Round a number to a specific number of decimal places
  */
 export function round(num: number, decimals = 0): number {
-  const factor = Math.pow(10, decimals)
+  const factor = 10 ** decimals
   return Math.round(num * factor) / factor
 }
 
@@ -132,7 +132,7 @@ export function getScaleToFit(
   sourceWidth: number,
   sourceHeight: number,
   targetWidth: number,
-  targetHeight: number
+  targetHeight: number,
 ): number {
   return Math.min(targetWidth / sourceWidth, targetHeight / sourceHeight)
 }
@@ -144,7 +144,7 @@ export function getScaleToCover(
   sourceWidth: number,
   sourceHeight: number,
   targetWidth: number,
-  targetHeight: number
+  targetHeight: number,
 ): number {
   return Math.max(targetWidth / sourceWidth, targetHeight / sourceHeight)
 }

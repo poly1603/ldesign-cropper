@@ -35,7 +35,7 @@ export class KeyboardManager {
       enabled: true,
       customBindings: [],
       showHelp: true,
-      ...options
+      ...options,
     }
     this.enabled = this.options.enabled ?? true
 
@@ -58,25 +58,25 @@ export class KeyboardManager {
     this.registerBinding({
       key: KEYBOARD.ARROW_UP,
       action: () => this.moveCropBox(0, -KEYBOARD.MOVE_STEP),
-      description: 'Move crop box up'
+      description: 'Move crop box up',
     })
 
     this.registerBinding({
       key: KEYBOARD.ARROW_DOWN,
       action: () => this.moveCropBox(0, KEYBOARD.MOVE_STEP),
-      description: 'Move crop box down'
+      description: 'Move crop box down',
     })
 
     this.registerBinding({
       key: KEYBOARD.ARROW_LEFT,
       action: () => this.moveCropBox(-KEYBOARD.MOVE_STEP, 0),
-      description: 'Move crop box left'
+      description: 'Move crop box left',
     })
 
     this.registerBinding({
       key: KEYBOARD.ARROW_RIGHT,
       action: () => this.moveCropBox(KEYBOARD.MOVE_STEP, 0),
-      description: 'Move crop box right'
+      description: 'Move crop box right',
     })
 
     // Navigation with Shift (larger steps)
@@ -84,87 +84,87 @@ export class KeyboardManager {
       key: KEYBOARD.ARROW_UP,
       shiftKey: true,
       action: () => this.moveCropBox(0, -KEYBOARD.MOVE_STEP_LARGE),
-      description: 'Move crop box up (large)'
+      description: 'Move crop box up (large)',
     })
 
     this.registerBinding({
       key: KEYBOARD.ARROW_DOWN,
       shiftKey: true,
       action: () => this.moveCropBox(0, KEYBOARD.MOVE_STEP_LARGE),
-      description: 'Move crop box down (large)'
+      description: 'Move crop box down (large)',
     })
 
     this.registerBinding({
       key: KEYBOARD.ARROW_LEFT,
       shiftKey: true,
       action: () => this.moveCropBox(-KEYBOARD.MOVE_STEP_LARGE, 0),
-      description: 'Move crop box left (large)'
+      description: 'Move crop box left (large)',
     })
 
     this.registerBinding({
       key: KEYBOARD.ARROW_RIGHT,
       shiftKey: true,
       action: () => this.moveCropBox(KEYBOARD.MOVE_STEP_LARGE, 0),
-      description: 'Move crop box right (large)'
+      description: 'Move crop box right (large)',
     })
 
     // Zoom
     this.registerBinding({
       key: KEYBOARD.PLUS,
       action: () => this.zoom(TRANSFORM.DEFAULT_SCALE_STEP),
-      description: 'Zoom in'
+      description: 'Zoom in',
     })
 
     this.registerBinding({
       key: KEYBOARD.EQUAL,
       action: () => this.zoom(TRANSFORM.DEFAULT_SCALE_STEP),
-      description: 'Zoom in'
+      description: 'Zoom in',
     })
 
     this.registerBinding({
       key: KEYBOARD.MINUS,
       action: () => this.zoom(-TRANSFORM.DEFAULT_SCALE_STEP),
-      description: 'Zoom out'
+      description: 'Zoom out',
     })
 
     this.registerBinding({
       key: KEYBOARD.ZERO,
       action: () => this.resetZoom(),
-      description: 'Reset zoom to 100%'
+      description: 'Reset zoom to 100%',
     })
 
     // Rotation
     this.registerBinding({
       key: 'r',
       action: () => this.rotate(TRANSFORM.DEFAULT_ROTATION_STEP),
-      description: 'Rotate right 90°'
+      description: 'Rotate right 90°',
     })
 
     this.registerBinding({
       key: 'r',
       shiftKey: true,
       action: () => this.rotate(-TRANSFORM.DEFAULT_ROTATION_STEP),
-      description: 'Rotate left 90°'
+      description: 'Rotate left 90°',
     })
 
     // Flip
     this.registerBinding({
       key: 'h',
       action: () => this.flipHorizontal(),
-      description: 'Flip horizontal'
+      description: 'Flip horizontal',
     })
 
     this.registerBinding({
       key: 'v',
       action: () => this.flipVertical(),
-      description: 'Flip vertical'
+      description: 'Flip vertical',
     })
 
     // Reset
     this.registerBinding({
       key: 'Escape',
       action: () => this.reset(),
-      description: 'Reset to original'
+      description: 'Reset to original',
     })
 
     // Undo/Redo
@@ -172,7 +172,7 @@ export class KeyboardManager {
       key: 'z',
       ctrlKey: true,
       action: () => this.undo(),
-      description: 'Undo'
+      description: 'Undo',
     })
 
     this.registerBinding({
@@ -180,14 +180,14 @@ export class KeyboardManager {
       ctrlKey: true,
       shiftKey: true,
       action: () => this.redo(),
-      description: 'Redo'
+      description: 'Redo',
     })
 
     this.registerBinding({
       key: 'y',
       ctrlKey: true,
       action: () => this.redo(),
-      description: 'Redo'
+      description: 'Redo',
     })
 
     // Save/Export
@@ -195,7 +195,7 @@ export class KeyboardManager {
       key: 's',
       ctrlKey: true,
       action: () => this.save(),
-      description: 'Save/Export'
+      description: 'Save/Export',
     })
 
     // Copy
@@ -203,7 +203,7 @@ export class KeyboardManager {
       key: 'c',
       ctrlKey: true,
       action: () => this.copy(),
-      description: 'Copy to clipboard'
+      description: 'Copy to clipboard',
     })
 
     // Help
@@ -212,7 +212,7 @@ export class KeyboardManager {
         key: '?',
         shiftKey: true,
         action: () => this.toggleHelp(),
-        description: 'Show keyboard shortcuts'
+        description: 'Show keyboard shortcuts',
       })
     }
 
@@ -220,38 +220,38 @@ export class KeyboardManager {
     this.registerBinding({
       key: KEYBOARD.DELETE,
       action: () => this.clear(),
-      description: 'Clear crop box'
+      description: 'Clear crop box',
     })
 
     this.registerBinding({
       key: KEYBOARD.BACKSPACE,
       action: () => this.clear(),
-      description: 'Clear crop box'
+      description: 'Clear crop box',
     })
 
     // Aspect ratio presets
     this.registerBinding({
       key: '1',
       action: () => this.setAspectRatio(1),
-      description: 'Set aspect ratio 1:1'
+      description: 'Set aspect ratio 1:1',
     })
 
     this.registerBinding({
       key: '2',
       action: () => this.setAspectRatio(16 / 9),
-      description: 'Set aspect ratio 16:9'
+      description: 'Set aspect ratio 16:9',
     })
 
     this.registerBinding({
       key: '3',
       action: () => this.setAspectRatio(4 / 3),
-      description: 'Set aspect ratio 4:3'
+      description: 'Set aspect ratio 4:3',
     })
 
     this.registerBinding({
       key: '4',
-      action: () => this.setAspectRatio(NaN),
-      description: 'Free aspect ratio'
+      action: () => this.setAspectRatio(Number.NaN),
+      description: 'Free aspect ratio',
     })
   }
 
@@ -276,10 +276,14 @@ export class KeyboardManager {
    */
   private generateBindingKey(binding: KeyBinding): string {
     const parts: string[] = []
-    if (binding.ctrlKey) parts.push('Ctrl')
-    if (binding.shiftKey) parts.push('Shift')
-    if (binding.altKey) parts.push('Alt')
-    if (binding.metaKey) parts.push('Meta')
+    if (binding.ctrlKey)
+      parts.push('Ctrl')
+    if (binding.shiftKey)
+      parts.push('Shift')
+    if (binding.altKey)
+      parts.push('Alt')
+    if (binding.metaKey)
+      parts.push('Meta')
     parts.push(binding.key)
     return parts.join('+')
   }
@@ -302,14 +306,15 @@ export class KeyboardManager {
    * Handle key down event
    */
   private handleKeyDown(event: KeyboardEvent): void {
-    if (!this.enabled) return
+    if (!this.enabled)
+      return
 
     // Don't trigger if typing in input fields
     const target = event.target as HTMLElement
     if (
-      target.tagName === 'INPUT' ||
-      target.tagName === 'TEXTAREA' ||
-      target.isContentEditable
+      target.tagName === 'INPUT'
+      || target.tagName === 'TEXTAREA'
+      || target.isContentEditable
     ) {
       return
     }
@@ -321,7 +326,7 @@ export class KeyboardManager {
       altKey: event.altKey,
       metaKey: event.metaKey,
       action: () => { },
-      description: ''
+      description: '',
     })
 
     const binding = this.bindings.get(key)
@@ -338,7 +343,7 @@ export class KeyboardManager {
     if (cropBoxData) {
       this.cropper.setCropBoxData({
         left: cropBoxData.left + deltaX,
-        top: cropBoxData.top + deltaY
+        top: cropBoxData.top + deltaY,
       })
     }
   }
@@ -412,7 +417,8 @@ export class KeyboardManager {
             await navigator.clipboard.write([item])
           }
         })
-      } catch (err) {
+      }
+      catch (err) {
         console.error('Failed to copy to clipboard:', err)
       }
     }
@@ -433,7 +439,8 @@ export class KeyboardManager {
     if (this.helpOverlay && this.helpOverlay.parentNode) {
       this.helpOverlay.parentNode.removeChild(this.helpOverlay)
       this.helpOverlay = null
-    } else {
+    }
+    else {
       this.showHelp()
     }
   }
@@ -524,16 +531,24 @@ export class KeyboardManager {
   private categorizeBinding(binding: KeyBinding): string {
     const key = binding.key.toLowerCase()
 
-    if (key.startsWith('arrow')) return 'Navigation'
-    if (['+', '=', '-', '0'].includes(key)) return 'Zoom'
-    if (key === 'r') return 'Rotation'
-    if (['h', 'v'].includes(key)) return 'Flip'
-    if (key === 'z' || key === 'y') return 'History'
-    if (key === 's' || key === 'c') return 'Export'
-    if (['1', '2', '3', '4'].includes(key)) return 'Aspect Ratio'
+    if (key.startsWith('arrow'))
+      return 'Navigation'
+    if (['+', '=', '-', '0'].includes(key))
+      return 'Zoom'
+    if (key === 'r')
+      return 'Rotation'
+    if (['h', 'v'].includes(key))
+      return 'Flip'
+    if (key === 'z' || key === 'y')
+      return 'History'
+    if (key === 's' || key === 'c')
+      return 'Export'
+    if (['1', '2', '3', '4'].includes(key))
+      return 'Aspect Ratio'
     if (key === 'escape' || key === 'delete' || key === 'backspace')
       return 'Actions'
-    if (key === '?') return 'Help'
+    if (key === '?')
+      return 'Help'
 
     return 'Other'
   }
@@ -543,10 +558,14 @@ export class KeyboardManager {
    */
   private formatKeyCombo(binding: KeyBinding): string {
     const parts: string[] = []
-    if (binding.ctrlKey) parts.push('Ctrl')
-    if (binding.shiftKey) parts.push('Shift')
-    if (binding.altKey) parts.push('Alt')
-    if (binding.metaKey) parts.push('⌘')
+    if (binding.ctrlKey)
+      parts.push('Ctrl')
+    if (binding.shiftKey)
+      parts.push('Shift')
+    if (binding.altKey)
+      parts.push('Alt')
+    if (binding.metaKey)
+      parts.push('⌘')
 
     // Format key name
     let keyName = binding.key
@@ -592,4 +611,3 @@ export class KeyboardManager {
     }
   }
 }
-

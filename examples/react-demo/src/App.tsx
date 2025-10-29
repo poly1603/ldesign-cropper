@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react'
-import { ReactCropper, type ReactCropperRef } from '@ldesign/cropper-react'
+import type { ReactCropperRef } from '@ldesign/cropper-react'
+import { ReactCropper } from '@ldesign/cropper-react'
+import { useRef, useState } from 'react'
 
 function App() {
   const cropperRef = useRef<ReactCropperRef>(null)
@@ -12,7 +13,8 @@ function App() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
 
-    if (!file) return
+    if (!file)
+      return
 
     // 创建图片 URL
     const reader = new FileReader()
@@ -60,7 +62,7 @@ function App() {
     const canvas = cropperRef.current?.getCroppedCanvas({
       width: 1920,
       height: 1080,
-      fillColor: '#fff'
+      fillColor: '#fff',
     })
 
     if (canvas) {
@@ -96,31 +98,33 @@ function App() {
         </div>
 
         <div className="cropper-wrapper">
-          {imageSrc ? (
-            <ReactCropper
-              ref={cropperRef}
-              src={imageSrc}
-              aspectRatio={16 / 9}
-              viewMode={1}
-              dragMode="move"
-              autoCrop={true}
-              autoCropArea={0.8}
-              guides={true}
-              center={true}
-              highlight={true}
-              cropBoxMovable={true}
-              cropBoxResizable={true}
-              toolbar={true}
-              onReady={handleReady}
-            />
-          ) : (
-            <div className="empty-state">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-              </svg>
-              <p>请选择一张图片开始裁剪</p>
-            </div>
-          )}
+          {imageSrc
+            ? (
+                <ReactCropper
+                  ref={cropperRef}
+                  src={imageSrc}
+                  aspectRatio={16 / 9}
+                  viewMode={1}
+                  dragMode="move"
+                  autoCrop={true}
+                  autoCropArea={0.8}
+                  guides={true}
+                  center={true}
+                  highlight={true}
+                  cropBoxMovable={true}
+                  cropBoxResizable={true}
+                  toolbar={true}
+                  onReady={handleReady}
+                />
+              )
+            : (
+                <div className="empty-state">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+                  </svg>
+                  <p>请选择一张图片开始裁剪</p>
+                </div>
+              )}
         </div>
 
         <div className="controls">
@@ -144,4 +148,3 @@ function App() {
 }
 
 export default App
-

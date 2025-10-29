@@ -17,7 +17,7 @@ export function getElement(selector: string | Element): Element | null {
  */
 export function createElement<K extends keyof HTMLElementTagNameMap>(
   tagName: K,
-  className?: string
+  className?: string,
 ): HTMLElementTagNameMap[K] {
   const element = document.createElement(tagName)
   if (className) {
@@ -31,7 +31,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
  */
 export function setStyle(
   element: HTMLElement,
-  styles: Partial<CSSStyleDeclaration>
+  styles: Partial<CSSStyleDeclaration>,
 ): void {
   Object.assign(element.style, styles)
 }
@@ -39,11 +39,11 @@ export function setStyle(
 /**
  * Get the offset of an element relative to the document
  */
-export function getOffset(element: Element): { left: number; top: number } {
+export function getOffset(element: Element): { left: number, top: number } {
   const rect = element.getBoundingClientRect()
   return {
     left: rect.left + window.pageXOffset,
-    top: rect.top + window.pageYOffset
+    top: rect.top + window.pageYOffset,
   }
 }
 
@@ -109,7 +109,7 @@ export function empty(element: Element): void {
  * Append child elements
  */
 export function append(parent: Element, ...children: Element[]): void {
-  children.forEach((child) => parent.appendChild(child))
+  children.forEach(child => parent.appendChild(child))
 }
 
 /**
@@ -131,7 +131,7 @@ export function closest(element: Element, selector: string): Element | null {
  */
 export function getComputedStyle(
   element: Element,
-  property?: string
+  property?: string,
 ): string | CSSStyleDeclaration {
   const computed = window.getComputedStyle(element)
   return property ? computed.getPropertyValue(property) : computed
@@ -142,19 +142,19 @@ export function getComputedStyle(
  */
 export function isVisible(element: HTMLElement): boolean {
   return !!(
-    element.offsetWidth ||
-    element.offsetHeight ||
-    element.getClientRects().length
+    element.offsetWidth
+    || element.offsetHeight
+    || element.getClientRects().length
   )
 }
 
 /**
  * Get element size
  */
-export function getSize(element: Element): { width: number; height: number } {
+export function getSize(element: Element): { width: number, height: number } {
   const rect = element.getBoundingClientRect()
   return {
     width: rect.width,
-    height: rect.height
+    height: rect.height,
   }
 }
