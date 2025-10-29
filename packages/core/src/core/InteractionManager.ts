@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InteractionManager - Handles user interactions (mouse, touch, gestures)
  */
 
@@ -32,8 +32,6 @@ export class InteractionManager {
   private zoomOnWheel: boolean
   private wheelZoomRatio: number
 
-<<<<<<< HEAD
-=======
   // Bound event handlers (to properly remove listeners)
   private boundHandleStart: (event: MouseEvent | TouchEvent) => void
   private boundHandleMove: (event: MouseEvent | TouchEvent) => void
@@ -41,7 +39,6 @@ export class InteractionManager {
   private boundHandleWheel: (event: WheelEvent) => void
   private boundPreventDrag: (event: Event) => void
 
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Throttled/debounced handlers
   private throttledMove: (event: MouseEvent | TouchEvent) => void
   private debouncedWheel: (event: WheelEvent) => void
@@ -66,11 +63,9 @@ export class InteractionManager {
     this.zoomOnWheel = options.zoomOnWheel ?? true
     this.wheelZoomRatio = options.wheelZoomRatio ?? 0.1
 
-<<<<<<< HEAD
     // Create throttled handlers for performance
     this.throttledMove = throttle(this.handleMove.bind(this), 16) // ~60fps
     this.debouncedWheel = debounce(this.handleWheel.bind(this), 50)
-=======
     // Bind event handlers once
     this.boundHandleStart = this.handleStart.bind(this)
     this.boundHandleEnd = this.handleEnd.bind(this)
@@ -81,7 +76,6 @@ export class InteractionManager {
     this.boundHandleMove = this.handleMove.bind(this)
     this.throttledMove = throttle(this.boundHandleMove, 16) // ~60fps
     this.debouncedWheel = debounce(this.boundHandleWheel, 50)
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
 
     this.bindEvents()
   }
@@ -95,7 +89,6 @@ export class InteractionManager {
     const activeOptions = getEventListenerOptions(false) as any
 
     // Mouse events - need active for preventDefault
-<<<<<<< HEAD
     on(this.element, 'mousedown', this.handleStart.bind(this) as any, activeOptions)
     on(document, 'mousemove', this.throttledMove as any, activeOptions)
     on(document, 'mouseup', this.handleEnd.bind(this) as any, activeOptions)
@@ -106,7 +99,6 @@ export class InteractionManager {
       on(document, 'touchmove', this.throttledMove as any, activeOptions)
       on(document, 'touchend', this.handleEnd.bind(this) as any, activeOptions)
       on(document, 'touchcancel', this.handleEnd.bind(this) as any, activeOptions)
-=======
     on(this.element, 'mousedown', this.boundHandleStart as any, activeOptions)
     on(document, 'mousemove', this.throttledMove as any, activeOptions)
     on(document, 'mouseup', this.boundHandleEnd as any, activeOptions)
@@ -117,7 +109,6 @@ export class InteractionManager {
       on(document, 'touchmove', this.throttledMove as any, activeOptions)
       on(document, 'touchend', this.boundHandleEnd as any, activeOptions)
       on(document, 'touchcancel', this.boundHandleEnd as any, activeOptions)
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
     }
 
     // Wheel event for zoom - use debounced version
@@ -126,18 +117,12 @@ export class InteractionManager {
     }
 
     // Prevent default drag behavior
-<<<<<<< HEAD
-    on(this.element, 'dragstart', ((e: Event) => preventDefault(e)) as any)
-=======
-    on(this.element, 'dragstart', this.boundPreventDrag as any)
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
-  }
+    on(this.element, 'dragstart', ((e: Event) => preventDefault(e)) as any)  }
 
   /**
    * Unbind events
    */
   private unbindEvents(): void {
-<<<<<<< HEAD
     off(this.element, 'mousedown', this.handleStart.bind(this))
     off(document, 'mousemove', this.handleMove.bind(this))
     off(document, 'mouseup', this.handleEnd.bind(this))
@@ -152,7 +137,6 @@ export class InteractionManager {
     if (this.zoomOnWheel) {
       off(this.element, 'wheel', this.handleWheel.bind(this))
     }
-=======
     off(this.element, 'mousedown', this.boundHandleStart)
     off(document, 'mousemove', this.throttledMove)
     off(document, 'mouseup', this.boundHandleEnd)
@@ -169,7 +153,6 @@ export class InteractionManager {
     }
 
     off(this.element, 'dragstart', this.boundPreventDrag)
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   }
 
   /**

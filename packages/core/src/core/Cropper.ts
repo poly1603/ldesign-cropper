@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cropper - Main cropper class
  */
 
@@ -86,7 +86,6 @@ const DEFAULTS = {
     acceptedFiles: 'image/*',
     maxFileSize: UI.MAX_PLACEHOLDER_FILE_SIZE,
     className: ''
-<<<<<<< HEAD
   },
   useWorker: false,  // Enable Web Worker for heavy operations
   workerOptions: {
@@ -137,8 +136,6 @@ const DEFAULTS = {
     invertMask: false,
     quickMask: false,
     autoCreateFromSelection: true
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   }
 }
 
@@ -155,7 +152,6 @@ export class Cropper {
   private presetManager: PresetManager | null = null
   private placeholderElement: HTMLElement | null = null
   private fileInput: HTMLInputElement | null = null
-<<<<<<< HEAD
   private workerManager: WorkerManager | null = null
   private touchGestureManager: TouchGestureManager | null = null
   private mobileUI: MobileUI | null = null
@@ -163,8 +159,6 @@ export class Cropper {
   private selection: Selection | null = null
   private maskManager: MaskManager | null = null
   private selectionToolbar: SelectionToolbar | null = null
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   public ready = false  // Changed to public for HistoryManager access
   private disabled = false
   private currentAction: Action = 'crop'
@@ -203,7 +197,6 @@ export class Cropper {
     // Create image processor
     this.imageProcessor = new ImageProcessor(this.wrapper)
 
-<<<<<<< HEAD
     // Initialize worker manager if enabled
     if (this.options.useWorker) {
       this.workerManager = new WorkerManager(this.options.workerOptions)
@@ -229,8 +222,6 @@ export class Cropper {
       this.initSelectionAndMask()
     }
 
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
     // Merge placeholder options with defaults
     this.options.placeholder = {
       ...DEFAULTS.placeholder,
@@ -276,14 +267,11 @@ export class Cropper {
       // Initialize preset manager
       this.initPresetManager()
 
-<<<<<<< HEAD
       // Initialize selection and mask if not already initialized
       if ((this.options.selection || this.options.masks) && !this.selection) {
         this.initSelectionAndMask()
       }
 
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
       // Mark as ready
       this.ready = true
 
@@ -1267,7 +1255,6 @@ export class Cropper {
   }
 
   /**
-<<<<<<< HEAD
    * Analyze image using AI
    * Returns brightness, contrast, dominant colors, etc.
    */
@@ -1753,8 +1740,6 @@ export class Cropper {
   }
 
   /**
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
    * Destroy
    */
   destroy(): void {
@@ -1784,7 +1769,6 @@ export class Cropper {
       this.imageProcessor.destroy()
     }
 
-<<<<<<< HEAD
     if (this.workerManager) {
       this.workerManager.terminate()
     }
@@ -1813,8 +1797,6 @@ export class Cropper {
       this.selectionToolbar.destroy()
     }
 
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
     if (this.wrapper && this.wrapper.parentNode) {
       this.wrapper.parentNode.removeChild(this.wrapper)
     }
@@ -1827,13 +1809,10 @@ export class Cropper {
     this.toolbar = null
     this.historyManager = null
     this.presetManager = null
-<<<<<<< HEAD
     this.workerManager = null
     this.touchGestureManager = null
     this.mobileUI = null
     this.accessibilityManager = null
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
     this.ready = false
   }
 }

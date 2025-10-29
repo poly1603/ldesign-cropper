@@ -811,7 +811,8 @@ export class LayerSystem {
     list.innerHTML = ''
 
     // Add layers (in reverse order - top to bottom)
-    [...this.layers].reverse().forEach(layer => {
+    const reversedLayers = [...this.layers].reverse()
+    reversedLayers.forEach(layer => {
       const item = createElement('div', 'layer-item')
       if (layer === this.activeLayer) {
         item.classList.add('active')

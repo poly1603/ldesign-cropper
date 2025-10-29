@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "dev": "ldesign-builder --watch",
-    "build": "ldesign-builder",
+    "build": "ldesign-builder build",
     "clean": "rimraf es lib dist",
     "lint": "tsc --noEmit",
     "test": "vitest"

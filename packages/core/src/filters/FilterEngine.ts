@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Filter Engine
  * Core system for applying filters to images
  */
@@ -42,7 +42,6 @@ export class FilterEngine {
   private originalImageData: ImageData | null = null
   private cachedResult: ImageData | null = null
   private cacheKey: string = ''
-<<<<<<< HEAD
   private useWorker: boolean
   private workerManager?: WorkerManager
 
@@ -50,8 +49,6 @@ export class FilterEngine {
     this.useWorker = options.useWorker ?? false
     this.workerManager = options.workerManager
   }
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
 
   /**
    * Register a filter
@@ -201,7 +198,6 @@ export class FilterEngine {
   }
 
   /**
-<<<<<<< HEAD
    * Apply all enabled filters asynchronously (with optional Worker support)
    */
   async applyFiltersAsync(
@@ -231,8 +227,6 @@ export class FilterEngine {
   }
 
   /**
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
    * Apply single filter without modifying pipeline
    */
   applyFilter(

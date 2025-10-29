@@ -224,7 +224,8 @@ export class SelectionToolbar {
     ]
 
     // Add all tools to map
-    [...selectionTools, ...modeTools, ...actionTools, ...maskTools].forEach(tool => {
+    const allTools = [...selectionTools, ...modeTools, ...actionTools, ...maskTools]
+    allTools.forEach(tool => {
       this.tools.set(tool.id, tool)
     })
   }

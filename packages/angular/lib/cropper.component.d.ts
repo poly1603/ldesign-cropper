@@ -1,0 +1,32 @@
+import { ElementRef, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { type CropperOptions, type CropBoxData, type ImageData } from '@ldesign/cropper-core';
+export declare class CropperComponent implements OnInit, OnDestroy {
+    containerRef: ElementRef<HTMLDivElement>;
+    src?: string;
+    aspectRatio?: number;
+    viewMode?: 0 | 1 | 2 | 3;
+    dragMode?: 'crop' | 'move' | 'none';
+    options?: CropperOptions;
+    ready: EventEmitter<CustomEvent<any>>;
+    cropstart: EventEmitter<CustomEvent<any>>;
+    cropmove: EventEmitter<CustomEvent<any>>;
+    cropend: EventEmitter<CustomEvent<any>>;
+    crop: EventEmitter<CustomEvent<any>>;
+    zoom: EventEmitter<CustomEvent<any>>;
+    private cropper?;
+    ngOnInit(): void;
+    ngOnDestroy(): void;
+    private initCropper;
+    getCroppedCanvas(options?: any): HTMLCanvasElement | null;
+    getCropBoxData(): CropBoxData | null;
+    getImageData(): ImageData | null;
+    setAspectRatio(aspectRatio: number): void;
+    reset(): void;
+    clear(): void;
+    replace(url: string): void;
+    destroy(): void;
+    zoom(ratio: number): void;
+    rotate(degree: number): void;
+    scale(scaleX: number, scaleY?: number): void;
+    move(offsetX: number, offsetY?: number): void;
+}

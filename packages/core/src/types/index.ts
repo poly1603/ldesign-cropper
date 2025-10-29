@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cropper Types
  */
 
@@ -135,21 +135,11 @@ export interface CropperOptions {
 
   // Highlight
   highlight?: boolean
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Highlight opacity (0-1, default: 0.05)
   highlightOpacity?: number
 
   // Background
   background?: boolean
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Modal opacity (0-1, default: 0.5)
   modalOpacity?: number
 
@@ -158,11 +148,6 @@ export interface CropperOptions {
 
   // Auto crop area
   autoCropArea?: number
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Initial crop box size ratio (relative to the smaller dimension)
   initialCropBoxSize?: number
 
@@ -280,7 +265,6 @@ export interface CropperOptions {
     className?: string
   }
 
-<<<<<<< HEAD
   // Web Worker options
   useWorker?: boolean
   workerOptions?: {
@@ -356,8 +340,6 @@ export interface CropperOptions {
     autoCreateFromSelection?: boolean
   }
 
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   // Events
   ready?: (event: CustomEvent) => void
   cropstart?: (event: CustomEvent) => void

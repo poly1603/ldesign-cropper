@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Batch Processor
  * Handles batch processing of multiple images
  */
@@ -27,12 +27,9 @@ export interface BatchProcessorOptions {
   parallelProcessing?: boolean
   maxConcurrent?: number
   autoStart?: boolean
-<<<<<<< HEAD
   useWorker?: boolean
   workerManager?: WorkerManager
   filters?: Array<{ name: string; options: any }>
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
   onProgress?: (item: BatchItem, index: number, total: number) => void
   onItemComplete?: (item: BatchItem, index: number) => void
   onComplete?: (items: BatchItem[]) => void
@@ -198,22 +195,17 @@ export class BatchProcessor {
    * Process single item
    */
   private async processItem(item: BatchItem, index: number): Promise<void> {
-<<<<<<< HEAD
     if (item.status !== 'pending' || this.cancelled) return
 
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
     try {
       item.status = 'processing'
       item.progress = 0
 
-<<<<<<< HEAD
       // If using worker and filters are specified
       if (this.options.useWorker && this.options.workerManager && this.options.filters) {
         await this.processItemWithWorker(item, index)
       } else {
         await this.processItemWithCropper(item, index)
-=======
       // Create temporary container
       const container = document.createElement('div')
       container.style.position = 'absolute'
@@ -268,7 +260,6 @@ export class BatchProcessor {
       // Report progress
       if (this.options.onProgress) {
         this.options.onProgress(item, index, this.items.length)
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
       }
     } catch (error) {
       item.status = 'failed'
@@ -281,7 +272,6 @@ export class BatchProcessor {
   }
 
   /**
-<<<<<<< HEAD
    * Process item with worker
    */
   private async processItemWithWorker(item: BatchItem, index: number): Promise<void> {
@@ -407,8 +397,6 @@ export class BatchProcessor {
   }
 
   /**
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
    * Cancel batch processing
    */
   cancel(): void {

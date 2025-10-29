@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Math utilities
  */
 
@@ -52,7 +52,6 @@ export function getDistance(p1: Point, p2: Point): number {
 }
 
 /**
-<<<<<<< HEAD
  * Get the distance between two points (simple version)
  */
 export function distance(x1: number, y1: number, x2: number, y2: number): number {
@@ -62,8 +61,6 @@ export function distance(x1: number, y1: number, x2: number, y2: number): number
 }
 
 /**
-=======
->>>>>>> 8d2dcc195686e5df89c23a6972035842b9e45d8f
  * Get the angle between two points
  */
 export function getAngle(p1: Point, p2: Point): number {

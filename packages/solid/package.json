@@ -1,0 +1,66 @@
+{
+  "name": "@ldesign/cropper-solid",
+  "version": "2.0.0",
+  "description": "Solid.js wrapper for @ldesign/cropper",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss",
+    "**/*.less"
+  ],
+  "exports": {
+    ".": {
+      "types": "./es/index.d.ts",
+      "import": "./es/index.js",
+      "require": "./lib/index.cjs"
+    },
+    "./es/*": "./es/*",
+    "./lib/*": "./lib/*",
+    "./dist/*": "./dist/*"
+  },
+  "main": "./lib/index.cjs",
+  "module": "./es/index.js",
+  "types": "./es/index.d.ts",
+  "files": [
+    "es",
+    "lib",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "ldesign-builder --watch",
+    "build": "ldesign-builder build",
+    "clean": "rimraf es lib dist",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@ldesign/cropper-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^6.0.0",
+    "@types/node": "^20.10.0",
+    "eslint": "^9.18.0",
+    "rimraf": "^5.0.0",
+    "solid-js": "^1.8.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8.0"
+  },
+  "keywords": [
+    "cropper",
+    "image-cropper",
+    "solid",
+    "solidjs",
+    "component"
+  ],
+  "author": "ldesign",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
